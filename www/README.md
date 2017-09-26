@@ -3,22 +3,26 @@
 - Install [angular-cli](https://github.com/angular/angular-cli)
 - Install [VS Code](https://code.visualstudio.com/) or [WebStorm](https://www.jetbrains.com/webstorm/)
 
+# 准备用taobao的npm镜像
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+
 # 准备开始
 
 进入目录
 ```
-cd web
+cd www
 ```
 安装依赖
 ```
-npm install
+cnpm install
 ```
 # TypeScript + Angular4 
 这是一个Angular4项目（默认使用TypeScript）
 
 ## TypeScript准备
 ```
-npm install -g typescript
+cnpm install -g typescript
+cnpm install -g typings
 ```
 
 启动服务
