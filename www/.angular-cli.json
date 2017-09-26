@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "angular2-lte"
+    "name": "kefu"
   },
   "apps": [
     {
@@ -19,14 +19,14 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "../node_modules/bootstrap/dist/css/bootstrap.css",
-        "assets/css/skins/_all-skins.min.css",
+        "../node_modules/_bootstrap@3.3.7@bootstrap/dist/css/bootstrap.css",
         "assets/css/AdminLTE.css",
+        "assets/css/skins/_all-skins.min.css",
         "styles.css"
       ],
       "scripts": [
-        "../node_modules/jquery/dist/jquery.min.js",
-        "../node_modules/bootstrap/dist/js/bootstrap.min.js",
+        "../node_modules/_jquery@3.2.1@jquery/dist/jquery.min.js",
+        "../node_modules/_bootstrap@3.3.7@bootstrap/dist/js/bootstrap.js",
         "assets/js/adminlte.min.js"
       ],
       "environmentSource": "environments/environment.ts",

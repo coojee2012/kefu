@@ -26,10 +26,11 @@ export const ROUTER_CONFIG: Routes = [
   { path: 'trending', loadChildren: 'app/pages/trending/trending.module#TrendingModule' },
   { path: 'publications', loadChildren: 'app/pages/publications/publications.module#PublicationsModule' },
   { path: 'search', loadChildren: 'app/pages/search/search.module#SearchModule' },
+  { path: 'home', loadChildren: 'app/pages/home/home.module#HomeModule' },
   { path: 'apps', loadChildren: 'app/pages/apps/apps.module#AppsModule' },
   { path: '404', component: NotFoundComponent },
   { path: '500', component: ServerErrorComponent },
-  //{ path: '', pathMatch: 'full', redirectTo: '/' },
+  // { path: '', pathMatch: 'full', redirectTo: '/' },
   { path: '**', component: NotFoundComponent }
 ];
 

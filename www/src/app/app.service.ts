@@ -7,7 +7,7 @@ import {
     Request,
     Response,
     RequestMethod,
-    RequestOptions, 
+    RequestOptions,
     RequestOptionsArgs
 } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
@@ -17,7 +17,7 @@ import 'rxjs/add/operator/catch';
 
 /**
  * 是否是对象
- * @param value 
+ * @param value
  */
 function isObject(value): boolean {
     return value !== null && typeof value === 'object';
@@ -25,7 +25,7 @@ function isObject(value): boolean {
 
 /**
  * 是否是undefined
- * @param value 
+ * @param value
  */
 function isUndefined(value) {
     return typeof value === 'undefined';
@@ -419,8 +419,8 @@ function methodBuilder(method: number, isJsonp = false) {
                     pQuery
                         .filter(p => !isUndefined(args[p.parameterIndex]))
                         .forEach(p => {
-                            let key = p.key;
-                            let value = args[p.parameterIndex];
+                            const key = p.key;
+                            const value = args[p.parameterIndex];
 
                             if (value instanceof Date) {
                                 search.set(encodeURIComponent(key), encodeURIComponent((<Date>value).getTime().toString()));
@@ -469,7 +469,7 @@ function methodBuilder(method: number, isJsonp = false) {
                 options = this.requestInterceptor(options) || options;
                 let httpRequest = isJsonp ? this.jsonp : this.http;
                 if (!httpRequest) {
-                    throw 'Http or jsonp should at less passs one of them!';
+                    throw new Error('Http or jsonp should at less passs one of them!');
                 }
                 let observable: Observable<Response> = httpRequest.request(new Request(options));
                 // @Produces
