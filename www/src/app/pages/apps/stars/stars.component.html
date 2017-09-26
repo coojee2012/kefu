@@ -1,0 +1,8 @@
+<p>
+  <i *ngFor="let star of stars" class="fa"
+     [class.fa-star]="star==='full'"
+     [class.fa-star-half-o]="star==='half'"
+     [class.fa-star-o]="star==='empty'"
+  ></i>
+  <span>{{rating}}星</span>
+</p>
