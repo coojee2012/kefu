@@ -6,7 +6,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 /**
  * 定义user 接口
  */
-export type userInterceptor = {
+export interface userInterceptor {
   nickname: string;
   avatar: string;
   slug: string;
@@ -60,5 +60,11 @@ export class UserDetailResolver implements Resolve<User> {
         return false;
       }
     });*/
+  }
+}
+
+@Injectable()
+export class UserDetailService {
+  constructor() {
   }
 }

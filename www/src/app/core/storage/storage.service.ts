@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 
 /**
  * 深拷贝
- * @param obj 
+ * @param obj
  */
 function cloneDeep(obj) {
     return JSON.parse(JSON.stringify(obj));
@@ -183,7 +183,7 @@ export class MemoryStorage implements IStorage {
     }
 
     get({ pool = DEFAULT_STORAGE_POOL_KEY, key }: { pool?: string, key: string }): Object {
-        let storage = this.getAll(pool);
+        const storage = this.getAll(pool);
         return storage.has(key) ? cloneDeep(storage.get(key)) : null;
     }
 
@@ -200,7 +200,7 @@ export class MemoryStorage implements IStorage {
             return;
         }
 
-        let poolStorage = this.storage.get(pool);
+        const poolStorage = this.storage.get(pool);
         if (poolStorage) {
             poolStorage.delete(key);
         }
@@ -235,7 +235,7 @@ export class StorageService {
     }
 
     get({ pool, key, storageType }: { pool?: string, key: string, storageType?: StorageType }): Object {
-        let data = this.storages.get(storageType || this.defaultStorageType).get({ pool, key });
+        const data = this.storages.get(storageType || this.defaultStorageType).get({ pool, key });
         return DataCacheStrategyFactory.getInstance().get(data);
     }
 
