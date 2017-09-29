@@ -7,6 +7,7 @@ import {Observable} from 'rxjs/Observable';
 import {AuthorizationService} from './core/authorization/authorization.service';
 import {Router} from '@angular/router';
 import { environment } from './../environments/environment';
+import 'rxjs/add/operator/do';
 /**
  * 是否是对象
  * @param value
@@ -136,4 +137,24 @@ export class CachingInterceptor implements HttpInterceptor {
       }
     });
   }
+}
+
+/**
+ * 记日志
+ * 由于拦截器可以同时处理请求和响应，因此可以用来记日志或请求计时等。考虑下面这个拦截器，它使用console.log来显示每个请求花了多久：
+ */
+@Injectable()
+export class TimingInterceptor implements HttpInterceptor {
+ constructor(private auth: AuthorizationService) {}
+ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+   const started = Date.now();
+   return next
+     .handle(req)
+     .do(event => {
+       if (event instanceof HttpResponse) {
+         const elapsed = Date.now() - started;
+         console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+       }
+     });
+ }
 }
