@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { StorageType, StorageService } from  '../storage';
+import { StorageType, StorageService } from '../storage';
 
-const isBlank = (obj) => {
+const isBlank = (obj: any) => {
     return obj === null || obj === undefined;
 };
 
 @Injectable()
 export class AuthorizationService {
-    private static STORAGE_POOL_KEY = "jianshu-authorization";
-    private static STORAGE_KEY = "current-user";
+    private static STORAGE_POOL_KEY = 'jianshu-authorization';
+    private static STORAGE_KEY = 'current-user';
     private storageType: StorageType;
     private currentUser: any;
 
@@ -65,6 +65,6 @@ export class AuthorizationService {
             roles = [roles];
         }
 
-        return this.currentUser.roles && roles.some(role => this.currentUser.roles.indexOf(role) !== -1);
+        return this.currentUser.roles && roles.some((role: any) => this.currentUser.roles.indexOf(role) !== -1);
     }
 }

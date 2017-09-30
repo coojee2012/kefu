@@ -5,10 +5,10 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
 /**
- * 深拷贝
+ * 深拷
  * @param obj
  */
-function cloneDeep(obj) {
+function cloneDeep(obj: any) {
     return JSON.parse(JSON.stringify(obj));
 }
 
@@ -52,7 +52,7 @@ class RxDataCacheStrategy implements IDataCacheStrategy {
     }
 
     put(result: any, putStorage: (data: Object) => void): Observable<any> {
-        return result.map(data => {
+        return result.map( (data: any) => {
             setTimeout(() => putStorage(data));
             return data;
         });
@@ -75,7 +75,7 @@ class PromiseDataCacheStrategy implements IDataCacheStrategy {
     }
 
     put(result: any, putStorage: (data: Object) => void): Promise<any> {
-        return result.then(data => setTimeout(() => putStorage(data)));
+        return result.then((data: any) => setTimeout(() => putStorage(data)));
     }
 
     get(result: any): Object {
@@ -94,8 +94,8 @@ export interface IStorage {
     getAll(pool: string): any;
     get(options: { pool?: string, key: string }): Object;
     put(options: { pool?: string, key: string }, value: Object): any;
-    remove(options: { pool?: string, key?: string });
-    removeAll();
+    remove(options: { pool?: string, key?: string }): void;
+    removeAll(): void;
 }
 
 /**
@@ -114,7 +114,7 @@ class DataCacheStrategyFactory {
     }
 
     put(options: { pool?: string, key: string }, value: any, storage: IStorage) {
-        let strategy = this.dataCacheStrategies.find(t => t.match(value));
+        const strategy = this.dataCacheStrategies.find(t => t.match(value));
         if (strategy) {
             return strategy.put(value, (result) => storage.put(options, { type: strategy.name(), result }));
         }
@@ -124,7 +124,7 @@ class DataCacheStrategyFactory {
 
     get(data: any): Object {
         if (data && data.type) {
-            let strategy = this.dataCacheStrategies.find(t => t.name() === data.type);
+            const strategy = this.dataCacheStrategies.find(t => t.name() === data.type);
             if (strategy) {
                 return strategy.get(data.result);
             }
@@ -138,21 +138,21 @@ export class WebStorage implements IStorage {
     }
 
     getAll(pool: string) {
-        let json = this.webStorage.getItem(pool);
+        const json = this.webStorage.getItem(pool);
         return json ? JSON.parse(json) : {};
     }
 
-    saveAll(pool: string, storage) {
+    saveAll(pool: string, storage: any) {
         this.webStorage.setItem(pool, JSON.stringify(storage));
     }
 
     get({ pool = DEFAULT_STORAGE_POOL_KEY, key }: { pool?: string, key: string }): Object {
-        let storage = this.getAll(pool);
+        const storage = this.getAll(pool);
         return storage[key];
     }
 
     put({ pool = DEFAULT_STORAGE_POOL_KEY, key }: { pool?: string, key: string }, value: Object): any {
-        let storage = this.getAll(pool);
+        const storage = this.getAll(pool);
         storage[key] = value;
         return this.saveAll(pool, storage);
     }
@@ -240,7 +240,7 @@ export class StorageService {
     }
 
     put({ pool, key, storageType }: { pool?: string, key: string, storageType?: StorageType }, value: Object): any {
-        let storage = this.storages.get(storageType || this.defaultStorageType);
+        const storage = this.storages.get(storageType || this.defaultStorageType);
         return DataCacheStrategyFactory.getInstance().put({ pool, key }, value, storage);
     }
 
@@ -283,23 +283,23 @@ export function Cacheable({ pool = DEFAULT_STORAGE_POOL_KEY, key, storageType = 
                               { pool?: string, key?: string, storageType?: StorageType } = {}) {
 
     const storageService = StorageFactory.getStorageService();
-    let getKey = (target: any, method: string, args: Object[]) => {
+    const getKey = (target: any, method: string, args: Object[]): string => {
         // TODO: we can change this code or override object toString method;
-        let prefix = key || `${target.constructor.name}.${method}`;
+        const prefix = key || `${target.constructor.name}.${method}`;
         return `${prefix}:${args.join('-')}`;
     };
 
     return function (target: any, name: string, methodInfo: any) {
-        let method = methodInfo.value;
+        const method = methodInfo.value;
 
-        let proxy = function (...args) {
-            const key = getKey(target, name, args || []);
-            let data = storageService.get({ pool, key, storageType });
+        const proxy = function (...args: any[]) {
+            key = getKey(target, name, args || []);
+            const data = storageService.get({ pool, key, storageType });
             if (data) {
                 return data;
             }
 
-            let result = method.apply(this, args || []);
+            const result = method.apply(this, args || []);
             return storageService.put({ pool, key, storageType }, result);
         };
 

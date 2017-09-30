@@ -23,6 +23,7 @@ const APP_PROVIDERS = [
 
 @NgModule({
     imports: [
+        // BrowserModule.withServerTransition({appId: 'ang4-seo-pre'}),
         BrowserModule,
         HttpClientModule,
         CoreModule,

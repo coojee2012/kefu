@@ -12,8 +12,8 @@ import {
 import {Observable} from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/switchMap';
-import "rxjs/add/operator/takeUntil";
-import "rxjs/add/operator/do";
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/do';
 
 @Component({
   selector: 'app-verify-sliderbar',
@@ -25,7 +25,7 @@ export class VerifySliderbarComponent implements OnInit, OnDestroy, AfterViewIni
   private elementLeft: any;
   private dragBg: any;
   @ViewChild('DragText') dragText: any;
-  private dispose;
+  private dispose: any;
 
   constructor(private element: ElementRef, private renderer2: Renderer2) {
   }
@@ -81,11 +81,11 @@ export class VerifySliderbarComponent implements OnInit, OnDestroy, AfterViewIni
   ngOnDestroy() {
   }
 
-  private getTranslate(obj) {
+  private getTranslate(obj: any) {
     return {x: obj.getBoundingClientRect().left};
   }
 
-  private setTranslate(obj, pos) {
+  private setTranslate(obj: any, pos: any) {
     let left = 0;
     if (pos.x - this.elementLeft.x <= 0) {
       left = 0;
@@ -102,7 +102,7 @@ export class VerifySliderbarComponent implements OnInit, OnDestroy, AfterViewIni
     this.setStyle(obj, left);
   }
 
-  private setStyle(obj, num) {
+  private setStyle(obj: any, num: number) {
     this.renderer2.setStyle(this.dragBg, 'width', `${num}px`);
     this.renderer2.setStyle(obj, 'left', `${num}px`);
   }

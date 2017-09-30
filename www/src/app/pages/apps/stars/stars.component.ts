@@ -1,4 +1,4 @@
-import { Component, OnInit ,Input} from '@angular/core';
+import { Component, OnInit , Input} from '@angular/core';
 
 @Component({
   selector: 'app-stars',
@@ -8,7 +8,7 @@ import { Component, OnInit ,Input} from '@angular/core';
 export class StarsComponent implements OnInit {
   @Input()
   public rating: number;
-  public stars = [];
+  public stars: string[]= [];
   constructor() { }
 
   ngOnInit() {
@@ -19,9 +19,9 @@ export class StarsComponent implements OnInit {
       if (i < full) {
         this.stars.push('full');
       } else if (i === full && half !== 0) {
-        this.stars.push('half')
+        this.stars.push('half');
       } else {
-        this.stars.push('empty')
+        this.stars.push('empty');
       }
     }
   }

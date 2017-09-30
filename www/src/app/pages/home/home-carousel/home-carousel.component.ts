@@ -81,11 +81,11 @@ export class HomeCarouselComponent implements OnInit {
     this.setBanner(index);
   }
 
-  setBanner(index) {
+  setBanner(index: any) {
     this.primary = this.getPrimary(index);
   }
 
-  getPrimary(index) {
+  getPrimary(index: any) {
     const primary: Array<any> = [];
     if (index === 0) {
       primary.push(this.list[this.list.length - 1]);

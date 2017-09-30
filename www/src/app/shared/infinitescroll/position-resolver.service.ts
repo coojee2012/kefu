@@ -26,7 +26,7 @@ export class PositionResolverService {
     return isWindow;
   }
 
-  getDocumentElement(isContainerWindow: boolean, windowElement) {
+  getDocumentElement(isContainerWindow: boolean, windowElement: any) {
     return isContainerWindow
       ? windowElement.document.documentElement
       : null;

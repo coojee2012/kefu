@@ -12,7 +12,7 @@ import 'rxjs/add/operator/do';
  * 是否是对象
  * @param value
  */
-function isObject(value): boolean {
+function isObject(value: any): boolean {
   return value !== null && typeof value === 'object';
 }
 
@@ -20,7 +20,7 @@ function isObject(value): boolean {
  * 是否是undefined
  * @param value
  */
-function isUndefined(value) {
+function isUndefined(value: any) {
   return typeof value === 'undefined';
 }
 
@@ -28,7 +28,7 @@ function isUndefined(value) {
  * 是否是空
  * @param value
  */
-function isEmpty(value) {
+function isEmpty(value: any) {
   return isUndefined(value) || value === null || value === '';
 }
 

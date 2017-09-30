@@ -19,7 +19,7 @@ import 'rxjs/add/operator/catch';
  * 是否是对象
  * @param value
  */
-function isObject(value): boolean {
+function isObject(value: any): boolean {
     return value !== null && typeof value === 'object';
 }
 
@@ -27,15 +27,15 @@ function isObject(value): boolean {
  * 是否是undefined
  * @param value
  */
-function isUndefined(value) {
+function isUndefined(value: any) {
     return typeof value === 'undefined';
 }
 
 /**
  * 是否是空
- * @param value 
+ * @param value
  */
-function isEmpty(value) {
+function isEmpty(value: any) {
     return typeof value === 'undefined' || value === null || value === '';
 }
 
@@ -63,7 +63,7 @@ export class AppHttpProvider {
     }
     /**
      * 添加拦截器
-     * @param interceptor 
+     * @param interceptor
      */
     addInterceptor(interceptor: AppHttpInterceptor): AppHttpProvider {
         this.interceptors.push(interceptor);
@@ -110,14 +110,14 @@ export class AppHttpProvider {
     handleRequest(req: RequestOptions): RequestOptions {
         return this.interceptors
             .filter(item => !!item.request)
-            .reduce((req, item) => {
-                return <RequestOptions>(item.request(req) || req);
+            .reduce((request, item) => {
+                return <RequestOptions>(item.request(request) || request);
             }, req);
     }
     /**
      * 处理响应
-     * @param res 
-     * @param request 
+     * @param res
+     * @param request
      */
     handleResponse(res: Observable<any>, request?: RequestOptions): Observable<any> {
         return this.interceptors
@@ -130,7 +130,7 @@ export class AppHttpProvider {
     /**
      * 设置api请求地址
      * @param host     api地址
-     * @param excludes 正则表达式 
+     * @param excludes 正则表达式
      */
     baseUrl(host: string, excludes: RegExp[] = []): AppHttpProvider {
         this.interceptors.push({
@@ -139,13 +139,13 @@ export class AppHttpProvider {
                     return request;
                 }
 
-                let excludeUrl = excludes.some(t => t.test(request.url));
+                const excludeUrl = excludes.some(t => t.test(request.url));
                 if (excludeUrl) {
                     return request;
                 }
 
-                host = host.replace(/\/$/, "");
-                let url = request.url.replace(/^\//, "");
+                host = host.replace(/\/$/, '');
+                const url = request.url.replace(/^\//, '');
                 request.url = `${host}/${url}`;
                 return request;
             }
@@ -155,13 +155,13 @@ export class AppHttpProvider {
 
     /**
      * 头信息
-     * @param headers 
+     * @param headers
      */
     headers(headers = {}): AppHttpProvider {
         return this.addInterceptor({
             request: (request: RequestOptions): void => {
                 request.headers = request.headers || new ngHeaders();
-                for (let key in headers) {
+                for (const key in headers) {
                     if (headers.hasOwnProperty(key)) {
                         request.headers.set(key, headers[key]);
                     }
@@ -185,7 +185,7 @@ export class AppHttpProvider {
             },
             response: (response: Observable<any>): Observable<any> => {
                 return response.map(res => {
-                    let type = res.headers.get('Content-Type') || res.headers.get('content-type');
+                    const type = res.headers.get('Content-Type') || res.headers.get('content-type');
                     if (type && type.indexOf('json') !== -1) {
                         return res.json && res.json();
                     }
@@ -355,8 +355,8 @@ function paramBuilder(paramName: string, optional = false) {
             throw new Error(`${paramName} Key is required!`);
         }
         return function (target: AppHttp, propertyKey: string | symbol, parameterIndex: number) {
-            let metadataKey = `${propertyKey}_${paramName}_parameters`;
-            let paramObj: any = {
+            const metadataKey = `${propertyKey}_${paramName}_parameters`;
+            const paramObj: any = {
                 key: key,
                 parameterIndex: parameterIndex
             };
@@ -369,13 +369,13 @@ function paramBuilder(paramName: string, optional = false) {
     };
 }
 
-export var Path = paramBuilder("Path");
+export const Path = paramBuilder('Path');
 
-export var Query = paramBuilder("Query", true);
+export const Query = paramBuilder('Query', true);
 
-export var Body = paramBuilder("Body")("Body");
+export const Body = paramBuilder('Body')('Body');
 
-export var Header = paramBuilder("Header");
+export const Header = paramBuilder('Header');
 
 export function Produces(producesDef: string) {
     return function (target: AppHttp, propertyKey: string, descriptor: any) {
@@ -389,24 +389,24 @@ function methodBuilder(method: number, isJsonp = false) {
     return function (url: string) {
         return function (target: AppHttp, propertyKey: string, descriptor: any) {
 
-            let pPath = target[`${propertyKey}_Path_parameters`];
-            let pQuery = target[`${propertyKey}_Query_parameters`];
-            let pBody = target[`${propertyKey}_Body_parameters`];
-            let pHeader = target[`${propertyKey}_Header_parameters`];
-            
+            const pPath = target[`${propertyKey}_Path_parameters`];
+            const pQuery = target[`${propertyKey}_Query_parameters`];
+            const pBody = target[`${propertyKey}_Body_parameters`];
+            const pHeader = target[`${propertyKey}_Header_parameters`];
+
             descriptor.value = function (...args: any[]) {
 
                 // Body
-                let body = "";
+                let body = '';
                 if (pBody) {
-                    let reqBody = args[pBody[0].parameterIndex];
+                    const reqBody = args[pBody[0].parameterIndex];
                     body = descriptor.enableJson ? JSON.stringify(reqBody) : reqBody;
                 }
 
                 // Path
                 let resUrl: string = url;
                 if (pPath) {
-                    for (let k in pPath) {
+                    for (const k in pPath) {
                         if (pPath.hasOwnProperty(k)) {
                             resUrl = resUrl.replace(`:${pPath[k].key}`, encodeURIComponent(args[pPath[k].parameterIndex]));
                         }
@@ -414,18 +414,18 @@ function methodBuilder(method: number, isJsonp = false) {
                 }
 
                 // Query
-                let search = new URLSearchParams();
+                const search = new URLSearchParams();
                 if (pQuery) {
                     pQuery
-                        .filter(p => !isUndefined(args[p.parameterIndex]))
-                        .forEach(p => {
+                        .filter((p: any) => !isUndefined(args[p.parameterIndex]))
+                        .forEach((p: any)  => {
                             const key = p.key;
                             const value = args[p.parameterIndex];
 
                             if (value instanceof Date) {
                                 search.set(encodeURIComponent(key), encodeURIComponent((<Date>value).getTime().toString()));
                             } else if (isObject(value)) {
-                                for (let k in value) {
+                                for (const k in value) {
                                     if (value.hasOwnProperty(k)) {
                                         search.set(encodeURIComponent(k), encodeURIComponent(value[k]));
                                     }
@@ -440,34 +440,34 @@ function methodBuilder(method: number, isJsonp = false) {
 
                 // Headers
                 // set class default headers
-                let headers = new ngHeaders(this.getDefaultHeaders());
+                const headers = new ngHeaders(this.getDefaultHeaders());
                 // set method specific headers
-                for (let k in descriptor.headers) {
+                for (const k in descriptor.headers) {
                     if (descriptor.headers.hasOwnProperty(k)) {
                         headers.append(k, descriptor.headers[k]);
                     }
                 }
 
                 if (pHeader) {
-                    for (let k in pHeader) {
+                    for (const k in pHeader) {
                         if (pHeader.hasOwnProperty(k)) {
                             headers.append(pHeader[k].key, args[pHeader[k].parameterIndex]);
                         }
                     }
                 }
 
-                let baseUrl = this.getBaseUrl();
-                let host = baseUrl ? baseUrl.replace(/\/$/, "") + '/' : '';
+                const baseUrl = this.getBaseUrl();
+                const host = baseUrl ? baseUrl.replace(/\/$/, '') + '/' : '';
                 let options = new RequestOptions(<any>{
                     method,
-                    url: `${host}${resUrl.replace(/^\//, "")}`,
+                    url: `${host}${resUrl.replace(/^\//, '')}`,
                     headers,
                     body,
                     search
                 });
 
                 options = this.requestInterceptor(options) || options;
-                let httpRequest = isJsonp ? this.jsonp : this.http;
+                const httpRequest = isJsonp ? this.jsonp : this.http;
                 if (!httpRequest) {
                     throw new Error('Http or jsonp should at less passs one of them!');
                 }

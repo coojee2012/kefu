@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  verify(data) {
+  verify(data: any) {
     this.login.verifycode = data;
     console.log('verify', data);
   }
