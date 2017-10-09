@@ -1,0 +1,47 @@
+{
+  "name": "angular4-server",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "start1": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
+    "lite": "lite-server",
+    "postinstall": "typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "typings": "typings"
+  },
+  "private": true,
+  "dependencies": {
+    "core-js": "^2.4.1",
+    "injection-js": "^2.1.0",
+    "reflect-metadata": "^0.1.10"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^3.3.36",
+    "@types/jasmine": "~2.5.53",
+    "@types/jasminewd2": "~2.0.2",
+    "@types/jquery": "^3.2.12",
+    "@types/node": "~6.0.60",
+    "codelyzer": "~3.1.1",
+    "concurrently": "^2.2.0",
+    "jasmine-core": "~2.6.2",
+    "jasmine-spec-reporter": "~4.1.0",
+    "karma": "~1.7.0",
+    "karma-chrome-launcher": "~2.1.1",
+    "karma-cli": "~1.0.1",
+    "karma-coverage-istanbul-reporter": "^1.2.1",
+    "karma-jasmine": "~1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "protractor": "~5.1.2",
+    "ts-node": "~3.2.0",
+    "tslint": "~5.3.2",
+    "typescript": "~2.3.3"
+  }
+}
