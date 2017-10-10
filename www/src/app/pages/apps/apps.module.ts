@@ -14,8 +14,6 @@ import {StarsComponent} from './stars/stars.component';
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ContentWrapperComponent } from './content-wrapper/content-wrapper.component';
-import { ContentHeaderComponent } from './content-header/content-header.component';
-import { ContentContentComponent } from './content-content/content-content.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -31,8 +29,6 @@ import { ContentContentComponent } from './content-content/content-content.compo
     StarsComponent,
     HeaderComponent,
     SidebarComponent,
-    ContentContentComponent,
-    ContentHeaderComponent,
     ContentWrapperComponent,
     AppsComponent
   ]

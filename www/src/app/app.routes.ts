@@ -6,7 +6,7 @@ import {NotFoundComponent} from './shared/not-found/not-found.component';
 import {ServerErrorComponent} from './shared/server-error/server-error.component';
 
 export const ROUTER_CONFIG: Routes = [
-  { path: '', loadChildren: 'app/pages/home/home.module#HomeModule' },
+  // { path: '', loadChildren: 'app/pages/home/home.module#HomeModule' },
   { path: 'login', loadChildren: 'app/pages/login/login.module#LoginModule' },
   { path: 'register', loadChildren: 'app/pages/register/register.module#RegisterModule' },
   { path: 'forget', loadChildren: 'app/pages/forget/forget.module#ForgetModule' },
@@ -27,7 +27,7 @@ export const ROUTER_CONFIG: Routes = [
   { path: 'publications', loadChildren: 'app/pages/publications/publications.module#PublicationsModule' },
   { path: 'search', loadChildren: 'app/pages/search/search.module#SearchModule' },
   { path: 'home', loadChildren: 'app/pages/home/home.module#HomeModule' },
-  { path: 'apps', loadChildren: 'app/pages/apps/apps.module#AppsModule' },
+  { path: '', loadChildren: 'app/pages/apps/apps.module#AppsModule' },
   { path: '404', component: NotFoundComponent },
   { path: '500', component: ServerErrorComponent },
   // { path: '', pathMatch: 'full', redirectTo: '/' },
