@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 
-
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -26,6 +26,7 @@ const APP_PROVIDERS = [
         // BrowserModule.withServerTransition({appId: 'ang4-seo-pre'}),
         BrowserModule,
         HttpClientModule,
+        NgbModule.forRoot(),
         CoreModule,
         SharedModule,
         ROUTING

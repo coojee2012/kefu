@@ -6,10 +6,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-
-  constructor() { }
+  private isActive: boolean[];
+  constructor() {
+    this.isActive = [false, false, false];
+  }
 
   ngOnInit() {
   }
-
+  onTreeClick(index: number) {
+    for (let i = 0; i < this.isActive.length; i++) {
+      if (this.isActive[i] && i !== index) {
+        this.isActive[i] = false;
+      }
+    }
+    this.isActive[index] = !this.isActive[index];
+  }
 }
