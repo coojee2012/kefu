@@ -2,8 +2,8 @@
  * Created by Administrator on 2017/5/11.
  */
 import { Routes, RouterModule } from '@angular/router';
-import {NotFoundComponent} from './shared/not-found/not-found.component';
-import {ServerErrorComponent} from './shared/server-error/server-error.component';
+import { NotFoundComponent } from './shared/not-found/not-found.component';
+import { ServerErrorComponent } from './shared/server-error/server-error.component';
 
 export const ROUTER_CONFIG: Routes = [
   // { path: '', loadChildren: 'app/pages/home/home.module#HomeModule' },
@@ -27,11 +27,11 @@ export const ROUTER_CONFIG: Routes = [
   { path: 'publications', loadChildren: 'app/pages/publications/publications.module#PublicationsModule' },
   { path: 'search', loadChildren: 'app/pages/search/search.module#SearchModule' },
   { path: 'home', loadChildren: 'app/pages/home/home.module#HomeModule' },
-  { path: '', loadChildren: 'app/pages/apps/apps.module#AppsModule' },
+  { path: 'app', loadChildren: 'app/pages/apps/apps.module#AppsModule' },
   { path: '404', component: NotFoundComponent },
   { path: '500', component: ServerErrorComponent },
-  // { path: '', pathMatch: 'full', redirectTo: '/' },
+  { path: '', pathMatch: 'full', redirectTo: '/app' },
   { path: '**', component: NotFoundComponent }
 ];
 
-export const ROUTING = RouterModule.forRoot(ROUTER_CONFIG);
+export const ROUTING = RouterModule.forRoot(ROUTER_CONFIG, { enableTracing: false });

@@ -12,9 +12,9 @@ export const routes: Routes = [
     path: '',
     component: AppsComponent,
     children: [
-       { path: 'dashbord', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
-       { path: 'chat', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' }
-     ]
+      { path: 'dashbord', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
+      { path: 'chat', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' }
+    ]
   },
   // { path: '', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
 ];

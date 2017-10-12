@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-chat-room',
+  selector: 'app-apps-chat-room',
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.css']
 })

@@ -3,18 +3,12 @@ import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../../shared';
 import { SidebarModule } from './sidebar';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 import { AppsComponent } from './apps.component';
 
 import { ROUTER_CONFIG } from './apps.routes';
 
-import { NavbarComponent } from './navbar/navbar.component';
-import { SearchComponent } from './search/search.component';
-import { ProductComponent } from './product/product.component';
-import { CarouselComponent } from './carousel/carousel.component';
-import { FooterComponent } from './footer/footer.component';
-import { StarsComponent } from './stars/stars.component';
-import { HeaderComponent } from './header/header.component';
-import { ContentWrapperComponent } from './content-wrapper/content-wrapper.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -24,15 +18,9 @@ import { ContentWrapperComponent } from './content-wrapper/content-wrapper.compo
     ROUTER_CONFIG
   ],
   declarations: [
-    NavbarComponent,
-    SearchComponent,
-    ProductComponent,
-    CarouselComponent,
-    FooterComponent,
-    StarsComponent,
     HeaderComponent,
-    ContentWrapperComponent,
+    FooterComponent,
     AppsComponent
-  ]
+  ],
 })
 export class AppsModule { }

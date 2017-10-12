@@ -1,17 +1,16 @@
-
 <div class="wrapper">
-
     <!--头部-->
     <app-apps-header>
     </app-apps-header>
     <!--/头部-->
     <!--侧边-->
-    <app-sidebar>
-    </app-sidebar>
+    <app-apps-sidebar>
+    </app-apps-sidebar>
     <!--/侧边-->
     <!--主要内容容器-->
-    <app-content-wrapper>
-    </app-content-wrapper>
+    <div class="content-wrapper">
+        <router-outlet></router-outlet>
+    </div>
     <!--/主要内容容器-->
     <!--底部信息-->
     <app-apps-footer>
