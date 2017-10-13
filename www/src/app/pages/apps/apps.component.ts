@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { LoggerService } from '../../core/logger';
 @Component({
   selector: 'app-apps',
   templateUrl: './apps.component.html',
@@ -7,9 +9,10 @@ import { Router } from '@angular/router';
 })
 export class AppsComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private logger: LoggerService) { }
 
   ngOnInit() {
+    this.logger.log('abcde');
     setTimeout(() => {
       this.router.navigate(['/app/dashbord']);
     }, 500);

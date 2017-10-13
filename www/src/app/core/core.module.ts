@@ -10,13 +10,14 @@ import { StorageModule } from './storage';
  */
 import { AuthorizationModule } from './authorization';
 import { LoadingModule } from './loading';
-
+import { LoggerModule } from './logger';
 @NgModule({
   imports: [
     HttpModule,
     LoadingModule,
     StorageModule,
-    AuthorizationModule
+    AuthorizationModule,
+    LoggerModule
   ],
   providers: [
     // UTILS_STORAGE_PROVIDERS,
