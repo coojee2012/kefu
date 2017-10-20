@@ -12,13 +12,14 @@ import {AppComponent} from './app.component';
 import {CoreModule} from './core';
 import {SharedModule} from './shared';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
-import {APPRequestInterceptor, APPResponseInterceptor} from './app.intercept';
+import {APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor} from './app.intercept';
 
 
 // Application wide providers
 const APP_PROVIDERS = [
     {provide: HTTP_INTERCEPTORS, useClass: APPRequestInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: APPResponseInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: APPResponseInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: TimingInterceptor, multi: true}
   ];
 
 @NgModule({
