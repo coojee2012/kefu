@@ -12,7 +12,7 @@ export class AppsComponent implements OnInit {
   constructor(private router: Router, private logger: LoggerService) { }
 
   ngOnInit() {
-    this.logger.log('abcde');
+    this.logger.log('测试LoggerService');
     setTimeout(() => {
       this.router.navigate(['/app/dashbord']);
     }, 500);
