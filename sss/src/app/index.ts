@@ -10,5 +10,6 @@ export class App {
     }
     run() {
         this.logger.log('ddddd');
+        this.logger.log('ttttt');
     }
 }
