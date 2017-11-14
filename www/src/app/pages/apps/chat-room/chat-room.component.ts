@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
+interface Message {
+
+}
+
 @Component({
   selector: 'app-apps-chat-room',
   templateUrl: './chat-room.component.html',
