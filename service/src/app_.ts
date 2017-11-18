@@ -1,9 +1,11 @@
 import 'reflect-metadata';
 import { Injector, ReflectiveInjector } from 'injection-js';
-import { HeroService } from './service/HeroService';
+// import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 
 import { App } from './app/index';
+
+console.log(LoggerService)
 
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
   {
@@ -11,8 +13,7 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
       return new LoggerService(true);
     }
   },
-  HeroService,
-
+  // HeroService,
   App
 ]);
 

@@ -10,6 +10,7 @@ import {Request, Response, NextFunction} from 'express';
 import * as mongoose from 'mongoose';
 import {default as Article} from './article';
 import { LoggerService } from '../service/LogService';
+import redisClient from '../config/redis';
 
 /**
  * 定义类接口
@@ -31,7 +32,7 @@ export interface UserInterface {
 /**
  * 模板控制器
  */
-//@Injectable()
+@Injectable()
 class UserController implements UserInterface {
     constructor(private logger: LoggerService) {
 
@@ -437,4 +438,7 @@ class UserController implements UserInterface {
 /**
  * 导出模块
  */
-export default new UserController();
+//export default new UserController();
+export default {
+  a:1
+};

@@ -1,8 +1,11 @@
-import { Injectable } from 'injection-js';
+import { Injectable , Injector } from 'injection-js';
 import { LoggerService } from './LogService';
 @Injectable()
 export class HeroService {
-    constructor(private loggerService: LoggerService) { }
+    private logger: LoggerService;
+    constructor(private injector: Injector ) {
+      this.logger = this.injector.get(LoggerService);
+    }
 
     heros: Array<{ id: number; name: string }> = [
         { id: 11, name: 'Mr. Nice' },
@@ -13,7 +16,7 @@ export class HeroService {
     ];
 
     getHeros() {
-        this.loggerService.log('Fetching heros...');
+        this.logger.log('Fetching heros...');
         return this.heros;
     }
 }
