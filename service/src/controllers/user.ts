@@ -270,7 +270,7 @@ class UserController implements UserInterface {
                 }
             });
             const result = await req.getValidationResult();
-            this.logger.log('111111');
+           // this.logger.log('111111');
             if (!result.isEmpty()) {
                 res.json({
                     'meta': {
