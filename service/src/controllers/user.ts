@@ -33,8 +33,8 @@ export interface UserInterface {
  */
 //@Injectable()
 class UserController implements UserInterface {
-    constructor() {
-        
+    constructor(private logger: LoggerService) {
+
     }
 
     /**
@@ -280,7 +280,7 @@ class UserController implements UserInterface {
                 });
                 return;
             }
-           
+
             const user: any = await User.findOne({
                 $or: [
                     {
@@ -335,7 +335,7 @@ class UserController implements UserInterface {
         catch(ex){
             return next(ex);
         }
-        
+
     }
 
 

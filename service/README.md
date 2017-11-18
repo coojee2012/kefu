@@ -1,4 +1,4 @@
-# 简书服务端(TypeScript or Node)
+# 服务端(TypeScript or Node)
 # 安装必备工具
 - Install [Node.js](https://nodejs.org/en/)
 - Install [MongoDB](https://docs.mongodb.com/manual/installation/)

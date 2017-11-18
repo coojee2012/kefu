@@ -7,7 +7,7 @@
  */
 import * as mongoose from 'mongoose';
 import {formatDate, getUserinfo} from '../controllers/utility';
-import * as _ from 'Lodash';
+import * as _ from 'lodash';
 
 const Schema = mongoose.Schema;
 
