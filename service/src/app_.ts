@@ -6,13 +6,14 @@ import { LoggerService } from './service/LogService';
 import { App } from './app/index';
 
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
-    HeroService,
-    {
-        provide: LoggerService, useFactory: () => {
-            return new LoggerService(true);
-        }
-    },
-    App
+  {
+    provide: LoggerService, useFactory: () => {
+      return new LoggerService(true);
+    }
+  },
+  HeroService,
+
+  App
 ]);
 
 const app: App = injector.get(App);
