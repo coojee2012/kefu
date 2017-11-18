@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+      "paths": {   // 配置.d.ts存放目录
+          "*": [
+              "node_modules/@types/*",
+              "src/types/*"
+          ]
+      },
+      "module": "commonjs", //指定生成哪个模块系统代码
+      "target": "es2015", //目标代码类型
+      "noImplicitAny": false, //在表达式和声明上有隐含的'any'类型时报错。
+      "sourceMap": true, //用于debug
+      "rootDir": "src", //仅用来控制输出的目录结构--outDir。
+      "outDir": "dist", //重定向输出目录。
+      "baseUrl": ".", // 根目录
+      "experimentalDecorators": true, // 实验支持修饰符是一个功能,在将来发布的版本中改变。设置“experimentalDecorators”选项来删除这个警告。
+      "watch": true //在监视模式下运行编译器。会监视输出文件，在它们改变时重新编译。
+  },
+  "include": [
+      "./src/**/*"
+  ]
+  //,
+  // "exclude": [
+  //     "views",
+  //     "public",
+  //     "db"
+  // ]
+}

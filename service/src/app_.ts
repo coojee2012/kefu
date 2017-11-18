@@ -16,4 +16,5 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
 ]);
 
 const app: App = injector.get(App);
+
 app.run();
