@@ -1,6 +1,6 @@
 
 /**
- * @description 服务的类 
+ * @description 服务的类
  */
 
 /**
@@ -30,14 +30,16 @@ import config = require('./config/config');
 /**
  * 全部路由
  */
-import { default as routes } from './routes/index';
-import { Injectable } from 'injection-js';
+// import { default as routes } from './routes/index';
+ import { RoutesService }  from './routes/RoutesService';
 
-@Injectable()
 export class AppServer {
-
-    constructor(private logger: LoggerService) {
-
+    private logger: LoggerService;
+    private routeService: RoutesService;
+    constructor(private injector: Injector) {
+      this.logger = injector.get(LoggerService);
+      this.routeService = new RoutesService(injector);
+   //console.log('dddd',this.injector);
     }
 
     /**
@@ -47,7 +49,7 @@ export class AppServer {
         try {
             mongoose.Promise = global.Promise;
             mongoose.connect(config.mongoUris, config.mongoOpts);
-            // 
+            //
             // const db = mongoose.createConnection(config.mongoUris, config.mongoOpts);
             const db = mongoose.connection;
             db.on('error', function () {
@@ -68,16 +70,6 @@ export class AppServer {
          * 引入express配置
          */
         const app = express();
-        // const injector: Injector = ReflectiveInjector.resolveAndCreate([
-        //     HeroService,
-        //     {
-        //         provide: LoggerService, useFactory: () => {
-        //             return new LoggerService(true);
-        //         }
-        //     },
-        //     app
-        // ])
-        // injector.get(app);
         /**
          * 设置静态资源路径，web ,app ,admin
          */
@@ -131,7 +123,8 @@ export class AppServer {
         /**
          * 路由挂载到app上
          */
-        routes(app);
+        //routes(app);
+        this.routeService.setRoute(app);
 
         /**
          * 成功日志
@@ -179,10 +172,10 @@ export class AppServer {
             await this.readyMongoDB();
             this.readyExpress();
             return Promise.resolve();
-        } 
+        }
         catch (ex) {
             return Promise.reject(ex);
         }
     }
-    
+
 }

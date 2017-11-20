@@ -33,7 +33,7 @@ export interface UserInterface {
  * 模板控制器
  */
 @Injectable()
-class UserController implements UserInterface {
+export class UserController implements UserInterface {
     constructor(private logger: LoggerService) {
 
     }
@@ -43,7 +43,8 @@ class UserController implements UserInterface {
      * 用户登陆
      */
     async login(req: Request, res: Response, next: NextFunction) {
-        console.log(1);
+        console.log('FFF',this);
+        this.logger.log('111111111111111111111FFFFFFFFFFFFFFF');
         req.checkBody({
             'username': {
                 notEmpty: true,
@@ -271,7 +272,7 @@ class UserController implements UserInterface {
                 }
             });
             const result = await req.getValidationResult();
-           // this.logger.log('111111');
+            this.logger.log('111111');
             if (!result.isEmpty()) {
                 res.json({
                     'meta': {
@@ -439,6 +440,3 @@ class UserController implements UserInterface {
  * 导出模块
  */
 //export default new UserController();
-export default {
-  a:1
-};

@@ -5,9 +5,7 @@ import { Injectable, Injector } from 'injection-js';
 import { LoggerService } from '../service/LogService';
 @Injectable()
 export class App {
-  private logger: LoggerService;
-    constructor(private injector: Injector) {
-    this.logger = this.injector.get(LoggerService);
+    constructor(private logger: LoggerService) {
     }
     run() {
         this.logger.log('ddddd');
