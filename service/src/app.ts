@@ -3,19 +3,20 @@ import { Injector, ReflectiveInjector } from 'injection-js';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 
-// import { AppServer } from './server';
-import { App } from './app/index';
+import { AppServer } from './server';
+// import { App } from './app/index';
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
     HeroService,
-    {
-        provide: LoggerService, useFactory: () => {
-            return new LoggerService(true);
-        }
-    },
-    App
+    LoggerService,
+    // {
+    //     provide: LoggerService, useFactory: () => {
+    //         return new LoggerService(true);
+    //     }
+    // },
+    AppServer
 ]);
 
-const server: App = injector.get(App);
+const server: AppServer = injector.get(AppServer);
 
 server.run()
 // .then(res=>{

@@ -24,6 +24,7 @@ class Service2 {
 }
 
 const injector = ReflectiveInjector.resolveAndCreate([
+  Service2,
   Service,
   Http
 ]);
