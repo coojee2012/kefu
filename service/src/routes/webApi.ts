@@ -21,7 +21,7 @@ import { LoggerService } from '../service/LogService';
 // import { default as CorpusController } from '../controllers/corpus';
 
 export class WebAPI {
-  private Router;
+  private Router: Express.Router;
   private userController: UserController;
   constructor(private injector: Injector) {
     this.Router = Express.Router();
@@ -35,7 +35,7 @@ export class WebAPI {
      * web API接口
      */
     // 用户登录注册退出找回密码 用户修改资料，查看信息
-    this.Router.post('/login', (req,res,next)=>{
+    this.Router.post('/login', (req,res,next) => { 
       this.userController.login(req,res,next)
       .then()
       .catch()

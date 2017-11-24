@@ -2,9 +2,7 @@ import { Injectable , Injector } from 'injection-js';
 import { LoggerService } from './LogService';
 @Injectable()
 export class HeroService {
-    private logger: LoggerService;
-    constructor(private injector: Injector ) {
-      this.logger = this.injector.get(LoggerService);
+    constructor( private logger: LoggerService ) {
     }
 
     heros: Array<{ id: number; name: string }> = [

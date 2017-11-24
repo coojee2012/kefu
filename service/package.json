@@ -48,6 +48,7 @@
     "@types/mongoose": "^4.7.5",
     "@types/node": "^7.0.5",
     "@types/redis": "^2.6.0",
+    "@types/winston": "^2.3.7",
     "concurrently": "^3.4.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",

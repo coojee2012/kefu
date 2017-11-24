@@ -14,15 +14,16 @@ cd www
 ```
 安装依赖
 ```
-cnpm install
+// 使用淘宝镜像安装依赖
+npm install --registry=https://registry.npm.taobao.org
 ```
 # TypeScript + Angular4 
 这是一个Angular4项目（默认使用TypeScript）
 
 ## TypeScript准备
 ```
-cnpm install -g typescript
-cnpm install -g typings
+npm install -g typescript --registry=https://registry.npm.taobao.org
+npm install -g typings --registry=https://registry.npm.taobao.org
 ```
 
 启动服务

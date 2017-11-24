@@ -8,7 +8,7 @@ import * as Express from 'express';
 
 
 export class WebStatic {
-  private Router;
+  private Router: Express.Router;
   constructor() {
     this.Router = Express.Router();
   }
