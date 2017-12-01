@@ -11,7 +11,8 @@
       "moduleResolution": "node", //指定生成哪个模块系统代码
       "target": "es5", //目标代码类型
       "typeRoots": [
-        "node_modules/@types"
+        "node_modules/@types",
+        "node_modules/deepstream.io-client.js/src/client.d.ts"
       ],
       "lib": [
         "es2017"

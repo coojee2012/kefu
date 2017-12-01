@@ -22,6 +22,7 @@ import path = require('path');
 import { Injector, ReflectiveInjector } from 'injection-js';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
+import { DeepStreamService } from './service/DeepStreamService';
 import { default as passport } from './config/passport';
 /**
  * 引入配置
@@ -36,11 +37,13 @@ import config = require('./config/config');
 export class AppServer {
     private logger: LoggerService;
     private routeService: RoutesService;
+    private dsClient: DeepStreamService;
     public app: express.Application;
 
     constructor(private injector: Injector) {
       this.app = express();
       this.logger = injector.get(LoggerService);
+      this.dsClient = injector.get(DeepStreamService);
       this.routeService = new RoutesService(injector);
     }
 

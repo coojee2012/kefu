@@ -19,6 +19,7 @@
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
+    "deepstream.io-client-js": "^2.3.0",
     "ejs": "^2.5.5",
     "express": "^4.14.1",
     "express-ejs-layouts": "^2.3.1",
