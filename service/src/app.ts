@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import { Injector, ReflectiveInjector } from 'injection-js';
+import { ConfigService } from './service/ConfigService';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 import { DeepStreamService } from './service/DeepStreamService';
+import { RoutesService }  from './routes/RoutesService';
 import { AppServer } from './server';
 // import { RoutesService }  from './routes/RoutesService';
 // import { App } from './app/index';
@@ -14,15 +16,18 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
         },
         deps: [] //这里不能丢
     },
+    ConfigService,
     DeepStreamService,
-    HeroService
+    HeroService,
+    RoutesService,
+    AppServer
 ]);
 
 console.log(injector.get(LoggerService) instanceof LoggerService);
 
- const server: AppServer = new AppServer(injector);
+ const server: AppServer = injector.get(AppServer);
 
- server.run()
+ server.run();
 // .then(res=>{
 // console.log('服务启动成功！')
 // })

@@ -19,7 +19,7 @@ import * as winston from 'winston';
 import * as expressWinston from 'express-winston';
 import expressLayouts = require('express-ejs-layouts');
 import path = require('path');
-import { Injector, ReflectiveInjector } from 'injection-js';
+import { Injector, ReflectiveInjector,Injectable } from 'injection-js';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 import { DeepStreamService } from './service/DeepStreamService';
@@ -27,24 +27,21 @@ import { default as passport } from './config/passport';
 /**
  * 引入配置
  */
-import config = require('./config/config');
+import { ConfigService } from './service/ConfigService';
 /**
  * 全部路由
  */
 // import { default as routes } from './routes/index';
  import { RoutesService }  from './routes/RoutesService';
 
+@Injectable()
 export class AppServer {
-    private logger: LoggerService;
-    private routeService: RoutesService;
-    private dsClient: DeepStreamService;
     public app: express.Application;
-
-    constructor(private injector: Injector) {
+    constructor(private injector: Injector, private logger: LoggerService,private routeService: RoutesService,private dsClient: DeepStreamService,private config: ConfigService) {
       this.app = express();
-      this.logger = injector.get(LoggerService);
-      this.dsClient = injector.get(DeepStreamService);
-      this.routeService = new RoutesService(injector);
+      //this.logger = injector.get(LoggerService);
+      //this.dsClient = injector.get(DeepStreamService);
+      // this.routeService = new RoutesService(injector);
     }
 
     /**
@@ -53,15 +50,16 @@ export class AppServer {
     async readyMongoDB() {
         const _this = this;
         try {
+            const mongoConfig = this.config.getConfig().mongo;
             mongoose.Promise = global.Promise;
-            mongoose.connect(config.mongoUris, config.mongoOpts);
+            await mongoose.connect(mongoConfig.mongoUris, mongoConfig.mongoOpts);
             //
             // const db = mongoose.createConnection(config.mongoUris, config.mongoOpts);
             const db = mongoose.connection;
             await new Promise((resolve,reject)=> {
                 const defaultErrorListener = (err) => {
                     reject(err);
-                    _this.logger.error('unable to connect to database at ' + config.dbs);
+                    _this.logger.error('unable to connect to database at ' + mongoConfig.dbs);
                 }
 
                 const runErrorListener = (err) => {
@@ -84,7 +82,7 @@ export class AppServer {
     }
 
     readyExpress() {
-    
+        const apiConfig = this.config.getConfig().apiConfig;
         /**
          * 设置静态资源路径，web ,app ,admin
          */
@@ -179,7 +177,7 @@ export class AppServer {
             next(err);
         });
 
-        this.app.listen(config.port, () => console.log('Express server listening on port ' + config.port));
+        this.app.listen(apiConfig.port, () => console.log('Express server listening on port ' + apiConfig.port));
     }
 
     async run() {

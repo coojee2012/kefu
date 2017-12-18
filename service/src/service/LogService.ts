@@ -24,15 +24,15 @@ export class LoggerService {
 
     }
     debug(message: string,...meta: any[]) {
-      this.logger.debug(message,meta);
+      this.logger.debug(message,...meta);
     }
     info(message: string,...meta: any[]) {
-      this.logger.info(message,meta);
+      this.logger.info(message,...meta);
     }
     warn(message: string,...meta: any[]) {
-      this.logger.warn(message,meta);
+      this.logger.warn(message,...meta);
     }
     error(message: string,...meta: any[]) {
-      this.logger.error(message,meta);
+      this.logger.error(message,...meta);
     }
 }
