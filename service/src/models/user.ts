@@ -1,6 +1,6 @@
 /**
- * 用户表
- * Created by jiayi on 2017/6/18.
+ * @description 用户表
+ * @author 11366846@qq.com,LinYong
  */
 /**
  * 引入依赖
