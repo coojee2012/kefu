@@ -4,7 +4,8 @@ import { ConfigService } from './service/ConfigService';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 import { DeepStreamService } from './service/DeepStreamService';
-import { RoutesService }  from './routes/RoutesService';
+import { MongoService } from './service/MongoService';
+import { RoutesService } from './routes/RoutesService';
 import { AppServer } from './server';
 // import { RoutesService }  from './routes/RoutesService';
 // import { App } from './app/index';
@@ -18,19 +19,20 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
     },
     ConfigService,
     DeepStreamService,
+    MongoService,
     HeroService,
     RoutesService,
     AppServer
 ]);
 
-console.log(injector.get(LoggerService) instanceof LoggerService);
+// console.log(injector.get(LoggerService) instanceof LoggerService);
 
- const server: AppServer = injector.get(AppServer);
-
- server.run()
- .then(res=>{
- console.log('服务启动成功！')
- })
- .catch(err=>{
- console.log('启动服务器异常：',err);
- });
+const server: AppServer = injector.get(AppServer);
+const logger: LoggerService = injector.get(LoggerService);
+server.run()
+    .then(res => {
+        logger.info('服务启动成功！')
+    })
+    .catch(err => {
+        logger.error('启动服务器异常：', err);
+    });

@@ -6,6 +6,7 @@
  * 引入依赖
  */
 import * as mongoose from 'mongoose';
+
 const Schema = mongoose.Schema;
 /**
  * 定义接口
@@ -45,5 +46,5 @@ templateSchema.pre('save', function save(next) {
 /*templateSchema.methods.comparePassword = function(candidatePassword?: string, callback?: any): any {
 
 };*/
-
-export default mongoose.model('Template', templateSchema);
+export default templateSchema;
+// export default mongoose.model('Template', templateSchema);

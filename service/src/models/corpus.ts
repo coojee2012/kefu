@@ -9,6 +9,7 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 import * as _ from 'lodash';
 import {formatDate, getUserinfo} from '../controllers/utility';
+
 /**
  * 定义接口
  */
@@ -98,5 +99,5 @@ corpusSchema.methods.formatData = function (): any {
     };
 };
 
-
-export default mongoose.model('Corpus', corpusSchema);
+export default corpusSchema;
+// export default mongoose.model('Corpus', corpusSchema);

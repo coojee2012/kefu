@@ -8,6 +8,7 @@
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
 
+
 /**
  * 定义接口
  */
@@ -181,5 +182,5 @@ userSchema.methods.comparePassword = function (candidatePassword?: string, callb
 userSchema.methods.gravatar = function (size: number) {
     return size;
 };
-
-export default mongoose.model('User', userSchema);
+export default userSchema;
+// export default mongoose.model('User', userSchema);

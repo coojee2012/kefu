@@ -14,7 +14,7 @@ export class ConfigService {
     getConfig(){
         const { NODE_ENV } = process.env;
         let config;
-        this.logger.info(`系统运行环境为：${NODE_ENV}`);
+        this.logger.info(`获取系统配置，当前运行环境为：${NODE_ENV}`);
         switch(NODE_ENV){
             case 'development':
             config =  devConfig;

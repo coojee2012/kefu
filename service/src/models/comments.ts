@@ -123,5 +123,5 @@ commentsSchema.methods.formatData = function (): any {
         'article_slug': this.article._id
     };
 };
-
-export default mongoose.model('Comments', commentsSchema);
+export default commentsSchema;
+// export default mongoose.model('Comments', commentsSchema);
