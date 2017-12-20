@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
+import { LoggerService } from '../../../services/LogService';
+import { DeepStreamService } from '../../../services/DeepStreamService';
 @Component({
   selector: 'app-apps-sidebar',
   templateUrl: './sidebar.component.html',
@@ -7,11 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
   private isActive: boolean[];
-  constructor() {
+  constructor(private logger: LoggerService, private dsClient: DeepStreamService) {
     this.isActive = [false, false, false];
   }
 
   ngOnInit() {
+    this.dsClient.eventSub('room/username', data => {
+      this.logger.debug('======', data);
+    });
   }
   onTreeClick(index: number) {
     for (let i = 0; i < this.isActive.length; i++) {

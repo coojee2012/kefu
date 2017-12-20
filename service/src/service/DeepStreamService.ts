@@ -23,4 +23,8 @@ export class DeepStreamService {
     onConnectionStateChanged(state){
         this.logger.debug('DSClientStateChanged', state);
     }
+
+    eventPub(topic, data){
+        this.client.event.emit(topic,data);
+    }
 }

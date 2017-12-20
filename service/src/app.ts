@@ -27,10 +27,10 @@ console.log(injector.get(LoggerService) instanceof LoggerService);
 
  const server: AppServer = injector.get(AppServer);
 
- server.run();
-// .then(res=>{
-// console.log('服务启动成功！')
-// })
-// .catch(err=>{
-// console.log('启动服务器异常：',err);
-// });
+ server.run()
+ .then(res=>{
+ console.log('服务启动成功！')
+ })
+ .catch(err=>{
+ console.log('启动服务器异常：',err);
+ });

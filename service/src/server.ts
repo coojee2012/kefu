@@ -33,6 +33,8 @@ import { ConfigService } from './service/ConfigService';
  */
 // import { default as routes } from './routes/index';
  import { RoutesService }  from './routes/RoutesService';
+import { setInterval } from 'timers';
+//import { Promise } from 'mongoose';
 
 @Injectable()
 export class AppServer {
@@ -51,12 +53,13 @@ export class AppServer {
         const _this = this;
         try {
             const mongoConfig = this.config.getConfig().mongo;
-            mongoose.Promise = global.Promise;
-            await mongoose.connect(mongoConfig.mongoUris, mongoConfig.mongoOpts);
+            mongoose.Promise = Promise;
+            await mongoose.connect(mongoConfig.uris, mongoConfig.opts);
             //
             // const db = mongoose.createConnection(config.mongoUris, config.mongoOpts);
             const db = mongoose.connection;
-            await new Promise((resolve,reject)=> {
+            
+            await new Promise( (resolve,reject) => {
                 const defaultErrorListener = (err) => {
                     reject(err);
                     _this.logger.error('unable to connect to database at ' + mongoConfig.dbs);
@@ -73,6 +76,7 @@ export class AppServer {
                     _this.logger.info('数据库[MongoDB]启动了');
                     resolve();
                 });
+                resolve();
             })
            
         }
@@ -82,7 +86,7 @@ export class AppServer {
     }
 
     readyExpress() {
-        const apiConfig = this.config.getConfig().apiConfig;
+        const apiConfig = this.config.getConfig().api;
         /**
          * 设置静态资源路径，web ,app ,admin
          */
@@ -181,9 +185,22 @@ export class AppServer {
     }
 
     async run() {
+        const _this = this;
         try {
             await this.readyMongoDB();
             this.readyExpress();
+            _this.logger.debug('MMMMMMM');
+            await new Promise((resole,reject) => {
+                let count = 0;
+             
+                setInterval(()=>{
+                    count++;
+                    _this.logger.debug('FFFFFFF');
+                    _this.dsClient.eventPub('room/username',`shuju:${new Date()}`);
+
+                },1000)
+
+            })
             return Promise.resolve();
         }
         catch (ex) {
