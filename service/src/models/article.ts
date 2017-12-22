@@ -115,5 +115,5 @@ articleSchema.methods.formatData = function (data: ArticleModel, callback?: any)
         }
     };
 };
-
-export default mongoose.model('Articles', articleSchema);
+export default articleSchema;
+// export default mongoose.model('Articles', articleSchema);

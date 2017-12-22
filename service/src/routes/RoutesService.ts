@@ -3,7 +3,7 @@ import { Injectable, Injector, ReflectiveInjector } from 'injection-js';
 import { Request, Response, NextFunction } from 'express';
 
 import { UserController } from '../controllers/user';
-
+import { ArticleController } from '../controllers/article'
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -19,7 +19,8 @@ export class RoutesService {
   }
   createChildInjector(): void {
     this.childInjector = ReflectiveInjector.resolveAndCreate([
-      UserController
+      UserController,
+      ArticleController
     ], this.injector);
   }
 

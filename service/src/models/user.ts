@@ -1,12 +1,13 @@
 /**
- * 用户表
- * Created by jiayi on 2017/6/18.
+ * @description 用户表
+ * @author 11366846@qq.com,LinYong
  */
 /**
  * 引入依赖
  */
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
+
 
 /**
  * 定义接口
@@ -72,13 +73,13 @@ const userSchema = new mongoose.Schema({
     status: {  // 用户状态  0 不存在（注销） 1 启用 2 黑名单
         type: String,
         required: true,
-        'enum': ['0', '1', '2'],
-        'default': '0'
+        enum: ['0', '1', '2'],
+        default: '0'
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者
         type: String,
-        'enum': ['0', '1', '2'],
-        'default': '0'
+        enum: ['0', '1', '2'],
+        default: '0'
     },
     tokens: [{
         accessToken: String,
@@ -92,8 +93,8 @@ const userSchema = new mongoose.Schema({
     profile: {
         gender: {  // 性别 0 保密 1 男 2 女
             type: String,
-            'enum': ['0', '1', '2'],
-            'default': '0'
+            enum: ['0', '1', '2'],
+            default: '0'
         },
         location: String,
         intro: String,
@@ -181,5 +182,5 @@ userSchema.methods.comparePassword = function (candidatePassword?: string, callb
 userSchema.methods.gravatar = function (size: number) {
     return size;
 };
-
-export default mongoose.model('User', userSchema);
+export default userSchema;
+// export default mongoose.model('User', userSchema);

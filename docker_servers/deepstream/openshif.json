@@ -1,0 +1,223 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "deepstream-ephemeral",
+    "annotations": {
+      "description": "operation portal.",
+      "tags": "nodejs,operation,deepstream",
+      "iconClass": "icon-nodejs"
+    }
+  },
+  "objects": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "deepstream",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "deepstream"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "protocol": "TCP",
+            "port": 6020,
+            "targetPort": 6020
+          }
+        ],
+        "selector": {
+          "app": "deepstream",
+          "deploymentconfig": "deepstream"
+        },
+        "type": "NodePort",
+        "sessionAffinity": "ClientIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "deepstream",
+        "annotations": {
+          "template.openshift.io/expose-uri": "http://{.spec.host}{.spec.path}"
+        }
+      },
+      "spec": {
+        "host": "${ROUTE_HOST}",
+        "path": "/ws-proxy",
+        "wildcardPolicy": "Subdomain",
+        "to": {
+          "kind": "Service",
+          "name": "deepstream"
+        },
+        "port": {
+          "targetPort": "web"
+        },
+        "tls": {
+          "termination": "edge",
+          "certificate": "${CERT}",
+          "key": "${KEY}",
+          "caCertificate": "${CA}"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "deepstream"
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 1,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          }
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 2,
+        "selector": {
+          "app": "deepstream",
+          "deploymentconfig": "deepstream"
+        },
+        "template": {
+          "metadata": {
+            "name": "deepstream",
+            "labels": {
+              "app": "deepstream",
+              "deploymentconfig": "deepstream"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "deepstream",
+                "image": "registry.yunkefu.cc/unicall/deepstream:${DEPLOY_TAG}",
+                "ports": [
+                  {
+                    "containerPort": 6020,
+                    "protocol": "TCP"
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "DEEPSTREAM_ENV",
+                    "valueFrom": {
+                      "configMapKeyRef": {
+                        "name":"node-config",
+                        "key":"node.env"
+                      }
+                    }
+                  }
+                ],
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "Always",
+                "readinessProbe": {
+                  "timeoutSeconds": 3,
+                  "initialDelaySeconds": 30,
+                  "tcpSocket": {
+                    "port": 6020
+                  }
+                },
+                "livenessProbe": {
+                  "timeoutSeconds": 3,
+                  "initialDelaySeconds": 30,
+                  "httpGet": {
+                    "port": 6020
+                  }
+                },
+                "resources": {
+                  "limits": {
+                    "memory": "${MEMORY_LIMIT}",
+                    "cpu":"${CPU_LIMIT}"
+                  },
+                  "requests":{
+                    "memory": "${MEMORY_REQUEST}",
+                    "cpu":"${CPU_REQUEST}"
+                  }
+                }
+              }
+            ],
+            "restartPolicy":"Always",
+            "imagePullSecrets": [
+              {
+                "name":"registry-yunkefu-cc-secret"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "MEMORY_LIMIT",
+      "displayName": "Memory Limit",
+      "description": "",
+      "value": "1024Mi"
+    },
+    {
+      "name": "MEMORY_REQUEST",
+      "displayName": "Memory Request",
+      "description": "",
+      "value": "256Mi"
+    },
+    {
+      "name": "CPU_LIMIT",
+      "displayName": "Cpu Limit",
+      "description": "",
+      "value": "1"
+    },
+    {
+      "name": "CPU_REQUEST",
+      "displayName": "Cpu Request",
+      "description": "",
+      "value": "10m"
+    },
+    {
+      "name": "ROUTE_HOST",
+      "displayName": "route host",
+      "description": "",
+      "value": "wildcard.yunkefu.cc"
+    },
+    {
+      "name": "DEPLOY_TAG",
+      "displayName": "deploy tag",
+      "description": "",
+      "value": "1.0.0.58"
+    },
+    {
+      "name": "CERT",
+      "displayName": "cert",
+      "description": "",
+      "value": ""
+    },
+    {
+      "name": "KEY",
+      "displayName": "key",
+      "description": "",
+      "value": ""
+    },
+    {
+      "name": "CA",
+      "displayName": "ca",
+      "description": "",
+      "value": ""
+    }
+  ]
+}

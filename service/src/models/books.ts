@@ -58,5 +58,5 @@ booksSchema.pre('save', function save(next) {
 /*booksSchema.methods.comparePassword = function(candidatePassword?: string, callback?: any): any {
 
 };*/
-
-export default mongoose.model('Books', booksSchema);
+export default booksSchema;
+//export default mongoose.model('Books', booksSchema);

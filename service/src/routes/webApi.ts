@@ -40,7 +40,11 @@ export class WebAPI {
       .then()
       .catch()
     });
-    this.Router.post('/register', this.userController.register);
+    this.Router.post('/register', (req,res,next) => { 
+      this.userController.register(req,res,next)
+      .then()
+      .catch()
+    });
     this.Router.post('/logout', passport.authenticate('user', { session: false }), this.userController.logout);
     this.Router.get('/user/:userid/home', this.userController.home);
     /*Router.get('/user/:id/profile', userController.profile);
