@@ -2,14 +2,15 @@
  * 用户模板
  * Created by jiayi on 2017/6/20.
  */
-import { Injectable } from 'injection-js';
+import { Injectable,Injector } from 'injection-js';
 import * as jwt from 'jsonwebtoken';
-import {default as User, UserModel} from '../models/user';
+import {UserModel} from '../models/user';
 import {LocalStrategyInfo} from 'passport-local';
 import {Request, Response, NextFunction} from 'express';
 import * as mongoose from 'mongoose';
-import {default as Article} from './article';
+import { ArticleController } from './article';
 import { LoggerService } from '../service/LogService';
+import { MongoService } from '../service/MongoService';
 import redisClient from '../config/redis';
 
 /**
@@ -34,8 +35,9 @@ export interface UserInterface {
  */
 @Injectable()
 export class UserController implements UserInterface {
-    constructor(private logger: LoggerService) {
-
+    private articleController:ArticleController;
+    constructor(private injector:Injector , private logger: LoggerService, private mongoDB: MongoService) {
+        this.articleController = injector.get(ArticleController);
     }
 
     /**
@@ -43,8 +45,7 @@ export class UserController implements UserInterface {
      * 用户登陆
      */
     async login(req: Request, res: Response, next: NextFunction) {
-        console.log('FFF',this);
-        this.logger.log('111111111111111111111FFFFFFFFFFFFFFF');
+        this.logger.debug('测试日志打印');
         req.checkBody({
             'username': {
                 notEmpty: true,
@@ -74,7 +75,7 @@ export class UserController implements UserInterface {
             return;
         }
         try {
-            const user: any = await User.findOne({username: req.body.username});
+            const user: any = await this.mongoDB.models.Users.findOne({username: req.body.username});
             if (!user) {
                 res.json({
                     'meta': {
@@ -160,7 +161,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            User.findOne({
+            this.mongoDB.models.Users.findOne({
                 'basic.nickname': req.body.nickname
             }).exec((err: any, user: UserModel) => {
                 if (err) {
@@ -214,7 +215,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            User.findOne({
+            this.mongoDB.models.Users.findOne({
                 'username': req.body.username
             }).exec((err, user: UserModel) => {
                 if (err) {
@@ -272,7 +273,7 @@ export class UserController implements UserInterface {
                 }
             });
             const result = await req.getValidationResult();
-            this.logger.log('111111');
+            this.logger.debug('getValidationResult:',result.isEmpty());
             if (!result.isEmpty()) {
                 res.json({
                     'meta': {
@@ -283,7 +284,7 @@ export class UserController implements UserInterface {
                 return;
             }
 
-            const user: any = await User.findOne({
+            const user: any = await this.mongoDB.models.Users.findOne({
                 $or: [
                     {
                         username: req.body.username
@@ -305,7 +306,7 @@ export class UserController implements UserInterface {
             const token = jwt.sign({username: req.body.username.username}, 'jiayishejijianshu', {
                 expiresIn: '7 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
-            const newUser = new User({
+            const newUser = new this.mongoDB.models.Users({
                 basic: {
                     nickname: req.body.nickname
                 },
@@ -347,7 +348,7 @@ export class UserController implements UserInterface {
      */
     async logout(req: Request, res: Response, next: NextFunction) {
         if ((req as any).isAuthenticated()) {
-            User.update({_id: (req as any).user._id}, {token: undefined})
+            this.mongoDB.models.Users.update({_id: (req as any).user._id}, {token: undefined})
                 .exec((err: any, user: UserModel) => {
                     if (err) {
                         return next(err);
@@ -378,7 +379,7 @@ export class UserController implements UserInterface {
      */
     async home(req: Request, res: Response, next: NextFunction) {
         const userinfo = (req as any).userinfo;
-        const article_count = await Article.count({author: userinfo._id});
+        const article_count = await this.articleController.count({author: userinfo._id});
         res.json({
             'meta': {
                 'code': 200,
@@ -418,7 +419,7 @@ export class UserController implements UserInterface {
             });
         }
         try {
-            const userinfo = await User.findOne({_id: id, status: 1});
+            const userinfo = await this.mongoDB.models.Users.findOne({_id: id, status: 1});
             if (!userinfo) {
                 return res.json({
                     'meta': {

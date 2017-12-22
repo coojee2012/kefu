@@ -2,12 +2,13 @@
  * Created by jiayi on 2017/7/3.
  */
 
-
+import { Injectable,Injector} from 'injection-js';
 import {Request, Response, NextFunction} from 'express';
 import * as mongoose from 'mongoose';
-import {default as Article, ArticleModel} from '../models/article';
+import { ArticleModel } from '../models/article';
 import * as _ from 'lodash';
-
+import { LoggerService } from '../service/LogService';
+import { MongoService } from '../service/MongoService';
 /**
  * 定义类接口
  */
@@ -30,8 +31,12 @@ export interface ArticleInterface {
 /**
  * 文章控制器
  */
-class ArticleController implements ArticleInterface {
-    constructor() {
+@Injectable()
+export class ArticleController implements ArticleInterface {
+    private Article:mongoose.Model<mongoose.Document>;
+    constructor(private logger:LoggerService,private mongoDB:MongoService) {
+        this.Article = this.mongoDB.models.Articles;
+        
     }
 
     async save(req: Request, res: Response, next: NextFunction) {
@@ -141,8 +146,8 @@ class ArticleController implements ArticleInterface {
         const {page = 1, limit = 20} = req.query;
         const params: any = Object.assign(req.query, {t: undefined});
         try {
-            const count = await Article.count(params);
-            const articles = await Article.find(params)
+            const count = await this.Article.count(params);
+            const articles = await this.Article.find(params)
                 .populate({path: 'author', select: {'basic.nickname': 1, 'basic.avatar': 1, _id: 1}})
                 .sort({'updatedAt': 'desc'})
                 .skip((Number(page) - 1) * Number(limit))
@@ -176,7 +181,7 @@ class ArticleController implements ArticleInterface {
             });
         }
         try {
-            const article = await Article.findOne({_id: id, isActive: true})
+            const article = await this.Article.findOne({_id: id, isActive: true})
                 .populate({path: 'author', select: {'basic.nickname': 1, 'basic.avatar': 1, _id: 1}});
             if (!article) {
                 return res.json({
@@ -215,7 +220,7 @@ class ArticleController implements ArticleInterface {
 
     async count(params: any) {
         try {
-            return await Article.count(params);
+            return await this.Article.count(params);
         } catch (err) {
             return 0;
         }
@@ -225,4 +230,4 @@ class ArticleController implements ArticleInterface {
 /**
  * 导出模块
  */
-export default new ArticleController();
+// export default new ArticleController();

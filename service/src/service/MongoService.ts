@@ -10,6 +10,9 @@ import commentsSchema from '../models/comments';
 import corpusSchema from '../models/corpus';
 import templateSchema from '../models/template';
 import userSchema from '../models/user';
+import tenantSchema from '../models/tenants';
+import roomSchema from '../models/rooms';
+import messageSchema from '../models/messages';
 
 interface IModels {
     Articles?: mongoose.Model<mongoose.Document>;
@@ -18,6 +21,9 @@ interface IModels {
     Corpus?: mongoose.Model<mongoose.Document>;
     Templates?: mongoose.Model<mongoose.Document>;
     Users?: mongoose.Model<mongoose.Document>;
+    Tenants?: mongoose.Model<mongoose.Document>;
+    Rooms?: mongoose.Model<mongoose.Document>;
+    Messages?: mongoose.Model<mongoose.Document>;
 }
 @Injectable()
 export class MongoService {
@@ -39,7 +45,6 @@ export class MongoService {
             this.conn = await mongoose.createConnection(mongoConfig.uris, mongoConfig.opts);
             this.conn.on('error',this.onConnectionError.bind(this));
             this.conn.once('connected', () => {
-                console.log('dddddd')
                 this.logger.info('数据库[MongoDB]启动了');
             });
             this.models.Articles = this.conn.model('Articles', articleSchema);
@@ -48,6 +53,9 @@ export class MongoService {
             this.models.Corpus = this.conn.model('Corpus', corpusSchema);
             this.models.Templates = this.conn.model('Templates', templateSchema);
             this.models.Users = this.conn.model('Users', userSchema);
+            this.models.Rooms = this.conn.model('Rooms', roomSchema);
+            this.models.Tenants = this.conn.model('Tenants', tenantSchema);
+            this.models.Messages = this.conn.model('Messages', messageSchema);
         }
         catch(ex){
             this.logger.error(ex);

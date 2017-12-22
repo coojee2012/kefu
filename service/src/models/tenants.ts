@@ -17,10 +17,10 @@ export type TenantModel = mongoose.Document & {
     consume: Number;  // 消费总额
     dids: string[];  // 呼叫中心电话号码
     telephones:string[]; // 公司联系电话
-    webchatOpts: {        // 个人资料
+    webchatOpts: {        // 在线聊天配置
 
     };
-    callCenterOpts: {   // 基本设置
+    callCenterOpts: {   // 呼叫中心基础设置
         status: String;   // 昵称
         billingType: String;    // 头像
         rating: String;    // 阅读语言
@@ -107,4 +107,6 @@ const tenantSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, { timestamps: true })
+}, { timestamps: true });
+
+export default tenantSchema;
