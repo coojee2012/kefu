@@ -28,10 +28,7 @@ import { default as passport } from './config/passport';
  * 引入配置
  */
 import { ConfigService } from './service/ConfigService';
-<<<<<<< HEAD
-=======
 import { MongoService  } from './service/MongoService';
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
 /**
  * 全部路由
  */
@@ -43,14 +40,10 @@ import { setInterval } from 'timers';
 @Injectable()
 export class AppServer {
     public app: express.Application;
-<<<<<<< HEAD
-    constructor(private injector: Injector, private logger: LoggerService,private routeService: RoutesService,private dsClient: DeepStreamService,private config: ConfigService) {
-=======
     constructor(private injector: Injector, private logger: LoggerService,
         private routeService: RoutesService,private dsClient: DeepStreamService,private config: ConfigService,
         private mongoDB: MongoService
     ) {
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
       this.app = express();
       //this.logger = injector.get(LoggerService);
       //this.dsClient = injector.get(DeepStreamService);
@@ -63,35 +56,7 @@ export class AppServer {
     async readyMongoDB() {
         const _this = this;
         try {
-<<<<<<< HEAD
-            const mongoConfig = this.config.getConfig().mongo;
-            mongoose.Promise = global.Promise;
-            await mongoose.connect(mongoConfig.mongoUris, mongoConfig.mongoOpts);
-            //
-            // const db = mongoose.createConnection(config.mongoUris, config.mongoOpts);
-            const db = mongoose.connection;
-            await new Promise((resolve,reject)=> {
-                const defaultErrorListener = (err) => {
-                    reject(err);
-                    _this.logger.error('unable to connect to database at ' + mongoConfig.dbs);
-                }
-
-                const runErrorListener = (err) => {
-                    _this.logger.error('MongoError',err)
-                }
-
-                db.once('error', defaultErrorListener);
-                db.once('open', function () {
-                    db.removeListener('error',defaultErrorListener);
-                    db.on('error',runErrorListener);
-                    _this.logger.info('数据库[MongoDB]启动了');
-                    resolve();
-                });
-            })
-           
-=======
            await this.mongoDB.connectDB();
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -99,11 +64,7 @@ export class AppServer {
     }
 
     readyExpress() {
-<<<<<<< HEAD
-        const apiConfig = this.config.getConfig().apiConfig;
-=======
         const apiConfig = this.config.getConfig().api;
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
         /**
          * 设置静态资源路径，web ,app ,admin
          */
@@ -198,11 +159,7 @@ export class AppServer {
             next(err);
         });
 
-<<<<<<< HEAD
-        this.app.listen(apiConfig.port, () => console.log('Express server listening on port ' + apiConfig.port));
-=======
         this.app.listen(apiConfig.port, () => this.logger.debug('Express server listening on port ' + apiConfig.port));
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
     }
 
     async run() {
@@ -212,7 +169,7 @@ export class AppServer {
             this.readyExpress();
             // await new Promise((resole,reject) => {
             //     let count = 0;
-             
+
             //     setInterval(()=>{
             //         count++;
             //         _this.logger.debug('FFFFFFF');

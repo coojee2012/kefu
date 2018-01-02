@@ -3,11 +3,7 @@
  */
 const Config = {
     api: {
-<<<<<<< HEAD
-        port: '3000'
-=======
         port: '8008'
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
     },
     reids: {
         host: '127.0.0.1',
@@ -28,9 +24,6 @@ const Config = {
         * auth    - options for authentication (see http://mongodb.github.com/node-mongodb-native/api-generated/db.html#authenticate)
         * mongos  - Boolean - if true, enables High Availability support for mongos
         */
-<<<<<<< HEAD
-        opts: {},
-=======
         opts: {
             useMongoClient: true,
             autoIndex: false, // Don't build indexes
@@ -41,7 +34,6 @@ const Config = {
             bufferMaxEntries: 0,
             replicaSet:'meteor'
         },
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
     },
     aws: {
         url: "amazonaws.com.cn",

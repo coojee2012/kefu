@@ -3,11 +3,7 @@
  */
 const Config = {
     api: {
-<<<<<<< HEAD
-        port: '3000'
-=======
         port: '80'
->>>>>>> 822401ac539b4922aa7886f524c7210dbd49bf2d
     },
     reids: {
         host: '127.0.0.1',
