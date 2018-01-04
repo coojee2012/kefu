@@ -16,11 +16,14 @@
   "dependencies": {
     "async": "^2.4.1",
     "bcrypt": "^1.0.2",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
     "deepstream.io-client-js": "^2.3.0",
     "ejs": "^2.5.5",
+    "esl": "^8.1.1",
+    "eventemitter2": "^5.0.0",
     "express": "^4.14.1",
     "express-ejs-layouts": "^2.3.1",
     "express-session": "^1.15.3",
@@ -33,6 +36,7 @@
     "logger": "0.0.1",
     "method-override": "^2.3.8",
     "mongoose": "4.13.2",
+    "node-uuid": "^1.4.8",
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
@@ -43,6 +47,8 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.19",
+    "@types/eventemitter2": "^4.1.0",
     "@types/express": "^4.0.35",
     "@types/lodash": "^4.14.52",
     "@types/mongodb": "^2.2.2",

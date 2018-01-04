@@ -1,0 +1,529 @@
+import { EventEmitter2 } from 'eventemitter2';
+//import { Promise } from 'bluebird';
+import { resolve } from 'path';
+import { reject } from 'bluebird';
+import assert = require('assert');
+
+const debug = (require('debug'))('esl:response');
+
+const trace = (require('debug'))('esl:response:trace');
+
+class FreeSwitchError extends Error {
+    constructor(private res:any, private args:any){
+        super();
+    }
+    toString() {
+        return "FreeSwitchError: " + (JSON.stringify(this.args));
+    }
+}
+
+class FreeSwitchTimeout extends Error {
+    constructor(private timeout:any, private text:any){
+        super();
+    }
+    toString() {
+        return "FreeSwitchTimeout: Timeout after " + this.timeout + "ms waiting for " + this.text;
+      }
+}
+export class FreeSwitchResponse extends EventEmitter2 {
+    private default_event_timeout:number;
+    private default_command_timeout:number;
+    private command_timeout:number;
+    private __later:any;
+    private __queue:any;
+    private closed:boolean;
+    constructor(private socket){
+        super();
+        this.default_event_timeout = 9 * 3600 * 1000;
+        this.command_timeout = 10 * 1000;
+    }
+    error(res, data) {
+        debug("error: new FreeSwitchError", {
+          res: res,
+          data: data
+        });
+        return Promise.reject(new FreeSwitchError(res, data));
+    }
+    async onceAsync (event, timeout) {
+        try{
+        
+            trace('onceAsync', event, timeout);
+            const self = this;
+            let timer;
+           const p =  await new Promise((resolve,reject) => {
+                const on_event = (...args) => {                  
+                    trace("onceAsync: on_event " + event, args);
+                    cleanup();
+                    resolve(args);
+                  };
+
+                const on_error = (error) => {
+                    trace("onceAsync: on_error " + event, error);
+                    cleanup();
+                    reject(error != null ? error : new Error("Socket closed while waiting for " + event));
+                  };
+                  const on_timeout= () => {
+                    trace("onceAsync: on_timeout " + event);
+                    cleanup();
+                    reject(new FreeSwitchTimeout(timeout, "event " + event));
+                  };
+                const cleanup = () => {
+                    self.removeListener(event, on_event);
+                    self.removeListener('socket.*', on_error);
+                    clearTimeout(timer);
+                  };
+                const on_cancel = ()=>{
+                    trace("onceAsync: Cancelling " + event);
+                    cleanup();
+                  };
+                self.once(event, on_event);
+                self.once('socket.*', on_error);
+                if (timeout != null) {
+                    timer = setTimeout(on_timeout, timeout);
+                }
+            })           
+        }
+        catch(ex){
+
+        }
+        
+      }
+  async  enqueue(f) {
+
+    try{
+        const self = this;
+        if (this.__queue == null) {
+            return this.error({}, {
+              when: 'enqueue on closed socket'
+            });
+          }
+          
+
+    }catch(ex){
+
+    }
+       
+
+        return new Promise((resolve,reject)=>{
+
+        })
+        return new Promise((function(_this) {
+          return function(resolve, reject) {
+            return _this.__queue = _this.__queue.then(function() {
+              return f();
+            }).then(resolve, reject);
+          };
+        })(this)).bind(this);
+      }
+    waitAsync(event, timeout) {
+        var p;
+        if ((this.__later != null) && event in this.__later) {
+          p = Promise.resolve(this.__later[event]);
+          delete this.__later[event];
+          return p.bind(this);
+        } else {
+          return this.onceAsync(event, timeout);
+        }
+      }
+      emit_later (event, data) {
+        var handled;
+        handled = this.emit(event, data);
+        if ((this.__later != null) && !handled) {
+          this.__later[event] = data;
+        }
+        return handled;
+      }
+  
+     write(command, args) {
+        var p;
+        if (this.closed) {
+          return this.error({}, {
+            when: 'write on closed socket',
+            command: command,
+            args: args
+          });
+        }
+        p = new Promise((function(_this) {
+          return function(resolve, reject) {
+            var error, key, text, value;
+            try {
+              trace('write', {
+                command: command,
+                args: args
+              });
+              text = command + "\n";
+              if (args != null) {
+                for (key in args) {
+                  value = args[key];
+                  text += key + ": " + value + "\n";
+                }
+              }
+              text += "\n";
+              _this.socket.write(text, 'utf8');
+              resolve(null);
+            } catch (error1) {
+              error = error1;
+              reject(error);
+            }
+          };
+        })(this));
+        return p.bind(this);
+      }
+  
+      send(command, args?:any, timeout?:number) {
+        if (timeout == null) {
+          timeout = this.command_timeout;
+        }
+        if (this.closed) {
+          return this.error({}, {
+            when: 'send on closed socket',
+            command: command,
+            args: args
+          });
+        }
+        return this.enqueue((function(_this) {
+          return function() {
+            var p, q;
+            p = _this.onceAsync('freeswitch_command_reply', timeout)["catch"](function(error) {
+              debug("send: response " + error, {
+                command: command,
+                args: args
+              });
+              return null;
+            });
+            q = _this.write(command, args)["catch"](function(error) {
+              debug("send: write " + error, {
+                command: command,
+                args: args
+              });
+              p.cancel();
+              return Promise.reject(error);
+            });
+            return q.then(function() {
+              return p;
+            }).then(function(res) {
+              var reply;
+              trace('send: received reply', {
+                command: command,
+                args: args
+              });
+              reply = res != null ? res.headers['Reply-Text'] : void 0;
+              if (reply == null) {
+                trace('send: no reply', {
+                  command: command,
+                  args: args
+                });
+                return _this.error(res, {
+                  when: 'no reply to command',
+                  command: command,
+                  args: args
+                });
+              }
+              if (reply.match(/^-/)) {
+                debug('send: failed', reply, {
+                  command: command,
+                  args: args
+                });
+                return _this.error(res, {
+                  when: 'command reply',
+                  reply: reply,
+                  command: command,
+                  args: args
+                });
+              }
+              trace('send: success', {
+                command: command,
+                args: args
+              });
+              return res;
+            });
+          };
+        })(this));
+      };
+  
+      end() {
+        trace('end');
+        this.closed = true;
+        this.socket.end();
+        return null;
+      };
+  
+      api(command, timeout) {
+        trace('api', {
+          command: command
+        });
+        if (this.closed) {
+          return this.error({}, {
+            when: 'api on closed socket',
+            command: command
+          });
+        }
+        return this.enqueue((function(_this) {
+          return function() {
+            var p, q;
+            p = _this.onceAsync('freeswitch_api_response', timeout)["catch"](function(error) {
+              debug("api: response " + error, command);
+              return null;
+            });
+            q = _this.write("api " + command)["catch"](function(error) {
+              debug("api: write " + error, command);
+              p.cancel();
+              return Promise.reject(error);
+            });
+            return q.then(function() {
+              return p;
+            }).then(function(res) {
+              var ref, reply;
+              trace('api: response', {
+                command: command
+              });
+              reply = res != null ? res.body : void 0;
+              if (reply == null) {
+                debug('api: no reply', {
+                  command: command
+                });
+                return _this.error(res, {
+                  when: 'no reply to api',
+                  command: command
+                });
+              }
+              if (reply.match(/^-/)) {
+                debug('api response failed', {
+                  reply: reply,
+                  command: command
+                });
+                return _this.error(res, {
+                  when: 'api response',
+                  reply: reply,
+                  command: command
+                });
+              }
+              res.uuid = (ref = reply.match(/^\+OK ([\da-f-]{36})/)) != null ? ref[1] : void 0;
+              return res;
+            });
+          };
+        })(this));
+      };
+  
+      bgapi(command, timeout) {
+        trace('bgapi', {
+          command: command,
+          timeout: timeout
+        });
+        if (this.closed) {
+          return this.error({}, {
+            when: 'bgapi on closed socket',
+            command: command
+          });
+        }
+        return this.send("bgapi " + command).then((function(_this) {
+          return function(res) {
+            var error, r, ref, reply;
+            error() {
+              return _this.error(res, {
+                when: "bgapi did not provide a Job-UUID",
+                command: command
+              });
+            };
+            if (res == null) {
+              return error();
+            }
+            reply = res.headers['Reply-Text'];
+            r = reply != null ? (ref = reply.match(/\+OK Job-UUID: (.+)$/)) != null ? ref[1] : void 0 : void 0;
+            if (r == null) {
+              r = res.headers['Job-UUID'];
+            }
+            if (r == null) {
+              return error();
+            }
+            trace('bgapi retrieve', r);
+            return _this.waitAsync("BACKGROUND_JOB " + r, timeout);
+          };
+        })(this));
+      };
+  
+      event_json() {
+        var events;
+        events = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        return this.send("event json " + (events.join(' ')));
+      };
+  
+      nixevent() {
+        var events;
+        events = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        return this.send("nixevent " + (events.join(' ')));
+      };
+  
+      noevents() {
+        return this.send("noevents");
+      };
+  
+      filter(header, value) {
+        return this.send("filter " + header + " " + value);
+      };
+  
+      filter_delete(header, value) {
+        if (value != null) {
+          return this.send("filter delete " + header + " " + value);
+        } else {
+          return this.send("filter delete " + header);
+        }
+      };
+  
+      sendevent(event_name, args) {
+        return this.send("sendevent " + event_name, args);
+      };
+  
+      auth(password) {
+        return this.send("auth " + password);
+      };
+  
+      connect() {
+        return this.send("connect");
+      };
+  
+      linger() {
+        return this.send("linger");
+      };
+  
+      exit() {
+        return this.send("exit");
+      };
+  
+      log(level) {
+        if (level != null) {
+          return this.send("log " + level);
+        } else {
+          return this.send("log");
+        }
+      };
+  
+      nolog() {
+        return this.send("nolog");
+      };
+  
+      sendmsg_uuid(uuid, command, args) {
+        var execute_text, options;
+        options = args != null ? args : {};
+        options['call-command'] = command;
+        execute_text = uuid != null ? "sendmsg " + uuid : 'sendmsg';
+        return this.send(execute_text, options);
+      };
+  
+      sendmsg(command, args) {
+        return this.sendmsg_uuid(null, command, args);
+      };
+  
+      execute_uuid(uuid, app_name, app_arg, loops) {
+        var options;
+        options = {
+          'execute-app-name': app_name,
+          'execute-app-arg': app_arg
+        };
+        if (loops != null) {
+          options.loops = loops;
+        }
+        return this.sendmsg_uuid(uuid, 'execute', options);
+      };
+  
+      command_uuid(uuid, app_name, app_arg, timeout) {
+        var event, p, q;
+        if (timeout == null) {
+          timeout = this.default_command_timeout;
+        }
+        if (app_arg == null) {
+          app_arg = '';
+        }
+        event = uuid != null ? "CHANNEL_EXECUTE_COMPLETE " + uuid + " " + app_name + " " + app_arg : "CHANNEL_EXECUTE_COMPLETE " + app_name + " " + app_arg;
+        p = this.onceAsync(event, timeout)["catch"](function(error) {
+          debug("command_uuid: response " + error, uuid, app_name, app_arg);
+          return null;
+        });
+        q = this.execute_uuid(uuid, app_name, app_arg)["catch"](function(error) {
+          debug("command_uuid: execute_uuid " + error, uuid, app_name, app_arg);
+          p.cancel();
+          return Promise.reject(error);
+        });
+        return q.then(function() {
+          return p;
+        });
+      };
+  
+      hangup_uuid(uuid, hangup_cause) {
+        var options;
+        if (hangup_cause == null) {
+          hangup_cause = 'NORMAL_UNSPECIFIED';
+        }
+        options = {
+          'hangup-cause': hangup_cause
+        };
+        return this.sendmsg_uuid(uuid, 'hangup', options);
+      };
+  
+      unicast_uuid(uuid, args) {
+        return this.sendmsg_uuid(uuid, 'unicast', args);
+      };
+  
+      execute(app_name, app_arg) {
+        return this.execute_uuid(null, app_name, app_arg);
+      };
+  
+      command(app_name, app_arg) {
+        return this.command_uuid(null, app_name, app_arg);
+      };
+  
+      hangup(hangup_cause) {
+        return this.hangup_uuid(null, hangup_cause);
+      };
+  
+      unicast(args) {
+        return this.unicast_uuid(null, args);
+      };
+  
+      auto_cleanup() {
+        var linger_delay;
+        this.once('freeswitch_disconnect_notice', function(res) {
+          trace('auto_cleanup: Received ESL disconnection notice', res);
+          switch (res.headers['Content-Disposition']) {
+            case 'linger':
+              trace('Sending freeswitch_linger');
+              this.emit('freeswitch_linger');
+              break;
+            case 'disconnect':
+              trace('Sending freeswitch_disconnect');
+              this.emit('freeswitch_disconnect');
+              break;
+            default:
+              trace('Sending freeswitch_disconnect');
+              this.emit('freeswitch_disconnect');
+          }
+        });
+        linger_delay = 4000;
+        this.once('freeswitch_linger', function() {
+          trace('auto_cleanup/linger');
+          if (this.emit('cleanup_linger')) {
+            debug('auto_cleanup/linger: cleanup_linger processed, make sure you call exit()');
+          } else {
+            trace("auto_cleanup/linger: exit() in " + linger_delay + "ms");
+            setTimeout((function(_this) {
+              return function() {
+                trace('auto_cleanup/linger: exit()');
+                _this.exit()["catch"](function() {
+                  return true;
+                });
+              };
+            })(this), linger_delay);
+          }
+        });
+        this.once('freeswitch_disconnect', function() {
+          trace('auto_cleanup/disconnect');
+          if (this.emit('cleanup_disconnect', this)) {
+            debug('auto_cleanup/disconnect: cleanup_disconnect processed, make sure you call end()');
+          } else {
+            trace('auto_cleanup/disconnect: end()');
+            this.end();
+          }
+        });
+        return null;
+      };
+}
