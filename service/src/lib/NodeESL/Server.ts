@@ -26,7 +26,7 @@ export class FreeSwitchServer extends EventEmitter2 {
         const conn = new Connection();
         conn.client(this.host, this.port, this.password);
     }
-    
+
     async createOutboundServer() {
         try {
             const self = this;
@@ -47,31 +47,35 @@ export class FreeSwitchServer extends EventEmitter2 {
         this.server.close(callback);
     }
 
-    _onConnection(socket: net.Socket) {
-        const conn = new Connection();
-        conn.server(socket);
-        const id = this._generateId();
-
-        this.connections[id] = conn;
-        this.connections[id]._id = id;
-
-        this.emit('connection::open', conn, id);
-
-        conn.on('esl::ready', function (id) {
-            if (this.bindEvents) {
-                conn.sendRecv('myevents', function () {
+    async _onConnection(socket: net.Socket) {
+        try{
+            const conn = new Connection();       
+            const id = this._generateId();
+            this.connections[id] = conn;
+            this.connections[id]._id = id;
+            this.emit('connection::open', conn, id);
+            conn.on('esl::ready', function (id) {
+                if (this.bindEvents) {
+                    conn.sendRecv('myevents', function () {
+                        this.emit('connection::ready', this.connections[id], id);
+                    }.bind(this));
+                } else {
                     this.emit('connection::ready', this.connections[id], id);
-                }.bind(this));
-            } else {
-                this.emit('connection::ready', this.connections[id], id);
-            }
-        }.bind(this, id));
+                }
+            }.bind(this, id));
+    
+            conn.on('esl::end', function (id) {
+                this.emit('connection::close', this.connections[id], id);
+                delete this.connections[id];
+            }.bind(this, id));
+    
+            conn.server(socket);
+        }
+        catch(ex){
 
-        conn.on('esl::end', function (id) {
-            this.emit('connection::close', this.connections[id], id);
+        }
+        
 
-            delete this.connections[id];
-        }.bind(this, id));
     }
 
     _onListening() {

@@ -4,7 +4,7 @@ import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { DeepStreamService } from './service/DeepStreamService';
 import { MongoService } from './service/MongoService';
-
+import { ESLServer } from './ESLServer';
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
     {
         provide: LoggerService, useFactory: () => {
@@ -16,4 +16,15 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
     ConfigService,
     DeepStreamService,
     MongoService,
+    ESLServer,
 ]);
+
+const server: ESLServer = injector.get(ESLServer);
+const logger: LoggerService = injector.get(LoggerService);
+server.startOutbound()
+    .then(res => {
+        logger.info('服务启动成功！')
+    })
+    .catch(err => {
+        logger.error('启动服务器异常：', err);
+    });

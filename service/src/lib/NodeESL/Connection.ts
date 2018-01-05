@@ -51,7 +51,7 @@ export class Connection extends EventEmitter2 {
   executeHandlers: any;
   reqEvents: string[];
   listeningEvents: any[];
-  _inbound: boolean;
+  private _inbound: boolean;
   private parser:Parser;
   socket: net.Socket;
   private password: string;
@@ -97,6 +97,7 @@ export class Connection extends EventEmitter2 {
     }, this._onConnect.bind(this));
 
     this.socket.on('error', this._onError.bind(this));
+    this.handleEvent();
   }
 
   /**
@@ -122,6 +123,11 @@ export class Connection extends EventEmitter2 {
     });
 
     this.socket.on('error', this._onError.bind(this));
+    this.handleEvent();
+  }
+
+  isInBound():boolean{
+    return this._inbound;
   }
 
   handleEvent() {
@@ -159,8 +165,8 @@ export class Connection extends EventEmitter2 {
       });
     }
     catch(ex) {
-      
-        }
+      console.log('[handleEvent]Error:',ex);
+    }
   }
   
 
