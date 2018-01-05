@@ -33,7 +33,7 @@ import { MongoService  } from './service/MongoService';
  * 全部路由
  */
 // import { default as routes } from './routes/index';
- import { RoutesService }  from './routes/RoutesService';
+import { RoutesService }  from './routes/RoutesService';
 import { setInterval } from 'timers';
 //import { Promise } from 'mongoose';
 
