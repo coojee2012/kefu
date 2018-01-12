@@ -12,7 +12,7 @@ export class Event {
   subclass: string;
   headers: any;
   body: string;
-  private PRIORITY: PRIORITY;
+  // private PRIORITY: PRIORITY;
   constructor(type, subclass) {
     this.headers = new Map();
 
@@ -46,11 +46,11 @@ export class Event {
       this.subclass = null;
       this.body = '';
     }
-    this.PRIORITY = {
-      LOW: 'LOW',
-      NORMAL: 'NORMAL',
-      HIGH: 'HIGH'
-    };
+    // this.PRIORITY = {
+    //   LOW: 'LOW',
+    //   NORMAL: 'NORMAL',
+    //   HIGH: 'HIGH'
+    // };
   }
 
   //Turns an event into colon-separated 'name: value'

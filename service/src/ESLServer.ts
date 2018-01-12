@@ -12,6 +12,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { MongoService } from './service/MongoService';
+import { FreeSwitchCallFlow } from './callflow'; 
 const DefaultESLCONF = {
     host: '0.0.0.0',
     port: 8085
@@ -25,6 +26,7 @@ export class ESLServer extends EventEmitter2 {
         super();
         this.eslServer = new FreeSwitchServer(DefaultESLCONF);
     }
+   
     async startOutbound() {
         try {
             const res = await this.eslServer.createOutboundServer();
@@ -60,12 +62,12 @@ export class ESLServer extends EventEmitter2 {
     async onEslConnReady(conn:Connection, id: string) {
         try {
             const connEvent:Event = conn.getInfo();
-            this.logger.debug(`onEslConnReady->${id}:`,connEvent.headers);
+            this.logger.debug(`onEslConnReady->${id}:`,connEvent.getHeader('Unique-ID'));
             if(conn.isInBound())
             {
 
             }else {
-                await this.handleOutbound(conn);
+                await this.handleOutbound(conn,id);
             }
             
         } catch (ex) {
@@ -76,14 +78,20 @@ export class ESLServer extends EventEmitter2 {
     async onEslConnClose(conn:Connection, id: string) {
         try {
             this.logger.debug(`onEslConnClose->${id}:`,conn.getInfo());
+            this.emit(`esl:conn::close::${id}`);
         } catch (ex) {
             this.logger.error('onEslConnClose Error:', ex);
         }
     }
 
-    async handleOutbound(conn:Connection) {
+    async handleOutbound(conn:Connection,id: string) {
         try{
-
+        const fsCallFlow = new FreeSwitchCallFlow(this.injector,conn);
+        this.once(`esl:conn::close::${id}`,() =>{
+            this.logger.info(`esl conn ${id} has closed yet!`);
+        })
+        const result = await fsCallFlow.start();
+        this.logger.info(`${id} handle result:`,result);
         }catch(ex){
             this.logger.error('handleOutbound Error:', ex);
         }
