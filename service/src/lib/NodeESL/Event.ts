@@ -13,7 +13,7 @@ export class Event {
   headers: any;
   body: string;
   // private PRIORITY: PRIORITY;
-  constructor(type, subclass) {
+  constructor(type, subclass?:any) {
     this.headers = new Map();
 
     this.hPtr = null;

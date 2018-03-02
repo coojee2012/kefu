@@ -4,12 +4,12 @@ import { Logger,LoggerInstance } from 'winston'
 @Injectable()
 export class LoggerService {
     private logger: LoggerInstance;
-    constructor(private level?: string) {
+    constructor(private level?: string,private label?:string) {
       this.logger =  new Logger({
         transports: [
           new (winston.transports.Console)({
             level:this.level || 'debug',
-            label: 'Service',
+            label: this.label || 'normal',
             prettyPrint: true,
             timestamp: true,
             json:false,

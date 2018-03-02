@@ -162,7 +162,7 @@ export class Parser extends EventEmitter2 {
   
       if (data.headers['Content-Length']) {
         headers['Content-Length'] = parseInt(data.headers['Content-Length'], 10);
-        headers._body = data.body;
+        headers['_body'] = data.body;
       }
     });
   

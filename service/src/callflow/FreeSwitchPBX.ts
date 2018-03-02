@@ -37,10 +37,10 @@ export class FreeSwitchPBX {
             this.logger.error('subscribe', ex);
         }
     }
-    async linger() {
+    async linger(time:Number) {
         try {
             const result = await new Promise((resolve, reject) => {
-                this.conn.sendRecv('linger', (evt: Event) => {
+                this.conn.sendRecv(`linger ${time}`, (evt: Event) => {
                     this.logger.debug('linger:', evt.getHeader('Reply-Text'));
                     resolve();
                 });
@@ -50,7 +50,6 @@ export class FreeSwitchPBX {
         catch (ex) {
             this.logger.error('linger', ex);
         }
-
     }
 
     /**

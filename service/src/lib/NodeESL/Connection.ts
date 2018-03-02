@@ -150,8 +150,10 @@ export class Connection extends EventEmitter2 {
 
         var fn = self.cmdCallbackQueue.shift();
 
-        if (fn && typeof fn === 'function')
+        if (fn && typeof fn === 'function'){
           fn.apply(self, arguments);
+        }
+          
       });
 
       //handle api response callbacks
@@ -824,7 +826,8 @@ export class Connection extends EventEmitter2 {
         if (headers['Event-Name'] === 'CHANNEL_DATA') {
           if (!this._inbound) {
             this.channelData = event;
-            this.emit('esl::event::CHANNEL_DATA' + (!!uuid ? '::' + uuid : ''), event);
+            emit = 'esl::event::CHANNEL_DATA' + (!!uuid ? '::' + uuid : '');
+            //this.emit('esl::event::CHANNEL_DATA' + (!!uuid ? '::' + uuid : ''), event);
           }
         }
         break;

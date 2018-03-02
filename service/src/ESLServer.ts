@@ -13,6 +13,9 @@ import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { MongoService } from './service/MongoService';
 import { FreeSwitchCallFlow } from './callflow'; 
+import { ESLEventNames } from './service/ESLEventNames';
+import { resolve, reject } from 'bluebird';
+import { Key } from 'selenium-webdriver';
 const DefaultESLCONF = {
     host: '0.0.0.0',
     port: 8085
@@ -21,6 +24,7 @@ const DefaultESLCONF = {
 export class ESLServer extends EventEmitter2 {
     eslServer: FreeSwitchServer;
     constructor(private injector: Injector, private logger: LoggerService,
+        private eslEventNames:ESLEventNames,
         private config: ConfigService,
         private mongoDB: MongoService) {
         super();
@@ -77,8 +81,9 @@ export class ESLServer extends EventEmitter2 {
 
     async onEslConnClose(conn:Connection, id: string) {
         try {
-            this.logger.debug(`onEslConnClose->${id}:`,conn.getInfo());
-            this.emit(`esl:conn::close::${id}`);
+            const connEvent:Event = conn.getInfo();
+            this.logger.debug(`onEslConnClose->${id}:`,connEvent.getHeader('Unique-ID'));
+            this.emit(`esl:conn::close::${id}`,connEvent.getHeader('Unique-ID'));
         } catch (ex) {
             this.logger.error('onEslConnClose Error:', ex);
         }
@@ -87,13 +92,36 @@ export class ESLServer extends EventEmitter2 {
     async handleOutbound(conn:Connection,id: string) {
         try{
         const fsCallFlow = new FreeSwitchCallFlow(this.injector,conn);
-        this.once(`esl:conn::close::${id}`,() =>{
-            this.logger.info(`esl conn ${id} has closed yet!`);
+        this.once(`esl:conn::close::${id}`,(callId) =>{
+            this.logger.info(`esl conn ${id} has closed yet!callId is ${callId}!`);
+            fsCallFlow.end()
+            .then(()=>{
+                
+            })
+            .catch(err => {
+
+            })
         })
+        this.handleAgentEvents(fsCallFlow);
         const result = await fsCallFlow.start();
         this.logger.info(`${id} handle result:`,result);
         }catch(ex){
             this.logger.error('handleOutbound Error:', ex);
+        }
+    }
+
+    handleAgentEvents(fsCallFlow:FreeSwitchCallFlow){
+        try{
+            const agentEvents = this.eslEventNames.ESLUserEvents;
+            Object.keys(agentEvents)
+            .forEach(key=>{
+                this.on(agentEvents[key],(...args)=>{
+                    fsCallFlow.emit(`${agentEvents[key]}::${fsCallFlow.getCallId()}`,args);
+                })
+            })
+            
+        }catch(ex){
+
         }
     }
 }
