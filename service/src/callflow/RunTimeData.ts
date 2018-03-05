@@ -8,6 +8,8 @@ FSName?:string;
 CoreUuid?:string;
 DestinationNumber?:string
 CallDirection?:string;
+tenantId?:string;
+routerLine?:string;
 }
 @Injectable()
 export class RuntimeData {
@@ -25,5 +27,12 @@ export class RuntimeData {
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
         this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
+
+        this.channelData.tenantId = connEvent.getHeader('variable_sip_to_host');
+        this.channelData.routerLine = '呼入';
+    }
+
+    getChannelData(){
+        return this.channelData;
     }
 }

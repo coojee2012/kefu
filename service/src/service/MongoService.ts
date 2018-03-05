@@ -1,10 +1,11 @@
-import { Injectable , Injector } from 'injection-js';
-import * as mongoose from 'mongoose';
+import { Injectable, Injector } from 'injection-js';
+//import * as mongoose from 'mongoose';
+import mongoose = require('mongoose');
 // import  { deepstreamQuarantine  } from 'deepstream.io-client-js';
 import { LoggerService } from './LogService';
 import { ConfigService } from './ConfigService';
 
-import  articleSchema   from '../models/article';
+import articleSchema from '../models/article';
 import booksSchema from '../models/books';
 import commentsSchema from '../models/comments';
 import corpusSchema from '../models/corpus';
@@ -13,6 +14,9 @@ import userSchema from '../models/user';
 import tenantSchema from '../models/tenants';
 import roomSchema from '../models/rooms';
 import messageSchema from '../models/messages';
+import routerSchema from '../models/router';
+import { resolve } from 'q';
+import { reject } from 'bluebird';
 
 interface IModels {
     Articles?: mongoose.Model<mongoose.Document>;
@@ -24,29 +28,48 @@ interface IModels {
     Tenants?: mongoose.Model<mongoose.Document>;
     Rooms?: mongoose.Model<mongoose.Document>;
     Messages?: mongoose.Model<mongoose.Document>;
+    Routers?: mongoose.Model<mongoose.Document>;
 }
 @Injectable()
 export class MongoService {
-    public models:IModels;
-    private conn:mongoose.Connection;
-    constructor(private logger:LoggerService,private config:ConfigService){
+    public models: IModels;
+    private conn: mongoose.Connection;
+    constructor(private logger: LoggerService, private config: ConfigService) {
         this.models = {};
-        // this.connectDB();
+        //this.connectDB();
     }
 
-    onConnectionError (err) {
-        this.logger.error('MongoError',err)
+    onConnectionError(err) {
+        this.logger.error('MongoError', err)
     }
 
-    async connectDB(){
-        try{
+    async connectDB() {
+        try {
             const mongoConfig = this.config.getConfig().mongo;
             mongoose.Promise = Promise;
+            this.logger.debug('数据库[MongoDB]连接信息：', mongoConfig.uris, mongoConfig.opts);
+            // await new Promise((resolve,reject)=>{
+            //     this.conn = mongoose.createConnection(mongoConfig.uris, mongoConfig.opts)
+            //     this.conn.on('error',(err)=>{
+            //         reject(err);
+            //     });
+            //     this.conn.once('connected', () => {
+            //         this.logger.info('数据库[MongoDB]启动了');
+            //         resolve();
+            //     });
+            // })
+
+
+           
+
+            // await 写法不用去监听事件
             this.conn = await mongoose.createConnection(mongoConfig.uris, mongoConfig.opts);
-            this.conn.on('error',this.onConnectionError.bind(this));
-            this.conn.once('connected', () => {
-                this.logger.info('数据库[MongoDB]启动了');
+            this.conn.on('error', (err) => {
+                this.onConnectionError.bind(this);
             });
+            this.logger.info('数据库[MongoDB]启动了');
+
+            // 另一种连法 this.conn = await mongoose.connect(mongoConfig.uris, mongoConfig.opts);        
             this.models.Articles = this.conn.model('Articles', articleSchema);
             this.models.Books = this.conn.model('Books', booksSchema);
             this.models.Comments = this.conn.model('Comments', commentsSchema);
@@ -56,9 +79,10 @@ export class MongoService {
             this.models.Rooms = this.conn.model('Rooms', roomSchema);
             this.models.Tenants = this.conn.model('Tenants', tenantSchema);
             this.models.Messages = this.conn.model('Messages', messageSchema);
+            this.models.Routers = this.conn.model('Routers', roomSchema);
         }
-        catch(ex){
-            this.logger.error(ex);
-        }       
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
 }

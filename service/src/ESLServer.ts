@@ -31,8 +31,20 @@ export class ESLServer extends EventEmitter2 {
         this.eslServer = new FreeSwitchServer(DefaultESLCONF);
     }
    
+     /**
+    * 连接mongo数据库
+    */
+   async readyMongoDB() {
+    try {
+       await this.mongoDB.connectDB();
+    }
+    catch (ex) {
+        return Promise.reject(ex);
+    }
+}
     async startOutbound() {
         try {
+            await this.readyMongoDB();
             const res = await this.eslServer.createOutboundServer();
             this.logger.info('[startOutbound]',res);
             /**
@@ -49,7 +61,7 @@ export class ESLServer extends EventEmitter2 {
             this.eslServer.on('connection::close', this.onEslConnClose.bind(this));
         }
         catch (ex) {
-            this.logger.error('Start Outbound Server Error:', ex);
+            return Promise.reject(ex);
         }
     }
 
@@ -107,6 +119,7 @@ export class ESLServer extends EventEmitter2 {
         this.logger.info(`${id} handle result:`,result);
         }catch(ex){
             this.logger.error('handleOutbound Error:', ex);
+            return Promise.reject(ex);
         }
     }
 
@@ -118,8 +131,7 @@ export class ESLServer extends EventEmitter2 {
                 this.on(agentEvents[key],(...args)=>{
                     fsCallFlow.emit(`${agentEvents[key]}::${fsCallFlow.getCallId()}`,args);
                 })
-            })
-            
+            })          
         }catch(ex){
 
         }

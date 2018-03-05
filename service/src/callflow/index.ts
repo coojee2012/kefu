@@ -8,6 +8,8 @@ import { EventEmitter2 } from 'eventemitter2';
 
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
+
+import { RouterController } from '../controllers/router'
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -17,11 +19,13 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private callId: String;
     private runtimeData: RuntimeData;
     private eslEventNames: ESLEventNames;
+    private routerControl:RouterController;
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
         this.eslEventNames = this.injector.get(ESLEventNames);
         this.createChildInjector(this.conn);
+        this.routerControl = this.childInjector.get(RouterController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
         this.runtimeData = this.childInjector.get(RuntimeData);
         this.isEnd = false;
@@ -30,6 +34,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     }
     createChildInjector(conn: Connection): void {
         this.childInjector = ReflectiveInjector.resolveAndCreate([
+            
             {
                 provide: FreeSwitchPBX, useFactory: () => {
                     return new FreeSwitchPBX(conn, this.injector);
@@ -41,7 +46,9 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                     return new RuntimeData(conn, this.injector);
                 },
                 deps: [] //这里不能丢
-            }
+            },
+            // 数据库相关服务注入
+            RouterController,
         ], this.injector);
     }
     /**
@@ -110,12 +117,26 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         }
     }
 
+    /** 
+     * @description 通过主叫和被叫号码从数据库中获取匹配的路由规则
+     * 
+     * */
+    async getRoute(){
+        try{
+            const { tenantId,routerLine } = this.runtimeData.getChannelData();
+            const docs = await this.routerControl.getRouterByTenantId(tenantId, routerLine);
+
+        }catch(ex){
+
+        }
+    }
     /**
     * @description 开始路由处理
     */
     async route() {
         try {
             this.logger.debug(`route->callId:`, this.callId);
+            await this.getRoute();
 
         } catch (ex) {
 
