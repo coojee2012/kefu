@@ -9,7 +9,8 @@ import { EventEmitter2 } from 'eventemitter2';
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 
-import { RouterController } from '../controllers/router'
+import { RouterController } from '../controllers/router';
+import { CallProcessController } from '../controllers/callProcess';
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -20,12 +21,14 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private runtimeData: RuntimeData;
     private eslEventNames: ESLEventNames;
     private routerControl:RouterController;
+    private callProcessControl:CallProcessController;
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
         this.eslEventNames = this.injector.get(ESLEventNames);
         this.createChildInjector(this.conn);
         this.routerControl = this.childInjector.get(RouterController);
+        this.callProcessControl = this.childInjector.get(CallProcessController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
         this.runtimeData = this.childInjector.get(RuntimeData);
         this.isEnd = false;
@@ -49,6 +52,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             },
             // 数据库相关服务注入
             RouterController,
+            CallProcessController,
         ], this.injector);
     }
     /**
@@ -123,11 +127,11 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
      * */
     async getRoute(){
         try{
-            const { tenantId,routerLine } = this.runtimeData.getChannelData();
-            const docs = await this.routerControl.getRouterByTenantId(tenantId, routerLine);
-
+            const { tenantId,routerLine,caller,callee,callId } = this.runtimeData.getRunData();
+            const result = await this.routerControl.getRouterByTenantId(tenantId, routerLine,caller,callee,callId);
+            return Promise.resolve(result);
         }catch(ex){
-
+            return Promise.reject(ex);
         }
     }
     /**
@@ -136,10 +140,34 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     async route() {
         try {
             this.logger.debug(`route->callId:`, this.callId);
-            await this.getRoute();
-
+            let {processmode, processdefined:any, routerLine}  = await this.getRoute();
+            switch (processmode) {
+                case 'diallocal':
+                 // result = await _this.flowBase.dialLocal(processdefined);
+                  //_this.R.logger.debug(loggerPrefix.concat(['route']), 'diallocal result:', result);
+                  break;
+                case 'dialout':
+                 // result = await _this.flowBase.dialOut(_this.R.called, processdefined);
+                  //_this.R.logger.debug(loggerPrefix.concat(['route']), 'dialout result:', result);
+                  //await _this.wait(3000);
+                  break;
+                case 'dialpbxlocal':
+                 // result = await _this.flowBase.dialPbxLocal(_this.R.called, processdefined);
+                  //_this.R.logger.debug(loggerPrefix.concat(['route']), 'dialpbxlocal result:', result);
+                  break;
+                case 'dialoutNewRock':
+                  //result = await _this.flowBase.dialoutNewRock(_this.R.called, processdefined);
+                 // _this.R.logger.debug(loggerPrefix.concat(['route']), 'dialoutNewRock result:', result);
+                  break;
+                case 'blacklist':
+                 // result = await _this.flowBase.blackList();
+                  break;
+                default:
+                 // result = await _this.defaultRoute();
+                  break;
+              }
         } catch (ex) {
-
+            return Promise.reject(ex);
         }
     }
 

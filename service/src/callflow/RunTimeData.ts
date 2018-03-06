@@ -8,17 +8,33 @@ FSName?:string;
 CoreUuid?:string;
 DestinationNumber?:string
 CallDirection?:string;
-tenantId?:string;
-routerLine?:string;
+originateCallee?:string;
+callerId?:string;
+callerName?:string;
+calleeId?:string;
+calleeName?:string;
+}
+
+interface IRunData {
+    callId:string;
+    tenantId?:string;
+    caller?:string;
+    callee?:string;
+    isOriginateCall?:boolean;
+    routerLine?:string;
 }
 @Injectable()
 export class RuntimeData {
     private logger: LoggerService;
     private channelData:IChannelData;
+    private runData:IRunData;
     constructor(private conn: Connection, private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
         this.logger.debug('Init Runtime Data!');
         this.channelData = {};
+        this.runData = {
+            callId:'',
+        };
         this.initData();
         this.logger.debug('Runtime Data:',this.channelData);
     }
@@ -26,13 +42,44 @@ export class RuntimeData {
         const connEvent: Event = this.conn.getInfo();
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
-        this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
-
-        this.channelData.tenantId = connEvent.getHeader('variable_sip_to_host');
-        this.channelData.routerLine = '呼入';
+        this.channelData.CallDirection = connEvent.getHeader('Call-Direction');     
+        this.channelData.callerId = connEvent.getHeader('Caller-Caller-ID-Number'),
+        this.channelData.callerName = connEvent.getHeader('Caller-Caller-ID-Name'),
+        this.channelData.calleeId = connEvent.getHeader('Caller-Callee-ID-Number'),
+        this.channelData.calleeName = connEvent.getHeader('Caller-Callee-ID-Name'),
+        this.channelData.DestinationNumber = connEvent.getHeader('Channel-Destination-Number');
+        //originateCall: chanData.get('variable_originate_call'),
+        //originateTenant: chanData.get('variable_originate_tenant'),
+        this.channelData.originateCallee =  connEvent.getHeader('variable_originate_callee'),
+        this.runData.tenantId = connEvent.getHeader('variable_sip_to_host');
+        this.runData.callId = connEvent.getHeader('Unique-ID');
+        this.runData.routerLine = '呼入';
+        this.runData.caller = this.setCaller();
+        this.runData.callee = this.setCalled();
     }
 
     getChannelData(){
         return this.channelData;
     }
+
+    getRunData(){
+        return this.runData;
+    }
+
+    setCaller() {
+        let caller = this.channelData.callerId;
+        // let clickAgent = this.pbxApi.getChannelData().clickAgent;
+        // if (this.clickOut && clickAgent) {
+        //   caller = clickAgent
+        // }
+        return caller;
+      }
+  
+      setCalled() {
+        let called = this.runData.isOriginateCall ? this.channelData.originateCallee : this.channelData.DestinationNumber;
+        // if (called == 100) {
+        //   called = this.pbxApi.getChannelData().sipToUser;
+        // }
+        return called;
+      }
 }

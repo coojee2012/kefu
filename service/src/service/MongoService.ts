@@ -12,9 +12,10 @@ import corpusSchema from '../models/corpus';
 import templateSchema from '../models/template';
 import userSchema from '../models/user';
 import tenantSchema from '../models/tenants';
-import roomSchema from '../models/rooms';
+import { default as roomSchema,RoomModel } from '../models/rooms';
 import messageSchema from '../models/messages';
-import routerSchema from '../models/router';
+import {default as routerSchema , RouterModel} from '../models/pbx_routers';
+import {default as callProcessSchema , CallProcessModel} from '../models/pbx_callProcess';
 import { resolve } from 'q';
 import { reject } from 'bluebird';
 
@@ -28,7 +29,8 @@ interface IModels {
     Tenants?: mongoose.Model<mongoose.Document>;
     Rooms?: mongoose.Model<mongoose.Document>;
     Messages?: mongoose.Model<mongoose.Document>;
-    Routers?: mongoose.Model<mongoose.Document>;
+    PBXRouters?: mongoose.Model<RouterModel>;
+    PBXCallProcess?:mongoose.Model<CallProcessModel>;
 }
 @Injectable()
 export class MongoService {
@@ -79,7 +81,8 @@ export class MongoService {
             this.models.Rooms = this.conn.model('Rooms', roomSchema);
             this.models.Tenants = this.conn.model('Tenants', tenantSchema);
             this.models.Messages = this.conn.model('Messages', messageSchema);
-            this.models.Routers = this.conn.model('Routers', roomSchema);
+            this.models.PBXRouters = this.conn.model('PBX_Routers', roomSchema);
+            this.models.PBXCallProcess = this.conn.model('PBX_CallProcess', callProcessSchema);
         }
         catch (ex) {
             return Promise.reject(ex);

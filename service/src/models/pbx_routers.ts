@@ -3,22 +3,23 @@ import * as mongoose from 'mongoose';
  * 定义接口
  */
 export type RouterModel = mongoose.Document & {
-    tenantId:String;
-    priority:Number;
-    createMode:Boolean;
-    routerLine:String;
-    routerName:String;
-    optExtra?:String;
-    lastWhenDone:Boolean;
-    callerGroup:String;
-    callerId:String;
-    callerLen:String;
-    calledNum:String;
-    calledLen:String;
-    replaceCallerId:String;
-    replaceCalledTrim:Number;
-    replaceCalledAppend:String;
-    processMode:String;
+    _id:string;
+    tenantId:string;
+    priority:number;
+    createMode:boolean;
+    routerLine:string;
+    routerName:string;
+    optExtra?:string;
+    lastWhenDone:boolean;
+    callerGroup:string;
+    callerId:string;
+    callerLen:number;
+    calledNum:string;
+    calledLen:number;
+    replaceCallerId:string;
+    replaceCalledTrim:number;
+    replaceCalledAppend:string;
+    processMode:string;
     processedFined:{};
 }
 

@@ -30,6 +30,15 @@ export type TenantModel = mongoose.Document & {
 
 };
 
+export type TenantCallCenterConfig = {
+    status:string;
+    billingType:string;
+    rating:any;
+    recordCall:boolean;
+    afterCallState:string;
+    satisfactionMode:string;
+}
+
 const tenantSchema = new mongoose.Schema({
     tenantId: {
         type: String,
