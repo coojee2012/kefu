@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type CallProcessModel = mongoose.Document & {
+export type PBXCallProcessModel = mongoose.Document & {
     _id:string;
     tenantId:string;
     callId:string;
@@ -13,7 +13,7 @@ export type CallProcessModel = mongoose.Document & {
     isHide:boolean;
     ts:Date;
 }
-const callProcessSchema = new mongoose.Schema({
+const pbxCallProcessSchema = new mongoose.Schema({
     tenantId: {type: String, required: true},
     callId: {type: String, required: true},
     caller: {type: String},
@@ -30,4 +30,4 @@ const callProcessSchema = new mongoose.Schema({
     ts: {type: Date, default: ()=>new Date()},
 });
 
-export default callProcessSchema;
+export default pbxCallProcessSchema;

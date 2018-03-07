@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type RouterModel = mongoose.Document & {
+export type PBXCDRModel = mongoose.Document & {
     tenantId:string;
     callId:string;
     caller:string;

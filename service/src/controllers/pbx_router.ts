@@ -1,15 +1,15 @@
 import { Injectable, Injector } from 'injection-js';
 import * as mongoose from 'mongoose';
-import { RouterModel } from '../models/pbx_routers';
+import { PBXRouterModel } from '../models/pbx_routers';
 import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
-import { CallProcessController } from './callProcess'
+import { PBXCallProcessController } from './pbx_callProcess'
 @Injectable()
-export class RouterController {
-    private callProcessControl:CallProcessController;
+export class PBXRouterController {
+    private callProcessControl:PBXCallProcessController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
-        this.callProcessControl = this.injector.get(CallProcessController);
+        this.callProcessControl = this.injector.get(PBXCallProcessController);
     }
     async create(req: Request, res: Response, next: NextFunction) {
         this.logger.debug('创建一条呼叫路由规则');

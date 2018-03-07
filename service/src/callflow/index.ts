@@ -9,8 +9,8 @@ import { EventEmitter2 } from 'eventemitter2';
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 
-import { RouterController } from '../controllers/router';
-import { CallProcessController } from '../controllers/callProcess';
+import { PBXRouterController } from '../controllers/pbx_router';
+import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -20,15 +20,15 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private callId: String;
     private runtimeData: RuntimeData;
     private eslEventNames: ESLEventNames;
-    private routerControl:RouterController;
-    private callProcessControl:CallProcessController;
+    private routerControl:PBXRouterController;
+    private callProcessControl:PBXCallProcessController;
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
         this.eslEventNames = this.injector.get(ESLEventNames);
         this.createChildInjector(this.conn);
-        this.routerControl = this.childInjector.get(RouterController);
-        this.callProcessControl = this.childInjector.get(CallProcessController);
+        this.routerControl = this.childInjector.get(PBXRouterController);
+        this.callProcessControl = this.childInjector.get(PBXCallProcessController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
         this.runtimeData = this.childInjector.get(RuntimeData);
         this.isEnd = false;
@@ -51,8 +51,8 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 deps: [] //这里不能丢
             },
             // 数据库相关服务注入
-            RouterController,
-            CallProcessController,
+            PBXRouterController,
+            PBXCallProcessController,
         ], this.injector);
     }
     /**

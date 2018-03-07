@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type RouterModel = mongoose.Document & {
+export type PBXRouterModel = mongoose.Document & {
     _id:string;
     tenantId:string;
     priority:number;
@@ -23,7 +23,7 @@ export type RouterModel = mongoose.Document & {
     processedFined:{};
 }
 
-const routerSchema = new mongoose.Schema({
+const pbxRouterSchema = new mongoose.Schema({
     tenantId: {
         type: String,
         required: true
@@ -97,4 +97,4 @@ const routerSchema = new mongoose.Schema({
     processedFined: {}//处理详细参数定义
 })
 
-export default routerSchema;
+export default pbxRouterSchema;

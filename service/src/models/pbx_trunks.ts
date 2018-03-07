@@ -9,46 +9,46 @@ const pbxTrunkSchema = new mongoose.Schema({
         required: true,
         unique: true,
         type: String,
-      },// 中继的名称
-      protocol: {
+    },// 中继的名称
+    protocol: {
         type: String,
-      },//协议 SIP,IAX2,等
-      gateway: {
+    },//协议 SIP,IAX2,等
+    gateway: {
         type: String,
         default: function () {
-          return '';
+            return '';
         }
-      },//SIP协议对应注册字符串或gateway:5060 或其他端口
-      transport: {
+    },//SIP协议对应注册字符串或gateway:5060 或其他端口
+    transport: {
         type: String,
         default: () => 'udp'
-      },
-      device: {
+    },
+    device: {
         type: String,
         default: () => ''
-      },//针对硬件中继设置
-      dnds: [{
+    },//针对硬件中继设置
+    dnds: [{
         type: String,
-      }],//该中继拥有的号码
-      concurrentCall: {
+    }],//该中继拥有的号码
+    concurrentCall: {
         type: Number,
-        default: ()=> 0
-      },// 中继的并发数,0表示不限制,-1表示禁用
-      memo: {
+        default: () => 0
+    },// 中继的并发数,0表示不限制,-1表示禁用
+    memo: {
         type: String,
         default: function () {
-          return '';
+            return '';
         }
-      },
-      ts: {
+    },
+    ts: {
         type: String,
         default: () => new Date()
-      },
-      args: {
+    },
+    args: {
         type: String,
         default: function () {
-          return '';
+            return '';
         }
-      }//关于中继的一些其他参数
+    }//关于中继的一些其他参数
 })
 export default pbxTrunkSchema;
