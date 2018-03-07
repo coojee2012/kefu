@@ -1,18 +1,16 @@
+
 import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXAgentStatisticsModel = mongoose.Document & {}
+export type PBXQueueStatisticsModel = mongoose.Document & {}
 
-const pbxAgentStatisticSchema = new mongoose.Schema({
+const pbxQueueStatisticsSchema = new mongoose.Schema({
     callId: {
         type: String,
+        unique: true,
         required: true,
-      },
-      bLegId: {
-        type: String,
-        required: true,
-      },//当时坐席的线路id
+      },//呼叫编号
       tenantId: {
         type: String,
         required: true,
@@ -21,26 +19,41 @@ const pbxAgentStatisticSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      agentNumber: {
+      onDutyAgents: [{
+        type: String
+      }],
+      answerAgent: {
         type: String,
-        required: true,
-      },
-      agentId: {
+        default: '',
+      },//最终服务坐席分机号
+      answerAgentId: {
         type: String,
-        required: true,
-      },
-      ringStart: {
+        default: '',
+      },//最终服务坐席ID
+      incomeTime: {
         type: Date,
         default: () => new Date()
-      },
+      },//进入队列时间
+      ringTimes: {
+        type: Number,
+        default: 0
+      },//总计呼叫过多少个坐席
+      ringDuration: {
+        type: Number,
+        default: 0
+      },//总计振铃时长
       answerTime: {
         type: Date,
         default: null
-      },
+      },//被应答的时间
+      transferStatic: {
+        type: Date,
+        default: null
+      },//转满意度的时间
       hangupTime: {
         type: Date,
         default: null
-      },
+      },//挂机时间
       satisfaction: {
         type: Number,
         default: 0
@@ -58,4 +71,4 @@ const pbxAgentStatisticSchema = new mongoose.Schema({
         default: -1
       }//关于该通话,坐席话后处理时间
 })
-export default pbxAgentStatisticSchema;
+export default pbxQueueStatisticsSchema;

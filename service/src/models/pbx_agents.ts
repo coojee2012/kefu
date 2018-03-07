@@ -4,5 +4,71 @@ import * as mongoose from 'mongoose';
  */
 export type PBXAgentModel = mongoose.Document & {}
 
-const pbxAgentSchema = new mongoose.Schema({})
+const pbxAgentSchema = new mongoose.Schema({
+    tenantId: {
+        type: String,
+        required: true,
+      },
+      queueNumber: {
+        type: String,
+        required: true,
+      },
+      agentNumber: {
+        type: String,
+        required: true,
+      },
+      callId: {
+        type: String,
+        default: ''
+      },
+      position: {
+        type: Number,
+        default: 0
+      },
+      lastBridgeStart: {
+        type: Number,
+        default: 0
+      },
+      lastBridgeEnd: {
+        type: Number,
+        default: 0
+      },
+      warpUpTime: {
+        type: Number,
+        default: 0
+      },
+      lastOfferedCall: {
+        type: Number,
+        default: 0
+      },
+      answeredCalls: {
+        type: Number,
+        default: 0
+      },
+      noAnsweredCalls: {
+        type: Number,
+        default: 0
+      },
+      busyDelayTime: {
+        type: Number,
+        default: 0
+      },
+      noAnswerDelayTime: {
+        type: Number,
+        default: 0
+      },
+      maxNoAnswer: {
+        type: Number,
+        default: 0
+      },
+      rejectDelayTime: {
+        type: Number,
+        default: 0
+      },
+      talkTime: {
+        type: Number,
+        default: 0
+      }
+})
+pbxAgentSchema.index({tenantId: 1, queueNumber: 1, agentNumber: 1}, {unique: true});
 export default pbxAgentSchema;
