@@ -13,6 +13,9 @@ callerId?:string;
 callerName?:string;
 calleeId?:string;
 calleeName?:string;
+sipCallId?:string;
+channelName?:string;
+useContext?:string;
 }
 
 interface IRunData {
@@ -48,6 +51,9 @@ export class RuntimeData {
         this.channelData.calleeId = connEvent.getHeader('Caller-Callee-ID-Number'),
         this.channelData.calleeName = connEvent.getHeader('Caller-Callee-ID-Name'),
         this.channelData.DestinationNumber = connEvent.getHeader('Channel-Destination-Number');
+        this.channelData.sipCallId = connEvent.getHeader('variable_sip_call_id');
+        this.channelData.channelName = connEvent.getHeader('Caller-Channel-Name');
+        this.channelData.useContext = connEvent.getHeader('Caller-Context');
         //originateCall: chanData.get('variable_originate_call'),
         //originateTenant: chanData.get('variable_originate_tenant'),
         this.channelData.originateCallee =  connEvent.getHeader('variable_originate_callee'),
