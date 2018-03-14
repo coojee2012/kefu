@@ -133,7 +133,7 @@ export class MongoService {
             this.models.PBXIvrInput = this.conn.model('PBX_ivrinputs',pbxIvrInputSchema);
             this.models.PBXIvrMenmu = this.conn.model('PBX_ivrmenus',pbxIvrMenmuSchema);
             this.models.PBXLastService = this.conn.model('PBX_lastservices',pbxLastServiceSchema);
-            this.models.PBXLocalNumber = this.conn.model('PBX_localmumbers',pbxLocalNumberSchema);
+            this.models.PBXLocalNumber = this.conn.model('PBX_localnumbers',pbxLocalNumberSchema);
             this.models.PBXQueue = this.conn.model('PBX_queues',pbxQueueSchema);
             this.models.PBXQueueMember = this.conn.model('PBX_queuemembers',pbxQueueMemberSchema);
             this.models.PBXQueueStatistic = this.conn.model('PBX_queuestatustics',pbxQueueStatisticSchema);

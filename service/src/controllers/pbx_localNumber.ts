@@ -24,7 +24,13 @@ export class PBXLocalNumberController {
             }, {}, {
                     lean: true,
                 });
-            return Promise.resolve(localNumberDoc);
+                
+            if(localNumberDoc){
+                return Promise.resolve(localNumberDoc);
+            }else{
+                return Promise.reject(`Can't find localNumber <${localNumber}> for <${tenantId}>!`);
+            }
+           
 
         } catch (ex) {
             return Promise.reject(ex);

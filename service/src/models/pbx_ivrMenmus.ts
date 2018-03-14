@@ -2,7 +2,13 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXIVRMenmuModel = mongoose.Document & {}
+export type PBXIVRMenmuModel = mongoose.Document & {
+  tenantId:string;
+  ivrName:string;
+  ivrNumber:string;
+  description:string;
+  readOnly:boolean;
+}
 
 const pbxIVRMenmuSchema = new mongoose.Schema({
     tenantId: {

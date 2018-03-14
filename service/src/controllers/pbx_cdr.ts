@@ -30,6 +30,26 @@ export class PBXCDRController {
         }
     }
 
+    async lastApp(callId:string, tenantId:string, lastApp:string) {
+        const _this = this;
+        try {
+            const result = await this.mongoDB.models.PBXCDR.update({
+                tenantId,
+                callId
+            },{
+                $set:{
+                    lastApp,
+                }
+            },{
+                multi: false, 
+                safe: true
+            });
+            return result;
+        } catch (ex) {
+          return Promise.reject(ex);
+        }
+      }
+
     async create(data){
         try{
             const newDoc = await this.mongoDB.models.PBXCDR.create(data);

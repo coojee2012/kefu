@@ -20,11 +20,14 @@ useContext?:string;
 
 interface IRunData {
     callId:string;
+    ivrMaxDeep:number;
+    ivrCurrentDeep:number;
     tenantId?:string;
     caller?:string;
     callee?:string;
     isOriginateCall?:boolean;
     routerLine?:string;
+    answered?:boolean;
 }
 @Injectable()
 export class RuntimeData {
@@ -37,6 +40,8 @@ export class RuntimeData {
         this.channelData = {};
         this.runData = {
             callId:'',
+            ivrMaxDeep:100,
+            ivrCurrentDeep:0
         };
         this.initData();
         this.logger.debug('Runtime Data:',this.channelData);
@@ -81,11 +86,21 @@ export class RuntimeData {
         return caller;
       }
   
-      setCalled() {
+    setCalled() {
         let called = this.runData.isOriginateCall ? this.channelData.originateCallee : this.channelData.DestinationNumber;
         // if (called == 100) {
         //   called = this.pbxApi.getChannelData().sipToUser;
         // }
         return called;
       }
+
+    setAnswered(){
+        this.runData.answered = true;
+        return;
+    }
+
+    increaseIvrCurrentDeep(number:number = 1){
+        this.runData.ivrCurrentDeep = this.runData.ivrCurrentDeep + number;
+    }
+
 }

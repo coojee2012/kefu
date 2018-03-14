@@ -37,7 +37,7 @@ export class FreeSwitchPBX {
             this.logger.error('subscribe', ex);
         }
     }
-    async linger(time:Number) {
+    async linger(time: Number) {
         try {
             const result = await new Promise((resolve, reject) => {
                 this.conn.sendRecv(`linger ${time}`, (evt: Event) => {
@@ -99,7 +99,64 @@ export class FreeSwitchPBX {
      * filter delete Unique-ID
      * 这会删除基于unique-id应用的所有过滤器。
      */
-    async filterDelete(){
+    async filterDelete() {
+
+    }
+
+
+    /**
+     * outbound模式下应答采用的uuid直接从通道变量获得
+     */
+    async answer(uuid?: string): Promise<any> {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.conn.execute('answer', '', uuid, (evt: Event) => {
+                    //  console.log('Answer -> ',evt);
+                    resolve();
+                })
+            });
+            return Promise.resolve(result);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
+    }
+
+    /**
+     * outbound模式下应答采用的uuid直接从通道变量获得
+     */
+    async startDTMF(uuid?: string): Promise<any> {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.conn.execute('start_dtmf', '', uuid, (evt:Event) => {
+                    //  console.log('Answer -> ',evt);
+                    resolve();
+                })
+            });
+            return Promise.resolve(result);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
+    }
+
+
+    async  getChannelVar(varname: string, uuid: string):Promise<string> {
+        try {
+            const result = await new Promise<string>((resolve, reject) => {
+                this.conn.api('uuid_getvar', [uuid, varname], (evt: Event) => {
+                    const value: string = evt.body;
+                    resolve(value);
+                });
+            });
+            return result;
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
 
     }
 }

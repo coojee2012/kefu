@@ -4,12 +4,12 @@ import { PBXRouterModel } from '../models/pbx_routers';
 import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
-import { PBXCallProcessController } from './pbx_callProcess'
+
 @Injectable()
 export class PBXRouterController {
-    private callProcessControl:PBXCallProcessController;
+
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
-        this.callProcessControl = this.injector.get(PBXCallProcessController);
+
     }
     async create(req: Request, res: Response, next: NextFunction) {
         this.logger.debug('创建一条呼叫路由规则');
@@ -75,7 +75,7 @@ export class PBXRouterController {
                     }
                 });
 
-                return Promise.resolve(routeDocs);
+            return Promise.resolve(routeDocs);
         } catch (ex) {
             this.logger.error('getRouterByTenantId error:', ex);
             return Promise.reject(ex);

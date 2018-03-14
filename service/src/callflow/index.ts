@@ -8,11 +8,15 @@ import { EventEmitter2 } from 'eventemitter2';
 
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
+import { FlowBase } from './FlowBase';
+import { IVR } from './IVR';
 
 import { PBXRouterController } from '../controllers/pbx_router';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXLocalNumberController } from '../controllers/pbx_localNumber';
 import { PBXCDRController } from '../controllers/pbx_cdr';
+import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
+import { PBXIVRActionsController } from '../controllers/pbx_ivrAction';
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -25,6 +29,8 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private routerControl: PBXRouterController;
     private callProcessControl: PBXCallProcessController;
     private cdrControl: PBXCDRController;
+    private flowBase:FlowBase;
+    private ivr:IVR;
 
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
@@ -36,6 +42,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         this.cdrControl = this.childInjector.get(PBXCDRController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
         this.runtimeData = this.childInjector.get(RuntimeData);
+        this.flowBase = this.childInjector.get(FlowBase);
         this.isEnd = false;
         const connEvent: Event = this.conn.getInfo();
         this.callId = connEvent.getHeader('Unique-ID');
@@ -55,11 +62,16 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 },
                 deps: [] //这里不能丢
             },
+            // 功能服务注入
+            FlowBase,
+            IVR,
             // 数据库相关服务注入
             PBXRouterController,
             PBXCallProcessController,
             PBXLocalNumberController,
             PBXCDRController,
+            PBXIVRMenuController,
+            PBXIVRActionsController,
         ], this.injector);
     }
     /**
@@ -77,6 +89,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                     this.logger.debug(`ESL Conn is disconnecting!!!`);
                 }
             })
+            // 当A-leg结束之后，还允许esl socket驻留的最长时间s
             await this.fsPbx.linger(30);
             const subRes = await this.fsPbx.subscribe(['ALL']);
             await this.fsPbx.filter('Unique-ID', this.callId);
@@ -107,11 +120,11 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
      */
     async billing() {
         try {
-            const { tenantId, callId, caller, callee,routerLine } = this.runtimeData.getRunData();
-            const {  sipCallId,channelName,useContext } = this.runtimeData.getChannelData();
+            const { tenantId, callId, caller, callee, routerLine } = this.runtimeData.getRunData();
+            const { sipCallId, channelName, useContext } = this.runtimeData.getChannelData();
             await this.cdrControl.create({
                 tenantId: tenantId,
-                routerLine:routerLine,
+                routerLine: routerLine,
                 srcChannel: channelName,
                 context: useContext,
                 caller: caller,
@@ -121,16 +134,26 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 isClickOut: false,
                 recordCall: true,
                 sipCallId,
-                isTransfer:false,
+                isTransfer: false,
                 associateId: []
             })
+
+            const callProcessData = {
+                tenantId: tenantId,
+                callId: callId,
+                caller: caller,
+                called: callee,
+                processName: 'billing',
+                passArgs: {},
+            }
+            await this.callProcessControl.create(callProcessData);
 
         } catch (ex) {
             return Promise.reject(ex);
         }
     }
 
-    
+
 
     // 监听坐席电话条发起的事件：如挂机，保持等事件
     listenAgentEvent() {
@@ -288,7 +311,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 caller: caller,
                 called: called,
                 processName: 'route',
-                passArgs: { match: false, routerName: '', processmode: '', processedFined: '' },
+                passArgs: { match: false, routerName: '', processmode: result.processmode, processedFined: result.processdefined },
             }
             await this.callProcessControl.create(callProcessData);
             this.logger.debug('Route Result:', result);
@@ -303,11 +326,12 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     async route() {
         try {
             this.logger.debug(`route->callId:`, this.callId);
-            let { processmode, processdefined: any, routerLine } = await this.getRoute();
+            let { processmode, processdefined, routerLine } = await this.getRoute();
             switch (processmode) {
                 case 'diallocal':
                     // result = await _this.flowBase.dialLocal(processdefined);
                     //_this.R.logger.debug(loggerPrefix.concat(['route']), 'diallocal result:', result);
+                    await this.flowBase.diallocal(processdefined);
                     break;
                 case 'dialout':
                     // result = await _this.flowBase.dialOut(_this.R.called, processdefined);
