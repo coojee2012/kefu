@@ -1,0 +1,13 @@
+redis_data:
+  image: busybox
+  volumes:
+    - /var/data/redis:/var/lib/redis
+redis:
+  image: registry.yunkefu.cc:5000/unicall/redis:latest
+  environment:
+    - REDIS_PASSWORD=gitlab_redis
+  ports:
+    - "6379:6379"
+  volumes_from:
+    - redis_data
+  restart: always

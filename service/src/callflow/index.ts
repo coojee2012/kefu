@@ -100,6 +100,10 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
 
     /**
      * @description 开始计费
+     * 关于计费的设计：
+     * 1、每一条leg单独计费，计费从该leg应答到该leg结束为止
+     * 2、计费金额在通话结束时写入记录到cdr中，并扣除租户通话余额（后期可以每分钟计费一次，当话费不足以支付（包含允许欠费的最大值）时，主动结束通话）
+     * 
      */
     async billing() {
         try {
@@ -122,9 +126,11 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             })
 
         } catch (ex) {
-
+            return Promise.reject(ex);
         }
     }
+
+    
 
     // 监听坐席电话条发起的事件：如挂机，保持等事件
     listenAgentEvent() {

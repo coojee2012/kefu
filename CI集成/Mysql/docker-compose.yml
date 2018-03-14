@@ -1,0 +1,8 @@
+sudo docker run --name mysql_data -d -v /var/data/mysql:/var/lib/mysql busybox
+
+
+sudo docker run --name mysql -d \
+ --volumes-from mysql_data --restart=always \
+ -e 'DB_USER=gitlab' -e 'DB_PASS=gitlab_mysql' -e 'DB_NAME=gitlabhq_production' \
+ -p 3306:3306 \
+ registry.yunkefu.cc/unicall/mysql
