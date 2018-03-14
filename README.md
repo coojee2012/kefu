@@ -1,5 +1,5 @@
 
-# 云客服
+# 使用Typescript编写ESL
 > 前端以SPA单页形式，后端以nodejs为主，提供api接口。前端页面使用angular4，管理后台使用hapi
 
 ## 技术栈
