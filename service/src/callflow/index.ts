@@ -17,6 +17,7 @@ import { PBXLocalNumberController } from '../controllers/pbx_localNumber';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
 import { PBXIVRActionsController } from '../controllers/pbx_ivrAction';
+import { PBXIVRInputController } from '../controllers/pbx_ivrInput';
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -71,6 +72,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             PBXLocalNumberController,
             PBXCDRController,
             PBXIVRMenuController,
+            PBXIVRInputController,
             PBXIVRActionsController,
         ], this.injector);
     }

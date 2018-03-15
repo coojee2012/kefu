@@ -5,7 +5,7 @@
             "name": "启动程序",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/sss/src/app.ts",
+            "program": "${workspaceRoot}/service/src/fsobesl.ts",
             "stopOnEntry": false,
             "args": [],
             "cwd": "${workspaceRoot}",
@@ -15,12 +15,12 @@
                 "--nolazy"
             ],
             "env": {
-                "NODE_ENV": "development"
+                "NODE_ENV": "dev"
             },
             "console": "integratedTerminal",
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/sss/dist/app.js"
+                "${workspaceRoot}/service/dist/fsobesl.js"
             ]//源映射，指定实际执行文件
         },
         {

@@ -130,11 +130,20 @@ export class FlowBase {
                 processName: 'ivr',
                 passArgs: { number, ivrName: ivrInfo ? ivrInfo.ivrName : `${number}` }
             })
-            await this.ivr.ivrAction({
+            const result = await this.ivr.ivrAction({
                 ivrNumber:number,
                 ordinal:1,
                 uuid:callId
             })
+            // 下一步需要拨打一个本地号码
+            if(result.nextArgs === 'diallocal'){
+                await this.diallocal(result.nextArgs);
+            }
+            // 正常结束IVR
+            else{
+
+            }
+           
 
         } catch (ex) {
             return Promise.reject(ex);

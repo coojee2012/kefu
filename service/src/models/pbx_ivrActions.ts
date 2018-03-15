@@ -37,6 +37,7 @@ export type ActionPlaybackPbxArgs = {
 export type ActionPlaybackLogicArgs = {
   input?: boolean;
   doneGo?:string; // '200,1' 字符串表示的将要去向的IVR及其ordinal
+  errorGo?:string; //  按键错误或输入超时
 }
 
 const pbxIVRMenmuSchema = new mongoose.Schema({

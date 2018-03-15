@@ -17,7 +17,7 @@
       "command": "tsc",
       "args": [
         "-p",
-        "./sss"
+        "./service"
       ]
     }
   ]

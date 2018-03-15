@@ -5,29 +5,31 @@ import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 
 export type uuidPlayAndGetDigitsOptions = {
-  transfer_on_failure: string;
-  digit_timeout: number;
+  transfer_on_failure?: string;
+  digit_timeout?: number;
   regexp: string;
-  var_name: string;
-  invalid_file: string;
-  input_err_file: string;
-  input_timeout_file: string;
-  input_err_retry: number;
-  input_timeout_retry: number;
+  var_name?: string;
+  invalid_file?: string;
+  input_err_file?: string;
+  input_timeout_file?: string;
+  input_err_retry?: number;
+  input_timeout_retry?: number;
   inputWhenInvalidTip?: boolean;
   file: string;
-  terminators: string;
-  timeout: number;
-  tries: number;
-  max: number;
-  min: number;
+  terminators?: string;
+  timeout?: number;
+  tries?: number;
+  max?: number;
+  min?: number;
 }
 @Injectable()
 export class FreeSwitchPBX {
   private logger: LoggerService;
+  private lastInputKey: string;
   constructor(private conn: Connection, private injector: Injector) {
     this.logger = this.injector.get(LoggerService);
     this.logger.debug('init freeswitch PBX!');
+    this.lastInputKey = '';
   }
   /**
    * @description
@@ -178,7 +180,6 @@ export class FreeSwitchPBX {
   }
 
   async uuidPlayAndGetDigits({ uuid, options, includeLast = false }: { uuid: string, options: uuidPlayAndGetDigitsOptions, includeLast: boolean }) {
-    const _this = this;
     try {
       let {
         transfer_on_failure,
@@ -187,15 +188,15 @@ export class FreeSwitchPBX {
         var_name,
         input_err_file,
         inputWhenInvalidTip,
-        input_err_retry,
+        input_err_retry = 3,
         input_timeout_file,
-        input_timeout_retry,
+        input_timeout_retry = 3,
         file,
-        terminators,
-        timeout,
-        tries,
-        max,
-        min
+        terminators = '#',
+        timeout = 30,
+        tries = 3,
+        max = 1,
+        min = 1
       } = options;
       const readArgs = {
         uuid,
@@ -208,14 +209,14 @@ export class FreeSwitchPBX {
       }
 
 
-      //input_err_retry =   3;
-      //input_timeout_retry = Number(input_timeout_retry) || 3;
+      input_err_retry = input_err_retry < 1 ? 3 : input_err_retry;
+      input_timeout_retry = input_timeout_retry < 1 ? 3 : input_timeout_retry;
       let inputKeys = '';
       let success = false;
       while (input_err_retry > 0 && input_timeout_retry > 0) {
         tries--;
-        const res = await _this.uuidRead(readArgs);
-        _this.logger.debug('uuidPlayAndGetDigits:', input_err_retry, input_timeout_retry);
+        const res = await this.uuidRead(readArgs);
+        this.logger.debug('uuidPlayAndGetDigits:', input_err_retry, input_timeout_retry);
         const reg = new RegExp(regexp);
         if (res && reg.test(res)) {
           inputKeys = res;
@@ -235,11 +236,7 @@ export class FreeSwitchPBX {
             input_err_retry--;
           }
           if (!inputWhenInvalidTip && input_err_retry > 0 && input_timeout_retry > 0) {
-            await _this.uuidPlayback({
-              uuid,
-              terminators: 'none',
-              file: tipFile
-            }, false);
+            await this.uuidPlayback({ uuid, terminators: 'none', file: tipFile });
           } else {
             readArgs.file = tipFile;
           }
@@ -248,17 +245,17 @@ export class FreeSwitchPBX {
 
       if (success) {
         if (includeLast) {
-          inputKeys = `${_this.lastInputKey}${inputKeys}`;
+          inputKeys = `${this.lastInputKey}${inputKeys}`;
         }
         if (inputKeys && inputKeys.length) {
-          _this.lastInputKey = inputKeys[inputKeys.length - 1];
+          this.lastInputKey = inputKeys[inputKeys.length - 1];
         }
       } else {
         inputKeys = '_invalid_';
       }
 
       if (var_name) {
-        await _this.uuidSetvar({
+        await this.uuidSetvar({
           uuid,
           varname: var_name,
           varvalue: inputKeys
@@ -267,6 +264,41 @@ export class FreeSwitchPBX {
       return inputKeys;
     } catch (ex) {
       this.logger.error('uuidReadDigits', ex);
+      return Promise.reject(ex);
+    }
+  }
+
+  async uuidPlayback({ uuid, file, terminators = 'none', legs = 'aleg' }: { uuid: string, file: string, terminators?: string, legs?: string }) {
+    try {
+      const getTerminatorsKey = (evt) => {
+        const input = evt.headers.get('DTMF-Digit');
+        this.logger.debug('DTMF-Digit:', evt, input);
+        if (input == terminators) {
+          this.uuidBreak(uuid);
+        }
+      }
+      await this.uuidBroadcast(uuid, file, legs);
+      const playResult = await new Promise((resolve, reject) => {
+        if (terminators && terminators !== 'none') {
+          this.conn.on(`esl::event::DTMF::${uuid}`, getTerminatorsKey)
+        }
+        // PLAYBACK_START
+        this.conn.once(`esl::event::PLAYBACK_START::${uuid}`, (evt) => {
+          this.logger.debug('uuidPlay start:', evt);
+
+        })
+        this.conn.once(`esl::event::PLAYBACK_STOP::${uuid}`, (evt) => {
+          const stopReason = evt.headers.get('Playback-Status');
+          this.logger.debug('uuidPlay stop:', evt);
+          resolve(stopReason);
+        })
+      })
+      if (terminators && terminators !== 'none') {
+        this.conn.off(`esl::event::DTMF::${uuid}`, getTerminatorsKey);
+      }
+      return playResult;
+    } catch (ex) {
+      this.logger.error('uuidPlayback', ex);
       return Promise.reject(ex);
     }
   }
@@ -434,6 +466,30 @@ export class FreeSwitchPBX {
       })
     }
     catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
+
+  async uuidSetvar({ uuid, varname, varvalue }: { uuid: string, varname: string, varvalue: string }) {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this.conn.api('uuid_setvar', [uuid, varname, varvalue], (evt) => {
+          const body = evt.getBody();
+          this.logger.debug('uuid_setvar result:', body);
+          if (/^\+OK/.test(body)) {
+            resolve({
+              success: true
+            });
+          } else {
+            reject({
+              success: false,
+              reason: body.split(/\s+/)[1]
+            });
+          }
+        })
+      })
+      return result;
+    } catch (ex) {
       return Promise.reject(ex);
     }
   }
