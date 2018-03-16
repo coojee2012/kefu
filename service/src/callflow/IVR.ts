@@ -1,5 +1,6 @@
 import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
-import  crypto = require('crypto');
+import crypto = require('crypto');
+import HTTP = require('request');
 import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
 import { Connection } from '../lib/NodeESL/Connection';
@@ -14,6 +15,7 @@ import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXIVRInputController } from '../controllers/pbx_ivrInput';
 
 import { ActionPlaybackArgs } from '../models/pbx_ivrActions';
+
 
 type TDoneIvrActionResult = {
     nextType: string; // 下一步执行的操作类型[ivr,diallocal,extension,queue,conference],除了下一步为ivr外，其余步骤全部为结束IVR，并回到调用处
@@ -114,13 +116,59 @@ export class IVR {
                 case 4:
                     {
                         this.logger.debug('录制用户数字按键');
-                        let file = 'ivr/8000/silence.wav';
-
+                        await this.recordKeys(ivrNumber, args, uuid);
+                        break;
+                    }
+                case 6:
+                    {
+                        let dialNumber = args.pbx.number;
+                        this.logger.debug(`拨打号码:${dialNumber}`);
+                        if (args.pbx.var_name && args.pbx.var_name !== '') {
+                            const varNumber = await this.fsPbx.uuidGetvar({ varname: args.pbx.var_name, uuid });
+                            console.log('FFFFFFFFFFFuuid_getvar', varNumber);
+                            dialNumber = varNumber;
+                            // localNumber = _this.R.inputKeys[args.pbx.var_name];
+                        }
+                        const dialWay = args && args.logic && args.logic.dial ? args.logic.dial : String(dialNumber).length > 4 ? 'dialout' : 'diallocal';
+                        if (dialWay === 'diallocal') {
+                            result = {
+                                nextType: 'diallocal',
+                                nextArgs: dialNumber,
+                            }
+                        }
+                        else if (dialWay === 'dialout') {
+                            const failDone = args.pbx && args.pbx.failDone ? args.pbx.failDone : null;
+                            const ringingTime = args.pbx && args.pbx.ringingTime ? args.pbx.ringingTime : 30;
+                            const isLastService = args.pbx.isLastService;
+                            result = {
+                                nextType: 'dialout',
+                                nextArgs: `dialNumber=${dialNumber};ringingTime=${ringingTime};isLastService=${isLastService};failDone=${failDone}`,
+                            }
+                        }
+                        else {
+                            result = { nextType: 'normal' }
+                        }
                         break;
                     }
                 case 9:
                     {
                         result = await this.checkDateTime(ivrNumber, args);
+                        break;
+                    }
+                case 16:
+                    {
+                        let { seconds = 1 } = args.logic;
+                        result = await this.waitAmoment(ivrNumber, +seconds);
+                        break;
+                    }
+                case 14:
+                    {
+                        // WEB交互接口
+                        break;
+                    }
+                case 18:
+                    {
+                        result = { nextType: 'normal' }
                         break;
                     }
                 default: {
@@ -294,9 +342,10 @@ export class IVR {
         }
     }
 
-    async recordKeys(ivrNumber,args, uuid) {
+    async recordKeys(ivrNumber, args, uuid): Promise<TDoneIvrActionResult> {
         try {
             let file: string;
+            let result: TDoneIvrActionResult;
             const { tenantId, callId, caller } = this.runtimeData.getRunData();
             if (args.pbx.file_from_var && args.pbx.file_from_var != '') {
                 const chelfile = await this.fsPbx.getChannelVar(args.pbx.file_from_var, uuid);
@@ -310,17 +359,22 @@ export class IVR {
                 file = 'ivr/8000/bee.wav';
             }
             else {
-
+                file = 'ivr/8000/silence.wav';
             }
             const ops = Object.assign({}, args.pbx, { file });
             ops.invalid_file = await this.fillSoundFilePath(ops.invalid_file);
             delete ops.file_from_var;
             ops.input_err_file = await this.fillSoundFilePath(ops.input_err_file);
             ops.input_timeout_file = await this.fillSoundFilePath(ops.input_timeout_file);
+            delete ops.var_name;
 
-            let inputs = await this.fsPbx.playback(ops, true, args.logic.includeLast, uuid);
+            let inputs = await this.fsPbx.uuidPlayAndGetDigits({
+                uuid: uuid,
+                options: <uuidPlayAndGetDigitsOptions>ops,
+                includeLast: args.logic.includeLast
+            });
             // 输入超过错误次数或者超过超时次数,值为:_invalid_
-            const chanData = {};
+
             if (args.logic.needEncrypt) {
                 inputs = this.encryptText({
                     password: tenantId,
@@ -336,16 +390,166 @@ export class IVR {
                 processName: 'recordDigits',
                 passArgs: { inputs: inputs }
             })
-            //_this.R.inputKeys[args.pbx.var_name] = inputs;
-            chanData[args.pbx.var_name] = inputs;
-            await this.fsPbx.set(chanData);
+            await this.fsPbx.uuidSetvar({ uuid, varname: args.pbx.var_name, varvalue: inputs });
+            result = { nextType: 'ivr', nextArgs: '' }
+            return result;
         }
         catch (ex) {
             return Promise.reject(ex);
         }
     }
 
-    encryptText({ algorithm='aes-256-ctr', password, text }:{algorithm?:string, password:string, text:string}) {
+    async waitAmoment(ivrNumber: string, seconds: number): Promise<TDoneIvrActionResult> {
+        try {
+            const { tenantId, callId, caller } = this.runtimeData.getRunData();
+            await this.pbxCallProcessController.create({
+                caller,
+                called: ivrNumber,
+                tenantId,
+                callId,
+                processName: 'ivrReturn',
+                passArgs: { result: `等待:${seconds * 1000}ms` }
+            });
+            await this.fsPbx.wait(seconds * 1000);
+            return { nextType: 'normal' };
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async webApi(uuid: string, args) {
+        try {
+            const { tenantId, callId, caller } = this.runtimeData.getRunData();
+            const { method, url, data = {}, channelVarData = {}, sendAgentMsg, successMsg } = args.logic;
+
+            const cvData = {};//存取从通道变量获取的
+            if (channelVarData) {
+                const ckeys = Object.keys(channelVarData)
+                for (let i = 0; i < ckeys.length; i++) {
+                    const varName = ckeys[i];
+                    const varValue = await this.fsPbx.getChannelVar(channelVarData[varName], uuid);
+                    cvData[varName] = varValue === '_undef_' ? '' : varValue;
+                }
+            }
+            const passData = Object.assign({}, data, cvData, {
+                tenantId,
+                callerIdNumber: caller,
+                reqId: `${callId}.${new Date().getTime()}`
+            });
+            const urlAddr = /^http/.test(url) ? url : _this.R.config.callControlApi.baseUrl + url;
+            this.logger.debug(`Action 14 Request URL:${urlAddr}`);
+            await this.pbxCallProcessController.create({
+                caller,
+                called: ivrNumber,
+                tenantId,
+                callId,
+                processName: 'ivrRestApi',
+                passArgs: { url: urlAddr, method }
+            });
+
+            const { error, response, body } = await this.httpPromise({
+                url: urlAddr,
+                method: method.toUpperCase(),
+                json: true,
+                timeout: 15 * 1000,
+                body: passData,
+            });
+            if (error || response.statusCode > 299) {
+                _this.R.logger.error('Action 14 Request Error:', error || response.statusCode);
+                const errCode = error ? error.code : response.statusCode;
+                _this.R.service.callProcess.create({
+                    caller,
+                    called: ivrNumber,
+                    tenantId,
+                    callId,
+                    processName: 'ivrReturn',
+                    passArgs: { result: `访问API接口异常:${errCode} ${response.statusCode}` }
+                })
+                switch (errCode) {
+                    case 'ETIMEDOUT':
+                        break;
+                    default:
+                        break;
+                }
+                /* result = {
+                 success: true,
+                 jumpOut: true,
+                 nextMode: 'diallocal',
+                 nextArgs: args.pbx.error
+                 }*/
+
+                result = await _this.doneJump({
+                    doneType: 'ivr',
+                    gotoIvrNumber: args.pbx.error.split(',')[0],
+                    gotoIvrActId: args.pbx.error.split(',')[1] || 1
+                })
+
+            }
+            else {
+                _this.R.logger.error('Action 14 Response:', body);
+                let channelVarValue = body.data;
+                if (args.pbx.reset_var) {
+                    const conditions = args.pbx.reset_var.split(',');
+                    for (let i = 0; i < conditions.length; i++) {
+                        const [k, v] = conditions[i].split('=');
+                        if (k == body.data) {
+                            channelVarValue = v;
+                            break;
+                        }
+                    }
+                }
+                const chanData = {};
+                chanData[args.pbx.var_name] = channelVarValue;
+                await _this.R.pbxApi.set(chanData);
+                _this.R.service.callProcess.create({
+                    caller,
+                    called: ivrNumber,
+                    tenantId,
+                    callId,
+                    processName: 'ivrReturn',
+                    passArgs: { result: `访问API接口成功:${body.data}` }
+                })
+                if (sendAgentMsg && body.message) {
+                    await _this.sendAgentMsg(body && body.success ? successMsg : body.message);
+                }
+
+
+                const gotoIvr = body && body.success ? args.pbx.success : args.pbx.fail;
+                result = await _this.doneJump({
+                    doneType: 'ivr',
+                    gotoIvrNumber: gotoIvr.split(',')[0],
+                    gotoIvrActId: gotoIvr.split(',')[1] || 1
+                })
+                /*result = {
+                 success: true,
+                 jumpOut: true,
+                 nextMode: 'diallocal',
+                 nextArgs: body && body.success ? args.pbx.success : args.pbx.fail
+                 }*/
+            }
+            break;
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async  httpPromise(options) {
+        try {
+            const result = new Promise<{ error: string, response: any, body: any }>((resolve) => {
+                HTTP(options, (error, response, body) => {
+                    resolve({ error, response, body })
+                })
+            })
+            return result;
+        }
+        catch (ex) {
+
+        }
+
+    }
+
+    encryptText({ algorithm = 'aes-256-ctr', password, text }: { algorithm?: string, password: string, text: string }) {
         const cipher = crypto.createCipher(algorithm, password)
         let crypted = cipher.update(text, 'utf8', 'hex')
         crypted += cipher.final('hex');
@@ -353,7 +557,7 @@ export class IVR {
         return crypted;
     }
 
-    decryptText({ algorithm='aes-256-ctr', password, text }:{algorithm?:string, password:string, text:string}) {
+    decryptText({ algorithm = 'aes-256-ctr', password, text }: { algorithm?: string, password: string, text: string }) {
         const decipher = crypto.createDecipher(algorithm, password)
         let dec = decipher.update(text, 'hex', 'utf8')
         dec += decipher.final('utf8');

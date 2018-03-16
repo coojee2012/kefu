@@ -22,6 +22,17 @@ export type uuidPlayAndGetDigitsOptions = {
   max?: number;
   min?: number;
 }
+
+export type uuidReadOptions = {
+  uuid: string;
+  file: string;
+  terminators?: string;
+  min?: number;
+  max?: number;
+  variableName?: string;
+  timeout?: number;
+  legs?: string;
+}
 @Injectable()
 export class FreeSwitchPBX {
   private logger: LoggerService;
@@ -303,7 +314,8 @@ export class FreeSwitchPBX {
     }
   }
 
-  async uuidRead({ uuid, file, terminators = 'none', min = 0, max = 1, variableName, timeout = 30000, legs = 'aleg' }) {
+
+  async uuidRead({ uuid, file, terminators = 'none', min = 1, max = 1, variableName, timeout = 30000, legs = 'aleg' }: uuidReadOptions) {
     try {
       let inputs = '';
       let playStoped = false;
@@ -492,6 +504,22 @@ export class FreeSwitchPBX {
     } catch (ex) {
       return Promise.reject(ex);
     }
+  }
+
+  async uuidGetvar({ uuid, varname }: { uuid: string, varname: string }): Promise<string> {
+    try {
+      const result = await new Promise<string>((resolve, reject) => {
+        this.conn.api('uuid_getvar', [uuid, varname], (evt) => {
+          const body = evt.getBody();
+          this.logger.debug(' uuid_getvar result:', body);
+          resolve(body);
+        })
+      })
+      return result;
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+
   }
 
   /**
