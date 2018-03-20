@@ -13,6 +13,9 @@ import { PBXIVRActionsController } from '../controllers/pbx_ivrAction';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXIVRInputController } from '../controllers/pbx_ivrInput';
+import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
+import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXBlackListController } from '../controllers/pbx_blacklist';
 
 import { ActionPlaybackArgs } from '../models/pbx_ivrActions';
 
@@ -29,19 +32,27 @@ export class IVR {
     private pbxCallProcessController: PBXCallProcessController;
     private pbxCDRController: PBXCDRController;
     private pbxIvrInputController: PBXIVRInputController;
+    private pbxQueueStatisticController: PBXQueueStatisticController;
+    private pbxAgentStatisticController: PBXAgentStatisticController;
+    private pbxBlacklistController: PBXBlackListController;
 
     private runtimeData: RuntimeData;
     private fsPbx: FreeSwitchPBX;
+    private config: ConfigService;
 
     private mainIvrNumber: string; // 主菜单IVR号码，通常表示为第一次该IVR的号码
     private preIvrNumber: string; // 上一层IVR菜单的号码
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
+        this.config = this.injector.get(ConfigService);
         this.pbxActionController = this.injector.get(PBXIVRActionsController);
         this.pbxCallProcessController = this.injector.get(PBXCallProcessController);
         this.pbxCDRController = this.injector.get(PBXCDRController);
         this.pbxIvrInputController = this.injector.get(PBXIVRInputController);
+        this.pbxQueueStatisticController = this.injector.get(PBXQueueStatisticController);
+        this.pbxAgentStatisticController = this.injector.get(PBXAgentStatisticController);
+        this.pbxBlacklistController = this.injector.get(PBXBlackListController);
 
         this.fsPbx = this.injector.get(FreeSwitchPBX);
         this.runtimeData = this.injector.get(RuntimeData);
@@ -85,7 +96,6 @@ export class IVR {
 
                         }
                         return await this.ivrAction({ ivrNumber: gotoIvrNumber, ordinal: gotoIvrActId, uuid });
-
                     } else {
                         return result;
                     }
@@ -116,7 +126,7 @@ export class IVR {
                 case 4:
                     {
                         this.logger.debug('录制用户数字按键');
-                        await this.recordKeys(ivrNumber, args, uuid);
+                        result = await this.recordKeys(ivrNumber, args, uuid);
                         break;
                     }
                 case 6:
@@ -164,6 +174,7 @@ export class IVR {
                 case 14:
                     {
                         // WEB交互接口
+                        result = await this.webApi(uuid, ivrNumber, args);
                         break;
                     }
                 case 18:
@@ -171,8 +182,43 @@ export class IVR {
                         result = { nextType: 'normal' }
                         break;
                     }
+                case 19: {
+
+                    // break;
+                }
+                case 20: {
+                    // 比较
+                    result = await this.compareValues(uuid, ivrNumber, args);
+                    break;
+                }
+                case 21:
+                    {
+                        result = await this.setChannelVar(uuid, args);
+                        break;
+                    }
+                case 22:
+                    {
+
+                    }
+
+                case 23:
+                    {
+                        result = await this.satisfaction({ uuid, options: args.pbx });
+                        break;
+                    }
+
+                case 24:
+                    {
+                        result = await this.blackListAction(uuid);
+                        break;
+                    }
+                case 25: {
+                    //result = await _this.lastService(args);
+                    //break;
+                }
                 default: {
                     this.logger.warn('未知的IVR Action');
+                    result = { nextType: 'normal' }
                     break;
                 }
             }
@@ -417,11 +463,11 @@ export class IVR {
         }
     }
 
-    async webApi(uuid: string, args) {
+    async webApi(uuid: string, ivrNumber: string, args) {
         try {
             const { tenantId, callId, caller } = this.runtimeData.getRunData();
             const { method, url, data = {}, channelVarData = {}, sendAgentMsg, successMsg } = args.logic;
-
+            let result: TDoneIvrActionResult;
             const cvData = {};//存取从通道变量获取的
             if (channelVarData) {
                 const ckeys = Object.keys(channelVarData)
@@ -436,7 +482,7 @@ export class IVR {
                 callerIdNumber: caller,
                 reqId: `${callId}.${new Date().getTime()}`
             });
-            const urlAddr = /^http/.test(url) ? url : _this.R.config.callControlApi.baseUrl + url;
+            const urlAddr = /^http/.test(url) ? url : this.config.getConfig().callControlApi.baseUrl + url;
             this.logger.debug(`Action 14 Request URL:${urlAddr}`);
             await this.pbxCallProcessController.create({
                 caller,
@@ -455,9 +501,9 @@ export class IVR {
                 body: passData,
             });
             if (error || response.statusCode > 299) {
-                _this.R.logger.error('Action 14 Request Error:', error || response.statusCode);
+                this.logger.error('Action 14 Request Error:', error || response.statusCode);
                 const errCode = error ? error.code : response.statusCode;
-                _this.R.service.callProcess.create({
+                await this.pbxCallProcessController.create({
                     caller,
                     called: ivrNumber,
                     tenantId,
@@ -477,16 +523,13 @@ export class IVR {
                  nextMode: 'diallocal',
                  nextArgs: args.pbx.error
                  }*/
-
-                result = await _this.doneJump({
-                    doneType: 'ivr',
-                    gotoIvrNumber: args.pbx.error.split(',')[0],
-                    gotoIvrActId: args.pbx.error.split(',')[1] || 1
-                })
-
+                result = {
+                    nextType: 'ivr',
+                    nextArgs: args.pbx.error
+                }
             }
             else {
-                _this.R.logger.error('Action 14 Response:', body);
+                this.logger.error('Action 14 Response:', body);
                 let channelVarValue = body.data;
                 if (args.pbx.reset_var) {
                     const conditions = args.pbx.reset_var.split(',');
@@ -498,10 +541,9 @@ export class IVR {
                         }
                     }
                 }
-                const chanData = {};
-                chanData[args.pbx.var_name] = channelVarValue;
-                await _this.R.pbxApi.set(chanData);
-                _this.R.service.callProcess.create({
+
+                await this.fsPbx.uuidSetvar({ uuid, varname: args.pbx.var_name, varvalue: channelVarValue })
+                await this.pbxCallProcessController.create({
                     caller,
                     called: ivrNumber,
                     tenantId,
@@ -509,25 +551,13 @@ export class IVR {
                     processName: 'ivrReturn',
                     passArgs: { result: `访问API接口成功:${body.data}` }
                 })
-                if (sendAgentMsg && body.message) {
-                    await _this.sendAgentMsg(body && body.success ? successMsg : body.message);
-                }
-
-
                 const gotoIvr = body && body.success ? args.pbx.success : args.pbx.fail;
-                result = await _this.doneJump({
-                    doneType: 'ivr',
-                    gotoIvrNumber: gotoIvr.split(',')[0],
-                    gotoIvrActId: gotoIvr.split(',')[1] || 1
-                })
-                /*result = {
-                 success: true,
-                 jumpOut: true,
-                 nextMode: 'diallocal',
-                 nextArgs: body && body.success ? args.pbx.success : args.pbx.fail
-                 }*/
+                result = {
+                    nextType: 'ivr',
+                    nextArgs: `${gotoIvr.split(',')[0]},${gotoIvr.split(',')[1] || 1}`
+                }
             }
-            break;
+            return result;
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -536,7 +566,7 @@ export class IVR {
 
     async  httpPromise(options) {
         try {
-            const result = new Promise<{ error: string, response: any, body: any }>((resolve) => {
+            const result = new Promise<{ error: any, response: any, body: any }>((resolve) => {
                 HTTP(options, (error, response, body) => {
                     resolve({ error, response, body })
                 })
@@ -544,10 +574,336 @@ export class IVR {
             return result;
         }
         catch (ex) {
-
+            return Promise.reject(ex);
         }
 
     }
+
+    async compareValues(uuid: string, ivrNumber: string, args): Promise<TDoneIvrActionResult> {
+        try {
+            const { tenantId, callId, caller } = this.runtimeData.getRunData();
+            let {
+                varName,
+                valueType = 'string',
+                success,
+                fail,
+                compareSymbol,
+                compareValue,
+                compareChannelVar,
+                sendAgentMsg,
+                successMsg,
+                failMsg
+            } = args.logic;
+            let result: TDoneIvrActionResult;
+            if (!varName || !success || !fail || !compareSymbol) {
+                result = {
+                    nextType: 'normal',
+                    nextArgs: ''
+                }
+            } else {
+                const c = ['eq', 'ne', 'gt', 'lt', 'gth', 'lth'];
+
+                const varValue: string = await this.fsPbx.getChannelVar(varName, uuid);
+                if (compareChannelVar) {
+                    compareValue = await this.fsPbx.getChannelVar(compareChannelVar, uuid);
+                }
+                if (!compareValue) {
+                    result = {
+                        nextType: 'ivr',
+                        nextArgs: fail
+                    }
+                    return result;
+                }
+                let value, comValue;
+                switch (valueType) {
+                    case 'string':
+                        value = String(varValue);
+                        comValue = String(compareValue);
+                        break;
+                    case 'boolean':
+                        value = Boolean(varValue);
+                        comValue = Boolean(compareValue);
+                        break;
+                    case 'number':
+                        value = Number(varValue);
+                        comValue = Number(compareValue);
+                        break;
+                    case 'length':
+                        value = String(varValue).length;
+                        comValue = Number(compareValue);
+                    default:
+                        break;
+                }
+                let res = false;
+                switch (compareSymbol) {
+                    case 'eq':
+                        res = value === comValue;
+                        break;
+                    case 'ne':
+                        res = value !== comValue;
+                        break;
+                    case 'gt':
+                        res = value > comValue;
+                        break;
+                    case 'gth':
+                        res = value >= comValue;
+                        break;
+                    case 'lt':
+                        res = value < comValue;
+                        break;
+                    case 'lth':
+                        res = value <= comValue;
+                        break;
+                    default:
+                        break;
+                }
+                this.logger.debug(`IVR Action compare:${value} ${compareSymbol} ${compareValue} = ${res}`);
+                await this.pbxCallProcessController.create({
+                    caller,
+                    called: ivrNumber,
+                    tenantId,
+                    callId,
+                    processName: 'ivrReturn',
+                    passArgs: { result: `判定结果为${res ? '真' : '假'}` }
+                })
+                if (res) {
+
+                    result = {
+                        nextType: 'ivr',
+                        nextArgs: success
+                    }
+                } else {
+                    result = {
+                        nextType: 'ivr',
+                        nextArgs: fail
+                    }
+                }
+            }
+            return result;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+
+    async setChannelVar(uuid: string, args): Promise<TDoneIvrActionResult> {
+        try {
+            const { varName, varValue, channelVarName, doneGo } = args.logic;
+            let setValue = varValue || '';
+            let result: TDoneIvrActionResult = {
+                nextType: 'ivr'
+            };
+            if (channelVarName) {
+                let channelVarValue = await this.fsPbx.getChannelVar(channelVarName, uuid) || '';
+                channelVarValue = channelVarValue === '_undef_' ? '' : channelVarValue;
+                setValue = channelVarValue;
+            }
+            const data = {};
+            data[varName] = setValue;
+            await this.fsPbx.uuidSetvar({ uuid, varname: varName, varvalue: setValue });
+            if (doneGo) {
+                result = {
+                    nextType: 'ivr',
+                    nextArgs: doneGo
+                }
+            }
+            return result;
+
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+    /**
+ * @description
+ * 队列转满意度流程
+ *   "非常满意":5;
+ *   "满意": sd = 4;
+ *   "一般":sd = 3
+ *   "不满意":sd = 2;
+ *   "非常不满意":sd = 1;
+ * @return {*}
+ */
+    async satisfaction({ uuid, options }: { uuid: string, options: any }): Promise<TDoneIvrActionResult> {
+        try {
+            const { regexp, very_play } = options;
+            const { caller, callee: called, callId, tenantId } = this.runtimeData.getRunData();
+            const { hangup, agentId, sType, agentNumber, queueNumber, queueName } = this.runtimeData.getStatisData();
+            let result: TDoneIvrActionResult = {
+                nextType: 'normal',
+                nextArgs: ''
+            }
+            await this.pbxCallProcessController.create({
+                caller,
+                called,
+                tenantId,
+                callId,
+                processName: 'satisfaction',
+                passArgs: { sType, agentId, agentNumber, queueNumber, queueName }
+            })
+            if (!hangup) {
+                let isHangup = false;
+                const onHangup = async (evt) => {
+                    try {
+                        this.logger.info(`监听到被满意度方[${uuid}]挂机了!`);
+                        isHangup = true;
+                        this.runtimeData.setStatisData({ hangupCase: evt.getHeader('Hangup-Cause') })
+                        await this.saveSatisfaction(-1);
+                    } catch (ex) {
+                        this.logger.error(ex);
+                    }
+
+                }
+                this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${uuid}`, 'once', onHangup);
+                // options.file = await _this.tools.fillSoundFilePath(options.file);
+
+                let inputs = await this.fsPbx.uuidPlayAndGetDigits({ uuid, options, includeLast: false });
+                const indexOfKeys = regexp.split("|").indexOf(inputs);
+
+                let inputKey = inputs;
+                if (inputs === 'timeout' || !inputs) {
+                    inputKey = '-1';// 未按键
+                    inputs = '-1';
+                }
+                else if (indexOfKeys < 0) {
+                    inputKey = '-2';// 按键错误
+                    inputs = '-1';
+                }
+                await this.pbxCallProcessController.create({
+                    caller,
+                    called,
+                    tenantId,
+                    callId,
+                    processName: 'input',
+                    passArgs: { key: inputKey + '' }
+                })
+                if (!isHangup) {
+                    this.fsPbx.removeConnLisenter(`esl::event::CHANNEL_HANGUP::${uuid}`, onHangup);
+                    await this.pbxQueueStatisticController.updateSatisValue(tenantId, callId, queueNumber, +inputKey);
+                    if (very_play) {
+                        const playBackFile = await this.fillSoundFilePath(very_play);
+                        await this.fsPbx.uuidPlayback({ uuid, terminators: 'none', file: playBackFile });
+                    }
+                    this.logger.info(`满意度完毕[${uuid},${indexOfKeys},${inputs},${very_play}]执行挂机!`);
+                    await this.fsPbx.uuidKill(uuid, 'NORMAL_CLEARING');
+                }
+                if (sType === 'queue') {
+                    await this.pbxQueueStatisticController.hangupCall(callId, tenantId, queueNumber, 'agent');
+                }
+            } else {
+                await this.pbxCallProcessController.create({
+                    caller,
+                    called,
+                    tenantId,
+                    callId,
+                    processName: 'input',
+                    passArgs: { key: '-1' }
+                })
+                await this.saveSatisfaction(-1);
+            }
+            //_this.R.pbxApi.disconnect(`满意度结束!`);
+            this.logger.error('satisfaction end:', result);
+            return Promise.resolve(result);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async saveSatisfaction(inputKey, isGlobal?: boolean): Promise<number> {
+        const _this = this;
+        try {
+
+            const { caller, callee: called, callId, tenantId } = this.runtimeData.getRunData();
+            const { hangup, agentId, sType, agentNumber, queueNumber, queueName, agentLeg } = this.runtimeData.getStatisData();
+            const statisCode = [5, 4, 2];
+            const surveyResult = inputKey > 0 ? statisCode[inputKey - 1] : -1;
+            const timestamp = new Date().getTime();
+
+
+            await this.pbxCallProcessController.create({
+                caller,
+                called,
+                tenantId,
+                callId,
+                processName: 'satisfactionScore',
+                passArgs: { score: surveyResult }
+            })
+
+
+
+            const nModified = await this.pbxQueueStatisticController.updateSatisValue(tenantId, callId, queueNumber, +inputKey);
+
+            if (nModified === 1) {
+                // 排除其他事件更新过
+
+                if (sType === 'queue') {
+
+                    await this.pbxAgentStatisticController.setSatisfaction(callId, agentLeg, +inputKey)
+                }
+
+                return Promise.resolve(-1)
+            }
+            else {
+                // 处理已经提交过满意度的用户挂机
+                if (inputKey == -1 && !isGlobal) {
+                    const doc = await this.pbxQueueStatisticController.findOne({
+                        callId: callId,
+                        satisfaction: { $gt: 0 }
+                    })
+                }
+                return Promise.resolve(-1)
+            }
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async blackListAction(uuid: string): Promise<TDoneIvrActionResult> {
+        try {
+            const { caller, callee: called, callId, tenantId, routerLine } = this.runtimeData.getRunData();
+            const tenantInfo = this.runtimeData.getTenantInfo();
+            let result: TDoneIvrActionResult = {
+                nextType: 'ivr'
+            };
+            let checkNumber: string = '';
+            if (routerLine === '呼入') {
+                checkNumber = caller;
+            }
+            else if (routerLine === '呼出') {
+                checkNumber = called;
+            }
+            else {
+                // 本地电话可黑名单吗?
+                checkNumber = caller;
+            }
+            let isBlackNumber = false;
+            this.logger.debug(`checkNumber${checkNumber}`, tenantInfo && tenantInfo.callCenterOpts && tenantInfo.callCenterOpts.useBlackList);
+            if (tenantInfo && tenantInfo.callCenterOpts && tenantInfo.callCenterOpts.useBlackList) {
+                isBlackNumber = await this.pbxBlacklistController.isBlackNumber(tenantId, checkNumber);
+            }
+            await this.pbxCallProcessController.create({
+                caller,
+                called,
+                tenantId,
+                callId,
+                processName: 'blackListCheck',
+                passArgs: { isBlackNumber: isBlackNumber, checkNumber: checkNumber }
+            })
+
+            const chanData = {};
+            chanData['isBlackNumber'] = String(isBlackNumber);
+            await this.fsPbx.uuidSetvar({ uuid, varname: 'isBlackNumber', varvalue: String(isBlackNumber) });
+
+            this.logger.debug(`${checkNumber}黑名单检测:${isBlackNumber}`);
+            return result;
+        }
+        catch (ex) {
+
+            return Promise.reject(ex);
+        }
+    }
+
 
     encryptText({ algorithm = 'aes-256-ctr', password, text }: { algorithm?: string, password: string, text: string }) {
         const cipher = crypto.createCipher(algorithm, password)

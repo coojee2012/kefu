@@ -521,6 +521,29 @@ export class FreeSwitchPBX {
     }
 
   }
+  
+  async uuidKill(uuid:string, cause:string = 'NORMAL_CLEARING'): Promise<string>  {
+    try{
+      await new Promise((resolve, reject) => {
+        if (this.conn.socket) {
+          this.conn.api('uuid_kill', [uuid, cause], (evt) => {
+            const body = evt.getBody();
+            if (/^\+OK/.test(body)) {
+              this.logger.debug(`UUID Kill [ ${uuid} ] OK`);
+              resolve(body);
+            } else {
+              this.logger.debug(`UUID Kill [ ${uuid} ] Fail`);
+              reject(body);
+            }
+          });
+        } else {
+          resolve('Socket is null!');
+        }
+      });
+    }catch(ex){
+      return Promise.reject(ex);
+    } 
+  }
 
   /**
     * 对特定的uuid异步执行任意拨号计划应用程序。
@@ -578,6 +601,32 @@ export class FreeSwitchPBX {
     }
     catch (ex) {
       return Promise.reject(ex);
+    }
+  }
+
+  addConnLisenter(evetName:string,eventType:string='once',cb?:any){
+    try{
+      if(!cb || typeof cb !== 'function') cb=()=>{};
+      if(eventType === 'once'){
+        this.conn.once(evetName,cb);
+      }else{
+        this.conn.on(evetName,cb); 
+      }
+    }catch(ex){
+      this.logger.error('addConnLisenter error',ex);
+    }
+  }
+
+  removeConnLisenter(evetName:string,cb?:any){
+    try{
+      if(!cb || typeof cb !== 'function') {
+        this.conn.removeAllListeners(evetName); 
+      }
+      else{
+        this.conn.off(evetName,cb); 
+      }  
+    }catch(ex){
+      this.logger.error('addConnLisenter error',ex);
     }
   }
 

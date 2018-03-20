@@ -6,26 +6,27 @@ import * as mongoose from 'mongoose';
  * 定义接口
  */
 export type TenantModel = mongoose.Document & { 
-    _id: String;
-    tenantId: String;
+    _id: string;
+    tenantId: string;
     companyName: string;  // 租户公司名称
     companyAddr: string;  // 租户公司名称
     createdAt: Date;   // 创建时间
     updatedAt: Date;   // 更新时间
-    location: String; // 区域
-    balance: Number; // 账户余额
-    consume: Number;  // 消费总额
+    location: string; // 区域
+    balance: number; // 账户余额
+    consume: number;  // 消费总额
     dids: string[];  // 呼叫中心电话号码
     telephones:string[]; // 公司联系电话
     webchatOpts: {        // 在线聊天配置
 
     };
     callCenterOpts: {   // 呼叫中心基础设置
-        status: String;   // 昵称
-        billingType: String;    // 头像
-        rating: String;    // 阅读语言
-        recordCall: Boolean;   // 简信接收设置
-        satisfactionMode: String;    // 提醒邮件通知
+        status: string;   // 昵称
+        billingType: string;    // 头像
+        rating: string;    // 阅读语言
+        recordCall: boolean;   // 简信接收设置
+        useBlackList:boolean;
+        satisfactionMode: string;    // 提醒邮件通知
     };
 
 };
@@ -37,6 +38,7 @@ export type TenantCallCenterConfig = {
     recordCall:boolean;
     afterCallState:string;
     satisfactionMode:string;
+    useBlackList:boolean;
 }
 
 const tenantSchema = new mongoose.Schema({
@@ -90,6 +92,10 @@ const tenantSchema = new mongoose.Schema({
         recordCall: {  //是否存录音
             type: Boolean,
             default: true
+        },
+        useBlackList:{
+            type: Boolean,
+            default: false
         },
         afterCallState: {  //分机通话结束后置于什么状态
             type: String,

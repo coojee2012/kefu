@@ -18,6 +18,11 @@ import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
 import { PBXIVRActionsController } from '../controllers/pbx_ivrAction';
 import { PBXIVRInputController } from '../controllers/pbx_ivrInput';
+import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
+import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXBlackListController } from '../controllers/pbx_blacklist';
+import { TenantController} from '../controllers/tenant';
+
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
@@ -74,6 +79,10 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             PBXIVRMenuController,
             PBXIVRInputController,
             PBXIVRActionsController,
+            PBXQueueStatisticController,
+            PBXAgentStatisticController,
+            PBXBlackListController,
+            TenantController,
         ], this.injector);
     }
     /**

@@ -11,7 +11,7 @@ import commentsSchema from '../models/comments';
 import corpusSchema from '../models/corpus';
 import templateSchema from '../models/template';
 import userSchema from '../models/user';
-import tenantSchema from '../models/tenants';
+import { default as tenantSchema,TenantModel } from '../models/tenants';
 import { default as roomSchema, RoomModel } from '../models/rooms';
 import messageSchema from '../models/messages';
 import { default as pbxRouterSchema, PBXRouterModel } from '../models/pbx_routers';
@@ -42,7 +42,7 @@ interface IModels {
     Corpus?: mongoose.Model<mongoose.Document>;
     Templates?: mongoose.Model<mongoose.Document>;
     Users?: mongoose.Model<mongoose.Document>;
-    Tenants?: mongoose.Model<mongoose.Document>;
+    Tenants?: mongoose.Model<TenantModel>;
     Rooms?: mongoose.Model<mongoose.Document>;
     Messages?: mongoose.Model<mongoose.Document>;
 

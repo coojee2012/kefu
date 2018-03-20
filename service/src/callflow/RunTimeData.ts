@@ -3,79 +3,120 @@ import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
 import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
-interface IChannelData  {
-FSName?:string;
-CoreUuid?:string;
-DestinationNumber?:string
-CallDirection?:string;
-originateCallee?:string;
-callerId?:string;
-callerName?:string;
-calleeId?:string;
-calleeName?:string;
-sipCallId?:string;
-channelName?:string;
-useContext?:string;
+
+
+import { TenantModel } from '../models/tenants';
+import { TenantController } from '../controllers/tenant';
+interface IChannelData {
+    FSName?: string;
+    CoreUuid?: string;
+    DestinationNumber?: string
+    CallDirection?: string;
+    originateCallee?: string;
+    callerId?: string;
+    callerName?: string;
+    calleeId?: string;
+    calleeName?: string;
+    sipCallId?: string;
+    channelName?: string;
+    useContext?: string;
 }
 
 interface IRunData {
-    callId:string;
-    ivrMaxDeep:number;
-    ivrCurrentDeep:number;
-    tenantId?:string;
-    caller?:string;
-    callee?:string;
-    isOriginateCall?:boolean;
-    routerLine?:string;
-    answered?:boolean;
+    callId: string;
+    ivrMaxDeep: number;
+    ivrCurrentDeep: number;
+    tenantId?: string;
+    caller?: string;
+    callee?: string;
+    isOriginateCall?: boolean;
+    routerLine?: string;
+    answered?: boolean;
+}
+interface ISatisData {
+    hangup?: any;
+    agentId?: string;
+    sType?: string;
+    agentNumber?: string;
+    queueNumber?: string;
+    queueName?: string;
+    hangupCase?: string;
+    agentLeg?: string;
 }
 @Injectable()
 export class RuntimeData {
     private logger: LoggerService;
-    private channelData:IChannelData;
-    private runData:IRunData;
+    private channelData: IChannelData;
+    private runData: IRunData;
+    private statisData: ISatisData;
+    private tenantInfo: TenantModel;
+    private tenantController: TenantController;
+
     constructor(private conn: Connection, private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
         this.logger.debug('Init Runtime Data!');
         this.channelData = {};
         this.runData = {
-            callId:'',
-            ivrMaxDeep:100,
-            ivrCurrentDeep:0
+            callId: '',
+            ivrMaxDeep: 100,
+            ivrCurrentDeep: 0
         };
         this.initData();
-        this.logger.debug('Runtime Data:',this.channelData);
+        this.logger.debug('Runtime Data:', this.channelData);
     }
-    initData(){
+    initData() {
         const connEvent: Event = this.conn.getInfo();
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
-        this.channelData.CallDirection = connEvent.getHeader('Call-Direction');     
-        this.channelData.callerId = connEvent.getHeader('Caller-Caller-ID-Number'),
-        this.channelData.callerName = connEvent.getHeader('Caller-Caller-ID-Name'),
-        this.channelData.calleeId = connEvent.getHeader('Caller-Callee-ID-Number'),
-        this.channelData.calleeName = connEvent.getHeader('Caller-Callee-ID-Name'),
+        this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
+        this.channelData.callerId = connEvent.getHeader('Caller-Caller-ID-Number');
+        this.channelData.callerName = connEvent.getHeader('Caller-Caller-ID-Name');
+        this.channelData.calleeId = connEvent.getHeader('Caller-Callee-ID-Number');
+        this.channelData.calleeName = connEvent.getHeader('Caller-Callee-ID-Name');
         this.channelData.DestinationNumber = connEvent.getHeader('Channel-Destination-Number');
         this.channelData.sipCallId = connEvent.getHeader('variable_sip_call_id');
         this.channelData.channelName = connEvent.getHeader('Caller-Channel-Name');
         this.channelData.useContext = connEvent.getHeader('Caller-Context');
         //originateCall: chanData.get('variable_originate_call'),
         //originateTenant: chanData.get('variable_originate_tenant'),
-        this.channelData.originateCallee =  connEvent.getHeader('variable_originate_callee'),
+        this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
+
         this.runData.tenantId = connEvent.getHeader('variable_sip_to_host');
         this.runData.callId = connEvent.getHeader('Unique-ID');
         this.runData.routerLine = '呼入';
         this.runData.caller = this.setCaller();
         this.runData.callee = this.setCalled();
+
+        this.setTenantInfo()
+            .then()
+            .catch(err => {
+                this.logger.error(err);
+            })
     }
 
-    getChannelData(){
+    getChannelData() {
         return this.channelData;
     }
 
-    getRunData(){
+    getRunData() {
         return this.runData;
     }
+
+    async setTenantInfo() {
+        try {
+            this.tenantInfo = await this.tenantController.getTenanByDomain(this.runData.tenantId);
+            if (!this.tenantInfo) {
+                throw new Error(`Can't find tenant: ${this.runData.tenantId}!!!`);
+            }
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    getTenantInfo() {
+        return this.tenantInfo;
+    }
+
 
     setCaller() {
         let caller = this.channelData.callerId;
@@ -84,23 +125,29 @@ export class RuntimeData {
         //   caller = clickAgent
         // }
         return caller;
-      }
-  
+    }
+
     setCalled() {
         let called = this.runData.isOriginateCall ? this.channelData.originateCallee : this.channelData.DestinationNumber;
         // if (called == 100) {
         //   called = this.pbxApi.getChannelData().sipToUser;
         // }
         return called;
-      }
+    }
 
-    setAnswered(){
+    setAnswered() {
         this.runData.answered = true;
         return;
     }
 
-    increaseIvrCurrentDeep(number:number = 1){
+    increaseIvrCurrentDeep(number: number = 1) {
         this.runData.ivrCurrentDeep = this.runData.ivrCurrentDeep + number;
+    }
+    setStatisData(data: ISatisData) {
+        this.statisData = Object.assign({}, this.statisData, data);
+    }
+    getStatisData() {
+        return this.statisData;
     }
 
 }

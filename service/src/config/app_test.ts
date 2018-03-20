@@ -57,6 +57,9 @@ const Config = {
         database_call_control: 'call_control',
         database_cgrates: 'cgrates'
     },
+    callControlApi:{
+        baseUrl:''
+    },
     deepstream: {
         host: '192.168.2.230',
         port: '6020'

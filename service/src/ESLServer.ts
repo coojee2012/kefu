@@ -12,6 +12,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { MongoService } from './service/MongoService';
+import { QueueWorkerService } from './callflow/QueueWorkerService';
 import { FreeSwitchCallFlow } from './callflow'; 
 import { ESLEventNames } from './service/ESLEventNames';
 import { resolve, reject } from 'bluebird';
@@ -23,12 +24,14 @@ const DefaultESLCONF = {
 @Injectable()
 export class ESLServer extends EventEmitter2 {
     eslServer: FreeSwitchServer;
+    private queueWorker:QueueWorkerService;
     constructor(private injector: Injector, private logger: LoggerService,
         private eslEventNames:ESLEventNames,
         private config: ConfigService,
         private mongoDB: MongoService) {
         super();
         this.eslServer = new FreeSwitchServer(DefaultESLCONF);
+        this.queueWorker = this.injector.get(QueueWorkerService);
     }
    
      /**
