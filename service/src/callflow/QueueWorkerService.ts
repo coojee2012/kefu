@@ -4,10 +4,12 @@ import { Queue, Job, QueueOptions } from 'bull';
 // import  { deepstreamQuarantine  } from 'deepstream.io-client-js';
 import { LoggerService } from '../service/LogService';
 import { ConfigService } from '../service/ConfigService';
+import { RedisService } from '../service/RedisService';
 
 import { TenantController } from '../controllers/tenant';
-import { RedisOptions } from 'ioredis';
-
+import { RedisOptions, Redis } from 'ioredis';
+import Redlock = require('redlock');
+import { Lock } from 'redlock';
 
 
 @Injectable()
@@ -19,12 +21,35 @@ export class QueueWorkerService {
     private queues: Queue[]; // 此处算法可以改进
     private childInjector: Injector;
     private queueOptions: QueueOptions;
-    constructor(private logger: LoggerService, private config: ConfigService) {
+    private redlock: Redlock;
+    private redLockClient: Redis;
+    private redisService: RedisService;
+    constructor(private injector: Injector, private logger: LoggerService, private config: ConfigService) {
+        this.redisService = this.injector.get(RedisService);
         this.queueOptions = {
-            redis: <RedisOptions>this.config.getConfig().redis,
+            redis: <RedisOptions>this.config.getConfig().reids,
             prefix: 'eslqueue'
         }
-
+        this.redLockClient = this.redisService.getClientByName('RedLock');
+        this.redlock = new Redlock(
+            // you should have one client for each redis node
+            // in your cluster
+            [this.redLockClient],
+            {
+                // the expected clock drift; for more details
+                driftFactor: 0.01, // time in ms
+                // the max number of times Redlock will attempt to lock a resource before erroring
+                retryCount: 10,
+                // the time in ms between attempts
+                retryDelay: 200, // time in ms
+                // the max time in ms randomly added to retries
+                // to improve performance under high contention
+                // see https://www.awsarchitectureblog.com/2015/03/backoff.html
+                retryJitter: 200 // time in ms
+            });
+        this.redlock.on('clientError', function (err) {
+            this.logger.error('A redis error has occurred:', err);
+        })
         this.queueTopics = [];
         this.queues = []
     }
@@ -91,10 +116,10 @@ export class QueueWorkerService {
                     console.log('bullqueue cleaned', type)
                 });
 
-                const queueIndex = this.queueTopics.length - 1; 
+            const queueIndex = this.queueTopics.length - 1;
             queue.process((job) => {
                 const MaxDoneTime = 3 * 60 * 1000; // 最多执行30分钟   
-                return this.doneInComeCall(job,queueIndex, MaxDoneTime);
+                return this.doneInComeCall(job, queueIndex, MaxDoneTime);
             });
         }
     }
@@ -269,14 +294,14 @@ export class QueueWorkerService {
         }
     }
 
-    async doneInComeCall(args: Job,queueIndex, MaxDoneTime: number) {
+    async doneInComeCall(args: Job, queueIndex, timeout: number) {
         try {
             try {
 
                 const argData = args.data;
 
                 const { queue, tenantId, callId } = argData;
-                
+
                 this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
                 const { members, queueNumber } = queue;
 
@@ -284,10 +309,10 @@ export class QueueWorkerService {
                 this.logger.debug('doneInComeCall', eventName);
                 let eslSendStop = false;
                 let maxTimeOut = false;
-                this.EE3.once(eventName, () => {
-                    this.logger.info('ESL Send Stop Job!');
-                    eslSendStop = true;
-                })
+                // this.EE3.once(eventName, () => {
+                //     this.logger.info('ESL Send Stop Job!');
+                //     eslSendStop = true;
+                // })
                 const startTime = new Date().getTime();
                 let isMyTurn = false;
 
@@ -403,5 +428,21 @@ export class QueueWorkerService {
         this.childInjector = ReflectiveInjector.resolveAndCreate([
             TenantController,
         ])
+    }
+    
+    async wait(millisecond) {
+        try {
+            if (millisecond <= 0) {
+                millisecond = 3 * 1000;
+            }
+            await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve();
+                }, millisecond)
+            })
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
 }

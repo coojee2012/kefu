@@ -7,6 +7,6 @@ export class Queue {
     private queueWorker:QueueWorkerService;
     constructor(private injector: Injector) {
         this.queueWorker = this.injector.get(QueueWorkerService);
-        this.queueWorker.add('');
+       // this.queueWorker.add('');
     }
 }

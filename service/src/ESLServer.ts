@@ -12,8 +12,9 @@ import { EventEmitter2 } from 'eventemitter2';
 import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { MongoService } from './service/MongoService';
+import { RedisService } from './service/RedisService';
 import { QueueWorkerService } from './callflow/QueueWorkerService';
-import { FreeSwitchCallFlow } from './callflow'; 
+import { FreeSwitchCallFlow } from './callflow';
 import { ESLEventNames } from './service/ESLEventNames';
 import { resolve, reject } from 'bluebird';
 import { Key } from 'selenium-webdriver';
@@ -24,32 +25,47 @@ const DefaultESLCONF = {
 @Injectable()
 export class ESLServer extends EventEmitter2 {
     eslServer: FreeSwitchServer;
-    private queueWorker:QueueWorkerService;
+    private queueWorker: QueueWorkerService;
     constructor(private injector: Injector, private logger: LoggerService,
-        private eslEventNames:ESLEventNames,
+        private eslEventNames: ESLEventNames,
         private config: ConfigService,
+        private redisService:RedisService,
         private mongoDB: MongoService) {
         super();
         this.eslServer = new FreeSwitchServer(DefaultESLCONF);
         this.queueWorker = this.injector.get(QueueWorkerService);
+        
     }
-   
-     /**
-    * 连接mongo数据库
-    */
-   async readyMongoDB() {
-    try {
-       await this.mongoDB.connectDB();
+
+    /**
+   * 连接mongo数据库
+   */
+    async readyMongoDB() {
+        try {
+            await this.mongoDB.connectDB();
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
-    catch (ex) {
-        return Promise.reject(ex);
+
+    async readyRedisClients(){
+        try {
+            this.redisService.setNamePrefix('ESL');
+            await this.redisService.addClient(10,'BullQueue');
+            await this.redisService.addClient(11,'RedLock');
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
-}
+
     async startOutbound() {
         try {
             await this.readyMongoDB();
+            await this.readyRedisClients();
             const res = await this.eslServer.createOutboundServer();
-            this.logger.info('[startOutbound]',res);
+            this.logger.info('[startOutbound]', res);
             /**
              * ESL连接打开
              */
@@ -69,73 +85,72 @@ export class ESLServer extends EventEmitter2 {
     }
 
 
-    async onEslConnOpen(conn:Connection, id: string) {
+    async onEslConnOpen(conn: Connection, id: string) {
         try {
 
-            this.logger.debug(`onEslConnOpen->${id}:`,conn.getInfo());
+            this.logger.debug(`onEslConnOpen->${id}:`, conn.getInfo());
         } catch (ex) {
             this.logger.error('onEslConnOpen Error:', ex);
         }
     }
 
-    async onEslConnReady(conn:Connection, id: string) {
+    async onEslConnReady(conn: Connection, id: string) {
         try {
-            const connEvent:Event = conn.getInfo();
-            this.logger.debug(`onEslConnReady->${id}:`,connEvent.getHeader('Unique-ID'));
-            if(conn.isInBound())
-            {
+            const connEvent: Event = conn.getInfo();
+            this.logger.debug(`onEslConnReady->${id}:`, connEvent.getHeader('Unique-ID'));
+            if (conn.isInBound()) {
 
-            }else {
-                await this.handleOutbound(conn,id);
+            } else {
+                await this.handleOutbound(conn, id);
             }
-            
+
         } catch (ex) {
             this.logger.error('onEslConnReady Error:', ex);
         }
     }
 
-    async onEslConnClose(conn:Connection, id: string) {
+    async onEslConnClose(conn: Connection, id: string) {
         try {
-            const connEvent:Event = conn.getInfo();
-            this.logger.debug(`onEslConnClose->${id}:`,connEvent.getHeader('Unique-ID'));
-            this.emit(`esl:conn::close::${id}`,connEvent.getHeader('Unique-ID'));
+            const connEvent: Event = conn.getInfo();
+            this.logger.debug(`onEslConnClose->${id}:`, connEvent.getHeader('Unique-ID'));
+            this.emit(`esl:conn::close::${id}`, connEvent.getHeader('Unique-ID'));
         } catch (ex) {
             this.logger.error('onEslConnClose Error:', ex);
         }
     }
 
-    async handleOutbound(conn:Connection,id: string) {
-        try{
-        const fsCallFlow = new FreeSwitchCallFlow(this.injector,conn);
-        this.once(`esl:conn::close::${id}`,(callId) =>{
-            this.logger.info(`esl conn ${id} has closed yet!callId is ${callId}!`);
-            fsCallFlow.end()
-            .then(()=>{
-                
-            })
-            .catch(err => {
+    async handleOutbound(conn: Connection, id: string) {
+        try {
+            const fsCallFlow = new FreeSwitchCallFlow(this.injector, conn);
+            this.once(`esl:conn::close::${id}`, (callId) => {
+                this.logger.info(`esl conn ${id} has closed yet!callId is ${callId}!`);
+                fsCallFlow.end()
+                    .then(() => {
 
+                    })
+                    .catch(err => {
+
+                    })
             })
-        })
-        this.handleAgentEvents(fsCallFlow);
-        const result = await fsCallFlow.start();
-        this.logger.info(`${id} handle result:`,result);
-        }catch(ex){
+            this.handleAgentEvents(fsCallFlow);
+            const result = await fsCallFlow.start();
+            this.logger.info(`${id} handle result:`, result);
+        } catch (ex) {
             this.logger.error('handleOutbound Error:', ex);
             return Promise.reject(ex);
         }
     }
 
-    handleAgentEvents(fsCallFlow:FreeSwitchCallFlow){
-        try{
+    handleAgentEvents(fsCallFlow: FreeSwitchCallFlow) {
+        try {
             const agentEvents = this.eslEventNames.ESLUserEvents;
             Object.keys(agentEvents)
-            .forEach(key=>{
-                this.on(agentEvents[key],(...args)=>{
-                    fsCallFlow.emit(`${agentEvents[key]}::${fsCallFlow.getCallId()}`,args);
+                .forEach(key => {
+                    this.on(agentEvents[key], (...args) => {
+                        fsCallFlow.emit(`${agentEvents[key]}::${fsCallFlow.getCallId()}`, args);
+                    })
                 })
-            })          
-        }catch(ex){
+        } catch (ex) {
 
         }
     }
