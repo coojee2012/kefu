@@ -7,10 +7,11 @@ import prodConfig from '../config/app_prod';
 
 
 export  interface IConfig {
-    reids?:any;
+    redis?:any;
     mongo?:any;
     deepstream?:any;
     callControlApi?:any;
+    sipRegInFS?:boolean,
 }
 @Injectable()
 export class ConfigService {

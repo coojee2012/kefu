@@ -14,9 +14,9 @@ export class RedisService {
         this.clients = [];
         this.namePrefix = '';
         this.redisOptions = {
-            host: this.config.getConfig().reids.host,
-            port: this.config.getConfig().reids.port,
-            password: this.config.getConfig().reids.password ? this.config.getConfig().reids.password : null,
+            host: this.config.getConfig().redis.host,
+            port: this.config.getConfig().redis.port,
+            password: this.config.getConfig().redis.password ? this.config.getConfig().redis.password : null,
         }
     }
 

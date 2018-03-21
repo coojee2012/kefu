@@ -5,7 +5,7 @@ const Config = {
     api: {
         port: '80'
     },
-    reids: {
+    redis: {
         host: '127.0.0.1',
         port: '6379',
         //password: '',
@@ -65,6 +65,7 @@ const Config = {
         port: '6020'
     },
     logLevel: 'debug',
+    sipRegInFS:false,
     esl: {
         port: '8058',
         host: ''

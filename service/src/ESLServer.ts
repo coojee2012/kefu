@@ -60,10 +60,13 @@ export class ESLServer extends EventEmitter2 {
         }
     }
 
+
+
     async startOutbound() {
         try {
             await this.readyMongoDB();
             await this.readyRedisClients();
+            await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列
             const res = await this.eslServer.createOutboundServer();
             this.logger.info('[startOutbound]', res);
             /**

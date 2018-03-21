@@ -23,14 +23,22 @@ export class QueueWorkerService {
     private queueOptions: QueueOptions;
     private redlock: Redlock;
     private redLockClient: Redis;
+    private bullQueueClient: Redis;
     private redisService: RedisService;
     constructor(private injector: Injector, private logger: LoggerService, private config: ConfigService) {
         this.redisService = this.injector.get(RedisService);
         this.queueOptions = {
-            redis: <RedisOptions>this.config.getConfig().reids,
-            prefix: 'eslqueue'
+            redis: {
+                host: this.config.getConfig().redis.host,
+                port: this.config.getConfig().redis.port,
+                password: this.config.getConfig().redis.password ? this.config.getConfig().redis.password : null,
+                db: 10,
+            },
+            prefix: 'esl_bull'
+
         }
         this.redLockClient = this.redisService.getClientByName('RedLock');
+        this.bullQueueClient = this.redisService.getClientByName('BullQueue');
         this.redlock = new Redlock(
             // you should have one client for each redis node
             // in your cluster
@@ -57,12 +65,13 @@ export class QueueWorkerService {
      * 
      * @param topic 以租户及队列名称组合的唯一的队列名，如果已经存在，返回
      */
-    add(tenantId: string, queueNumber: string) {
+    add(tenantId: string, queueNumber: string): Queue {
         const qNameTopic = `esl_q_queue::${tenantId}::${queueNumber}`;
         if (this.queueTopics.indexOf(qNameTopic) < 0) {
             const queue = new BullQueue(qNameTopic, this.queueOptions);
             this.queueTopics.push(qNameTopic)
             this.queues.push(queue);
+            this.setCacheBullKey(qNameTopic);
             queue
                 .on('error', function (error) {
                     // An error occured.
@@ -78,7 +87,6 @@ export class QueueWorkerService {
                     // workers that crash or pause the event loop.
                     console.log('bullqueue stalled', job.id, new Date())
                 })
-
                 .on('progress', function (job, progress) {
                     // A job's progress was updated!
                     console.log('bullqueue progress', job.id, new Date())
@@ -86,7 +94,6 @@ export class QueueWorkerService {
                 .on('global:progress', function (jobId, progress) {
                     console.log(`Job ${jobId} is ${progress * 100}% ready!`);
                 })
-
                 .on('completed', function (job, result) {
                     // A job successfully completed with a `result`.
                     console.log('bullqueue completed', job.id, new Date())
@@ -121,7 +128,52 @@ export class QueueWorkerService {
                 const MaxDoneTime = 3 * 60 * 1000; // 最多执行30分钟   
                 return this.doneInComeCall(job, queueIndex, MaxDoneTime);
             });
+            return queue;
+        } else {
+            return this.getQueueByName(qNameTopic);
         }
+    }
+
+    getQueueByName(name: string): Queue {
+        try {
+            const index = this.queueTopics.indexOf(name);
+            if (index > -1) {
+                return this.queues[index];
+            } else {
+                return null;
+            }
+
+        }
+        catch (ex) {
+
+        }
+    }
+
+    async readyCacheBullQueue() {
+        try {
+            const keys: string[] = await this.bullQueueClient.keys('bullQueueCache*');
+            this.logger.debug('readyCacheBullQueue', keys);
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i] || 'bullQueueCache';
+                const works = key.split('::');
+                if (works.length === 4) {
+                    this.add(works[2], works[3]);
+                }
+            }
+            return Promise.resolve();
+        }
+        catch (ex) {
+            this.logger.debug('readyCacheBullQueue error ', ex);
+            return Promise.reject(ex);
+        }
+    }
+
+    setCacheBullKey(name) {
+        this.bullQueueClient.set(`bullQueueCache::${name}`, 1)
+            .then()
+            .catch(err => {
+                this.logger.error('bullQueue set cache key error:', name);
+            })
     }
 
     /**
@@ -299,12 +351,9 @@ export class QueueWorkerService {
             try {
 
                 const argData = args.data;
-
                 const { queue, tenantId, callId } = argData;
-
                 this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
                 const { members, queueNumber } = queue;
-
                 const eventName = `stop::find::agent::${args.id}`;
                 this.logger.debug('doneInComeCall', eventName);
                 let eslSendStop = false;
@@ -394,11 +443,12 @@ export class QueueWorkerService {
                             loginType: data ? data.loginType : ''
                         }
 
-                        await new Promise((resolve, reject) => {
-                            this.seneca.act({ role: 'pubsub', path: 'phone_queue', data: JSON.stringify(pubData) }, (err, rsp) => {
-                                err ? reject(err) : resolve(rsp)
-                            })
-                        })
+                        // await new Promise((resolve, reject) => {
+                        //     this.seneca.act({ role: 'pubsub', path: 'phone_queue', data: JSON.stringify(pubData) }, (err, rsp) => {
+                        //         err ? reject(err) : resolve(rsp)
+                        //     })
+                        // })
+
                         break;
                     }
                     else {
@@ -429,7 +479,7 @@ export class QueueWorkerService {
             TenantController,
         ])
     }
-    
+
     async wait(millisecond) {
         try {
             if (millisecond <= 0) {

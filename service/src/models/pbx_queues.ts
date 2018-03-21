@@ -2,7 +2,65 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXQueueModel = mongoose.Document & {}
+export type PBXQueueModel = mongoose.Document & {
+  tenantId:string;
+  queueNumber:string;
+  queueName:string;
+  description?:string;
+  announceFile?:string;
+  playRing?:string;
+  sayMember?:boolean;
+  failedDone?:string;
+  members?:string[];
+  announceFrequency?:number;
+  queue:PBXQueueOptions;
+  agent:PBXQueueAgentOptions;
+  hasNew:boolean;
+  ts?:Date;
+  lm?:Date;
+  
+
+}
+
+export type PBXQueueOptions = {
+  strategy:string;
+  mohSound:string;
+  recordTemplate:string;
+  timeBaseScore:string;
+  tierRulesApply:boolean;
+  tierRuleWaitSecond:number;
+  tierRuleWaitMultiplyLevel:boolean;
+  tierRuleNoAgentNoWait:boolean;
+  discardAbandonedAfter:number;
+  abandonedResumeAllowed:boolean;
+  maxWaitTime:number;
+  maxWaitTimeWithNoAgent:number;
+  maxWaitTimeWithNoAgentTimeReached:number;
+  ringProgressivelyDelay:number;
+  transferStatic:boolean;
+  queueTimeoutFile:string;
+  satisfactionFile:string;
+  jobNumberTipFile:string;
+  enterTipFile:string;
+  ringTimeOut:number;
+  verySatisfactionPlay:string;
+  callerId:string;
+}
+
+export type PBXQueueAgentOptions = {
+  type:string;
+  contact:'';
+  status:string;
+  maxNoAnswer:number;
+  wrapUpTime:number;
+  rejectDelayTime:number;
+  busyDelayTime:number;
+  noAnswerDelayTime:number;
+  reserveAgents:boolean;
+  truncateAgentsOnLoad:boolean;
+  truncateTiersOnLoad:boolean;
+  maxRingTime:number;
+}
 
 const pbxQueueSchema = new mongoose.Schema({
     tenantId: {
@@ -36,10 +94,10 @@ const pbxQueueSchema = new mongoose.Schema({
         default: false
       },//是否启用播放坐席工号
       failedDone: {
-        type: Number,
-        default: 0
+        type:String,
+        default: ''
       },//队列呼叫失败的本地处理号码
-      members: [Number],//队列成员，如:[8001,8002,8003]
+      members: [String],//队列成员，如:[8001,8002,8003]
       /**                  ;ringall :ring 所有可用channels 直到应答为止
        ;roundrobin :轮流ring 每个可用interface,1calls :1-<2-<3,2calls:2-<3-<1;3calls:3-<1-<2
        ;leastrecent :ring 进来最少在队列中最少被呼叫的interface,有可能一直响某台分机
@@ -77,7 +135,7 @@ const pbxQueueSchema = new mongoose.Schema({
           type: Number,
           default: 15
         },//每次应答后，强制坐席空闲多少时间
-        rejectDelayDime: {
+        rejectDelayTime: {
           type: Number,
           default: 0
         },
