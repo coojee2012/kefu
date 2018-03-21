@@ -3,6 +3,7 @@ import { LoggerService } from './LogService';
 import { ConfigService } from './ConfigService';
 import IORedis = require('ioredis');
 import { Redis, RedisOptions } from 'ioredis'
+
 @Injectable()
 export class RedisService {
     private clientsNames: string[];
@@ -32,6 +33,12 @@ export class RedisService {
             this.clientsNames.push(clientName);
             this.clients.push(client);
             this.listenClientEvents(this.clientsNames.length - 1);
+
+            await new Promise((resolve,reject)=>{
+                client.once('ready', () => {
+                    resolve();
+                })
+            })        
         } catch (ex) {
             return Promise.reject(ex);
         }

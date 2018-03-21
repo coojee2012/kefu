@@ -26,40 +26,49 @@ export class QueueWorkerService {
     private bullQueueClient: Redis;
     private redisService: RedisService;
     constructor(private injector: Injector, private logger: LoggerService, private config: ConfigService) {
-        this.redisService = this.injector.get(RedisService);
-        this.queueOptions = {
-            redis: {
-                host: this.config.getConfig().redis.host,
-                port: this.config.getConfig().redis.port,
-                password: this.config.getConfig().redis.password ? this.config.getConfig().redis.password : null,
-                db: 10,
-            },
-            prefix: 'esl_bull'
+       
+    }
+
+    async init(){
+        try{
+            this.redisService = this.injector.get(RedisService);
+            this.queueOptions = {
+                redis: {
+                    host: this.config.getConfig().redis.host,
+                    port: this.config.getConfig().redis.port,
+                    password: this.config.getConfig().redis.password ? this.config.getConfig().redis.password : null,
+                    db: 10,
+                },
+                prefix: 'esl_bull'
+    
+            }
+            this.redLockClient = this.redisService.getClientByName('RedLock');
+            this.bullQueueClient = this.redisService.getClientByName('BullQueue');
+         
+            this.redlock = new Redlock(
+                // you should have one client for each redis node
+                // in your cluster
+                [this.redLockClient],
+                {
+                    // the expected clock drift; for more details
+                    driftFactor: 0.01, // time in ms
+                    // the max number of times Redlock will attempt to lock a resource before erroring
+                    retryCount: 10,
+                    // the time in ms between attempts
+                    retryDelay: 200, // time in ms
+                    // the max time in ms randomly added to retries
+                    // to improve performance under high contention
+                    // see https://www.awsarchitectureblog.com/2015/03/backoff.html
+                    retryJitter: 200 // time in ms
+                });
+            this.redlock.on('clientError', function (err) {
+                this.logger.error('A redis error has occurred:', err);
+            })
+            this.queueTopics = [];
+            this.queues = []
+        }catch(ex){
 
         }
-        this.redLockClient = this.redisService.getClientByName('RedLock');
-        this.bullQueueClient = this.redisService.getClientByName('BullQueue');
-        this.redlock = new Redlock(
-            // you should have one client for each redis node
-            // in your cluster
-            [this.redLockClient],
-            {
-                // the expected clock drift; for more details
-                driftFactor: 0.01, // time in ms
-                // the max number of times Redlock will attempt to lock a resource before erroring
-                retryCount: 10,
-                // the time in ms between attempts
-                retryDelay: 200, // time in ms
-                // the max time in ms randomly added to retries
-                // to improve performance under high contention
-                // see https://www.awsarchitectureblog.com/2015/03/backoff.html
-                retryJitter: 200 // time in ms
-            });
-        this.redlock.on('clientError', function (err) {
-            this.logger.error('A redis error has occurred:', err);
-        })
-        this.queueTopics = [];
-        this.queues = []
     }
     /**
      * 

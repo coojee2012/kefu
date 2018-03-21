@@ -13,6 +13,7 @@ import { ConfigService } from './service/ConfigService';
 import { LoggerService } from './service/LogService';
 import { MongoService } from './service/MongoService';
 import { RedisService } from './service/RedisService';
+import { EventService } from './service/EventService';
 import { QueueWorkerService } from './callflow/QueueWorkerService';
 import { FreeSwitchCallFlow } from './callflow';
 import { ESLEventNames } from './service/ESLEventNames';
@@ -26,6 +27,7 @@ const DefaultESLCONF = {
 export class ESLServer extends EventEmitter2 {
     eslServer: FreeSwitchServer;
     private queueWorker: QueueWorkerService;
+    private eventService:EventService;
     constructor(private injector: Injector, private logger: LoggerService,
         private eslEventNames: ESLEventNames,
         private config: ConfigService,
@@ -34,6 +36,7 @@ export class ESLServer extends EventEmitter2 {
         super();
         this.eslServer = new FreeSwitchServer(DefaultESLCONF);
         this.queueWorker = this.injector.get(QueueWorkerService);
+        this.eventService = this.injector.get(EventService);
         
     }
 
@@ -54,6 +57,8 @@ export class ESLServer extends EventEmitter2 {
             this.redisService.setNamePrefix('ESL');
             await this.redisService.addClient(10,'BullQueue');
             await this.redisService.addClient(11,'RedLock');
+            await this.redisService.addClient(12,'PUB');
+            await this.redisService.addClient(12,'SUB');
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -66,6 +71,9 @@ export class ESLServer extends EventEmitter2 {
         try {
             await this.readyMongoDB();
             await this.readyRedisClients();
+            
+            this.eventService.initRedisSub();
+            await this.queueWorker.init();
             await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列
             const res = await this.eslServer.createOutboundServer();
             this.logger.info('[startOutbound]', res);

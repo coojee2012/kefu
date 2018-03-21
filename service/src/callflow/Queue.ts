@@ -1,4 +1,4 @@
-
+import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
 import { Queue as BullQueue, Job, QueueOptions } from 'bull';
 import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
@@ -10,6 +10,7 @@ import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXQueueController } from '../controllers/pbx_queue';
 import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
 import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXCDRController } from '../controllers/pbx_cdr';
 
 @Injectable()
 export class Queue {
@@ -26,6 +27,8 @@ export class Queue {
     private pbxQueueController: PBXQueueController;
     private pbxQueueStatisticController: PBXQueueStatisticController;
     private pbxAgentStatisticController: PBXAgentStatisticController;
+    private cdrControl: PBXCDRController;
+    private originationUuid:string;
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -143,7 +146,7 @@ export class Queue {
                 const findQueueMemberEvent = `${EVENTNAME.callControl.PUB.findQueueMember}::${tenantId}::${callId}`;
                 const callerHangupEvent = `esl::event::CHANNEL_HANGUP::${callId}`;
 
-                let queueJob:Job;
+                let queueJob: Job;
                 let busyTipTime = startTime;
                 let setIntervalTimeout;
                 let isDoneTimeoutTip = false;
@@ -152,18 +155,18 @@ export class Queue {
                     try {
                         const now = new Date().getTime();
                         if (isDoneBusyTip || isDoneTimeoutTip) {
-                            logger.debug('有其他提示任务在处理中');
+                            this.logger.debug('有其他提示任务在处理中');
                             busyTipTime = now;
                             startTime = now;
                             return;
                         }
                         const diffTime = now - startTime;
                         const busyTipCheckTime = now - busyTipTime;
-                        logger.debug(`queue intervale diffTime=${diffTime},busyTipCheckTime=${busyTipCheckTime}`);
+                        this.logger.debug(`queue intervale diffTime=${diffTime},busyTipCheckTime=${busyTipCheckTime}`);
                         // 超时时处理
                         if (diffTime > maxWaitTime * 1000 && !isDoneTimeoutTip && !isDoneBusyTip) {
                             isDoneTimeoutTip = true;
-                            const res = await _this.dialMemberTimeOut({ queue });
+                            const res = await this.dialMemberTimeOut({ queue });
                             // 客户选择继续等待
                             if (res && res.wait) {
                                 startTime = new Date().getTime();
@@ -176,7 +179,7 @@ export class Queue {
                         // 默认30秒提醒一次
                         else if (busyTipCheckTime > 30 * 1000 && !isDoneBusyTip && !isDoneTimeoutTip) {
                             isDoneBusyTip = true;
-                            logger.debug('坐席全部忙!');
+                            this.logger.debug('坐席全部忙!');
                             const {
                                 abtFile,
                                 abtKeyTimeOut = 15,
@@ -188,7 +191,7 @@ export class Queue {
                                 abtTimeoutRetry = 2,
                                 abtInputErrRetry = -1,
                             } = queue.queue;
-                            const res = await _this.allBusyTip({
+                            const res = await this.allBusyTip({
                                 abtFile,
                                 abtKeyTimeOut,
                                 abtWaitTime,
@@ -199,18 +202,18 @@ export class Queue {
                                 abtTimeoutRetry,
                                 abtInputErrRetry,
                             })
-                            logger.debug(`队列全忙，用户是否选择继续等待:${res}`);
+                            this.logger.debug(`队列全忙，用户是否选择继续等待:${res}`);
                             if (res) {
                                 busyTipTime = new Date().getTime();
                             }
                             isDoneBusyTip = false;
                         }
                         else {
-                            logger.debug('队列时间检查！');
+                            this.logger.debug('队列时间检查！');
                         }
                     }
                     catch (ex) {
-                        logger.error('队列时间检查,发生异常:', ex);
+                        this.logger.error('队列时间检查,发生异常:', ex);
                         if (setIntervalTimeout) {
                             clearInterval(setIntervalTimeout);
                         }
@@ -244,10 +247,10 @@ export class Queue {
                     setIntervalTimeout = setInterval(() => {
                         timeoutFn()
                             .then(res => {
-                                logger.debug(['ESL', 'dialQueue'], `startTimer res :${res}`);
+                                this.logger.debug(`startTimer res :${res}`);
                             })
                             .catch(err => {
-                                logger.error(['ESL', 'dialQueue'], `startTimer error :${res}`);
+                                this.logger.error(`startTimer error :${err}`);
                             })
                     }, 1000);
                 }
@@ -325,7 +328,7 @@ export class Queue {
                         this.logger.debug('Queue PLAYBACK_START Core-UUID:', evt.getHeader('Core-UUID'));
                         queueJob = await this.bullQueue.add({
                             callId: callId,
-                            tenantId:tenantId,
+                            tenantId: tenantId,
                             queue,
                         }, {
                                 priority: priority < 1 ? 1 : priority,
@@ -358,45 +361,45 @@ export class Queue {
                         if (setIntervalTimeout) {
                             clearInterval(setIntervalTimeout);
                         }
-                        logger.debug(['ESL', 'dialQueue'], 'findQueueMemberEvent return', agentInfo);
+                        this.logger.debug('findQueueMemberEvent return', agentInfo);
                         result.agentNumber = agentInfo.accountCode;
                         if (result.callerHangup) {
-                            logger.info(['ESL', 'dialQueue'], 'find one but Caller is Hangup');
+                            this.logger.info('find one but Caller is Hangup');
                         }
                         else if (agentInfo && agentInfo.accountCode) {
                             const startCallAgentTime = new Date();
-                            const dialResult = await _this.dialQueueMember({
+                            const dialResult = await this.dialQueueMember({
                                 agentInfo,
                                 queueInfo: queue,
                                 agentType,
                             });
-                            _this.R.logger.debug(['ESL', 'dialQueue'], 'dialQueueMember result:', dialResult);
+                            this.logger.debug('dialQueueMember result:', dialResult);
                             // 不成功重新放回队列
                             if (result.callerHangup) {
-                                logger.info(['ESL', 'dialQueue'], 'When find Queue Member, Caller is Hangup');
+                                this.logger.info('When find Queue Member, Caller is Hangup');
                             }
                             else if (!dialResult.success) {
                                 priority = priority - 1;
                                 findQueueMemberExec = false;
-                                queueJob = await _this.bullQueue.add({
-                                    callId: _this.R.callId,
-                                    tenantId: _this.R.tenantId,
+                                queueJob = await this.bullQueue.add({
+                                    callId: callId,
+                                    tenantId: tenantId,
                                     queue,
                                 }, {
                                         priority: priority < 1 ? 1 : priority,
                                         timeout: (maxWaitTime + 1) * 1000 * 3,
                                         //timeout: 30 * 1000,
                                     });
-                                logger.debug('不成功重新放回队列:', queueJob ? queueJob.id : 'NULL');
-                                _this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
+                                this.logger.debug('不成功重新放回队列:', queueJob ? queueJob.id : 'NULL');
+                                this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
                                 startTimer();
                                 if (vipLevel && vipLevel > 0) {
                                     afterVipInsert(queueJob, queueJob.opts.priority)
                                         .then(() => {
-                                            logger.debug(loggerPrefix, 'VIP进入队列后对在等待中的普通坐席JOB重新插入完毕!');
+                                            this.logger.debug( 'VIP进入队列后对在等待中的普通坐席JOB重新插入完毕!');
                                         })
                                         .catch(err => {
-                                            logger.error(loggerPrefix, err);
+                                            this.logger.error(err);
                                         });
                                 }
                             }
@@ -404,38 +407,40 @@ export class Queue {
                                 result.success = true;
                                 result.answered = true;
                                 result.hasDone = true;
-                                _this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
+                                this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
                                 if (agentInfo.phoneLogin === 'yes') {
-                                    _this.R.service.cdr.create({
+                                    const { channelName,useContext } = this.runtimeData.getChannelData();
+                                    const tenantInfo = this.runtimeData.getTenantInfo();
+                                    await this.cdrControl.create({
                                         tenantId,
-                                        routerLine: _this.R.routerLine,
-                                        srcChannel: pbxApi.getChannelData().channelName,
-                                        context: pbxApi.getChannelData().userContext,
-                                        caller: _this.R.clickOut === 'yes' ? _this.R.DND : _this.R.caller,
+                                        routerLine: routerLine,
+                                        srcChannel: channelName,
+                                        context: useContext,
+                                        caller: caller,
                                         called: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
-                                        callId: _this.R.originationUuid,
-                                        recordCall: _this.R.tenantInfo.recordCall,
-                                        isTransfer: !_this.R.transferCall ? false : true,
+                                        callId: this.originationUuid,
+                                        recordCall: true,//tenantInfo.recordCall,
+                                        isTransfer: false,
                                         agiType: 'queue-leg',
-                                        isClickOut: _this.R.clickOut === 'yes',
+                                        isClickOut: false,
                                         starTime: startCallAgentTime,
                                         agent: String(agentInfo.accountCode),
-                                        callFrom: _this.R.DND,
+                                        callFrom: '',
                                         callTo: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
                                         answerTime: new Date(),
                                         answerStatus: 'answered',
-                                        associateId: [_this.R.callId],
+                                        associateId: callId,
                                     });
                                 }
                             }
                         }
                         // 
                         else {
-                            logger.error(['ESL', 'dialQueue'], 'findQueueMemberEvent Error', agentInfo);
+                            this.logger.error('findQueueMemberEvent Error', agentInfo);
                         }
                     }
                     catch (ex) {
-                        logger.error('onFindQueueMember:', ex);
+                        this.logger.error('onFindQueueMember:', ex);
                     }
                 };
 
@@ -548,21 +553,19 @@ export class Queue {
                         _this.R.logger.error('Done Caller Hangup ERROR:', ex);
                     }
                 };
-                pbxApi.conn.once(callerHangupEvent, callerHangupHandle);
+                this.fsPbx.addConnLisenter(callerHangupEvent, 'once',callerHangupHandle)
+                this.fsPbx.addConnLisenter(`esl::event::PLAYBACK_START::${callId}`,'once', onPlaybackStart)
 
-                pbxApi.conn.once(`esl::event::PLAYBACK_START::${callId}`, onPlaybackStart);
 
                 _this.R.EE3.on(findQueueMemberEvent, onFindQueueMember);
 
 
-                logger.debug(['ESL', 'dialQueue'], '=====PLAY QUEUE MUSIC START=====');
+                this.logger.debug('=====PLAY QUEUE MUSIC START=====');
                 await pbxApi.qMusic(queue.queue.mohSound || 'local_stream://moh/8000');
-                logger.debug(['ESL', 'dialQueue'], '=====PLAY QUEUE MUSIC STOP=====');
-
-
+                this.logger.debug('=====PLAY QUEUE MUSIC STOP=====');
                 // 下面的代码只有在answer之后才能执行，或者提前执行uuid_break后才会执行
                 await new Promise((resolve) => {
-                    logger.debug(loggerPrefix, '等待桥接！');
+                    this.logger.debug( '等待桥接！');
                     if (result.callerHangup) {
                         resolve(result);
                     }
@@ -574,9 +577,9 @@ export class Queue {
                         });
                     }
                 });
-                await _this.wait(300);
+                await this.fsPbx.wait(300);
                 await new Promise((resolve, reject) => {
-                    logger.debug(loggerPrefix, 'FIND_QUEUE_MEMBER_DONE:', result);
+                    this.logger.debug('FIND_QUEUE_MEMBER_DONE:', result);
                     let doneOver = false;
                     const doneAfter = async () => {
                         try {
@@ -598,26 +601,12 @@ export class Queue {
                         const { answered, agentNumber: whoAnswered } = result;
                         const onAgentHangup = async (evt) => {
                             try {
-                                _this.R.logger.debug(loggerPrefix, `FIND_QUEUE_MEMBER_DONE中监听到坐席${whoAnswered}挂机了!`);
+                                this.logger.debug(`FIND_QUEUE_MEMBER_DONE中监听到坐席${whoAnswered}挂机了!`);
                                 await doneAfter();
                                 if (!doneOver) {
                                     doneOver = true;
-                                    const timestamp = parseInt(new Date().getTime());
-                                    const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                                        type: 'hangUp-queue',
-                                        bLegId: _this.R.originationUuid,
-                                        timestamp,
-                                        agentId: _this.R.agentId,
-                                        agentNumber: String(whoAnswered),
-                                        answerTime: _this.answerTime,
-                                        queueName: queue.queueName,
-                                        queueNumber,
-                                        tryCall: _this.tryCallAgentTimes,
-                                        ringingTime: _this.ringTime,
-                                        by: 'agent',
-                                    });
-                                    _this.R.logger.debug('callControlMessageOriginData AgentHangupFirst ', fluentData);
-                                    process.fluent['callControlMessageOrigin'].log(fluentData);
+                                    const timestamp = new Date().getTime();
+                              
 
                                     _this.R.service.agentStatistics.hangupCall({
                                         callId: _this.R.callId,
@@ -785,6 +774,11 @@ export class Queue {
         }
     }
 
+
+    async dialQueueMember(optiosn:any){
+
+    }
+
     async enterEmptyQueue(queue) {
         try {
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
@@ -802,12 +796,177 @@ export class Queue {
         }
     }
 
-    setQueueWaitingInfo(tenantId:string, queueNumber:string, queueName:string){
+    async allBusyTip(options) {
+        try {
+            const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
+            let {
+                abtFile,
+                abtKeyTimeOut,
+                abtWaitTime,
+                abtInputTimeoutFile,
+                abtInputTimeoutEndFile,
+                abtInputErrFile,
+                abtInputErrEndFile,
+                abtTimeoutRetry = 2,
+                abtInputErrRetry = -1,
+            } = options;
+            abtFile = abtFile ? await this.fillSoundFilePath(abtFile) : 'demo/queuetimeout.wav';
+            abtInputTimeoutFile = abtInputTimeoutFile ? await this.fillSoundFilePath(abtInputTimeoutFile) : 'demo/timeoutandhangup.wav';
+            abtInputTimeoutEndFile = abtInputTimeoutEndFile ? await this.fillSoundFilePath(abtInputTimeoutEndFile) : 'ivr/8000/ivr-call_rejected.wav';
+            abtInputErrFile = abtInputErrFile ? await this.fillSoundFilePath(abtInputErrFile) : 'demo/inputerror.wav';
+            abtInputErrEndFile = abtInputErrEndFile ? await this.fillSoundFilePath(abtInputErrEndFile) : 'ivr/8000/ivr-call_rejected.wav';
+            const readArgs = {
+                min: 1,
+                max: 1,
+                uuid: callId,
+                file: abtFile,
+                variableName: 'all_busy_tip_input_key',
+                timeout: abtKeyTimeOut * 1000,
+                terminators: 'none',
+            };
+            let reReadDigits = true;
+            let continueWait = false;
+            let agentAnswered = false;
+            //   EE3.once(`queue::busytip::findagent::${callId}`,() => {
+            //     agentAnswered = true;
+            //     _this.R.logger.debug('在全忙提示的时候找到坐席且坐席已经接听！');
+
+            //   })
+            while (reReadDigits && !agentAnswered) {
+                reReadDigits = false;
+                // 提示是否继续等待音
+                const inputKey = await this.fsPbx.uuidRead(readArgs);
+
+                if (inputKey === '1') {
+                    this.logger.debug('abt-用户选择继续等待!');
+                    continueWait = true;// 坐席全忙,继续等待!
+                }
+                else if (inputKey === 'timeout') {
+                    // 输出超时音
+                    this.logger.debug('abt-用户输入超时,播放提示');
+                    if (abtTimeoutRetry === 0) {
+                        reReadDigits = false;
+                        continue;
+                    }
+                    await this.fsPbx.uuidPlayback({
+                        terminators: 'none',
+                        file: abtInputTimeoutFile,
+                        uuid: callId
+                    });
+                    // await _this.dialQueueTimeout(queue);
+                    // await _this.R.pbxApi.uuidBreak(_this.R.callId);
+                    await this.fsPbx.wait(500);
+                    reReadDigits = true;
+                    if (abtTimeoutRetry > 0) {
+                        abtTimeoutRetry--;
+                    }
+                }
+                else {
+                    // 输入错误音
+                    this.logger.debug('abt-用户输入错误音');
+
+                    if (abtInputErrRetry === 0) {
+                        reReadDigits = false;
+                        continue;
+                    }
+
+                    await this.fsPbx.uuidPlayback({
+                        terminators: 'none',
+                        file: abtInputErrFile,
+                        uuid: callId
+                    });
+                    // readArgs.soundFile = 'demo/inputerror.wav';
+                    reReadDigits = true;
+                    if (abtInputErrRetry > 0) {
+                        abtInputErrRetry--;
+                    }
+                }
+
+            }
+            if (agentAnswered) {
+                return continueWait;
+            }
+            else if (!continueWait && (abtTimeoutRetry === 0 || abtInputErrRetry === 0)) {
+                this.logger.debug('abt-用户输入错误音');
+                await this.fsPbx.uuidPlayback({
+                    uuid: callId,
+                    terminators: 'none',
+                    file: abtTimeoutRetry === 0 ? abtInputTimeoutEndFile : abtInputErrEndFile,
+                });
+                //this.R.alegHangupBy = 'system';
+                //this.hangupBySystem = true;
+                await this.fsPbx.uuidKill(callId);
+            }
+            return continueWait;
+        } catch (ex) {
+            this.logger.error('allBusyTip-处理是否继续等待音错误:', ex);
+        }
+    }
+
+    setQueueWaitingInfo(tenantId: string, queueNumber: string, queueName: string) {
 
     }
 
+    async dialMemberTimeOut({ queue }) {
+        try {
+            const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
+            this.logger.error('超时没有空闲坐席应答');
+            const readArgs = {
+                uuid: callId,
+                min: 1,
+                max: 1,
+                file: queue.queue.queueTimeoutFile || 'demo/queuetimeout.wav',
+                variableName: 'satisfaction_input_key',
+                timeout: 15 * 1000,
+                terminators: 'none',
+            };
+            let reReadDigits = true;
+            const result = {
+                wait: false,
+                error: ''
+            };
+            let agentAnswered = false;
+            // EE3.once(`queue::busytip::findagent::${callId}`, () => {
+            //     agentAnswered = true;
+            //     _this.R.logger.debug('在超时提示的时候找到坐席且坐席已经接听！');
+            // })
+            while (reReadDigits && !agentAnswered) {
+                reReadDigits = false;
+                // 提示是否继续等待音
+                this.logger.error('是否继续等待音');
+                const inputKey = await this.fsPbx.uuidRead(readArgs);
+                if (inputKey === '1') {
+                    this.logger.error('再排队一次');
+                    result.wait = true;// 再排队一次
+                }
+                else if (inputKey === 'timeout') {
+                    // 输出超时音
+                    this.logger.error('输出超时音');
+                    await this.fsPbx.uuidPlayback({
+                        uuid: callId,
+                        terminators: 'none',
+                        file: 'demo/timeoutandhangup.wav',
+                    });
+                    await this.fsPbx.wait(500);
+                    // _this.R.alegHangupBy = 'system';
+                    // _this.hangupBySystem = true;
+                    await this.fsPbx.uuidKill(callId, 'Dial Queue Timeout!');
+                    result.error = 'Dial Queue Timeout!';
+                }
+                else {
+                    // 输入错误音
+                    this.logger.error('输入错误音');
+                    readArgs.file = 'demo/inputerror.wav';
+                    reReadDigits = true;
+                }
+            }
+            return Promise.resolve(result);
+        } catch (ex) {
+            this.logger.error('dialMemberTimeOut:', ex);
+            return Promise.reject(ex);
+        }
+    }
     async fillSoundFilePath(file) {
-
         try {
             // const _this = this;
             // const {dbi, tenantId} = _this.R;
@@ -836,3 +995,4 @@ export class Queue {
         }
 
     }
+}
