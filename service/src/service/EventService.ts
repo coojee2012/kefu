@@ -49,7 +49,6 @@ export class EventService extends EventEmitter2 {
                 } catch (ex) {
                     this.logger.error('Done RedisSub Error:', ex);
                 }
-
             });
         } catch (ex) {
             this.logger.error(' initRedisSub Error:', ex);
@@ -57,10 +56,23 @@ export class EventService extends EventEmitter2 {
 
     }
 
-    addARedisSub(eventName) {
-        this.redisSubClient.subscribe(eventName, (err, count) => {
-            // Now we are subscribed to both the 'news' and 'music' channels.
-            // `count` represents the number of channels we are currently subscribed to.        
-        });
+    async addARedisSub(eventName) {
+        try {
+            const count = await this.redisSubClient.subscribe(eventName);
+            this.logger.debug(`Has Add ${count} Redis Sub!`);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
+    }
+    async pubAReidsEvent(eventName: string, data: string) {
+        try {
+            await this.redisPubClient.publish(eventName, data);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
     }
 }

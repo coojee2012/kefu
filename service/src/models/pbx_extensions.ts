@@ -2,7 +2,27 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXExtensionModel = mongoose.Document & {}
+export type PBXExtensionModel = mongoose.Document & {
+  tenantId:string;
+  accountCode:string;
+  password:string;
+  agentId:string;
+  deviceProto:string;
+  deviceNumber:string;
+  status:string;
+  loginType:string;
+  state:string;
+  deviceString:string;
+  firstChecked:boolean;
+  transferNumber:string;
+  phoneNumber:string;
+  lastCallId:string;
+  logicType:string;
+  logicOptions:any;
+  phoneLogin:string;
+  dndInfo:string;
+  failed:string;
+}
 
 const pbxExtensionSchema = new mongoose.Schema({
     tenantId: {
@@ -10,7 +30,7 @@ const pbxExtensionSchema = new mongoose.Schema({
         required: true,
       },
       accountCode: {
-        type: Number,
+        type: String,
         required: true,
       },	//账号,分机号
       password: {

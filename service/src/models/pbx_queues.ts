@@ -45,6 +45,7 @@ export type PBXQueueOptions = {
   ringTimeOut: number;
   verySatisfactionPlay: string;
   callerId: string;
+  forceDND?:boolean;
 
   //坐席全忙相关
   abtFile?: string;

@@ -51,6 +51,8 @@ export class RuntimeData {
     private statisData: ISatisData;
     private tenantInfo: TenantModel;
     private tenantController: TenantController;
+    private blegIds:string[];
+    private blegUsers:string[]; // 可以使agentId,extension,外线号码
 
     constructor(private conn: Connection, private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -138,6 +140,11 @@ export class RuntimeData {
     setAnswered() {
         this.runData.answered = true;
         return;
+    }
+
+    addBleg(uuid:string,user:string){
+        this.blegIds.push(uuid);
+        this.blegUsers.push(user);
     }
 
     increaseIvrCurrentDeep(number: number = 1) {

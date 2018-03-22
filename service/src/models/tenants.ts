@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type TenantModel = mongoose.Document & { 
+export type TenantModel = mongoose.Document & {
     _id: string;
     tenantId: string;
     companyName: string;  // 租户公司名称
@@ -16,7 +16,7 @@ export type TenantModel = mongoose.Document & {
     balance: number; // 账户余额
     consume: number;  // 消费总额
     dids: string[];  // 呼叫中心电话号码
-    telephones:string[]; // 公司联系电话
+    telephones: string[]; // 公司联系电话
     webchatOpts: {        // 在线聊天配置
 
     };
@@ -25,20 +25,27 @@ export type TenantModel = mongoose.Document & {
         billingType: string;    // 头像
         rating: string;    // 阅读语言
         recordCall: boolean;   // 简信接收设置
-        useBlackList:boolean;
+        useBlackList: boolean;
         satisfactionMode: string;    // 提醒邮件通知
+        dnds?: TenantDNDInfo[];
     };
 
 };
 
+export type TenantDNDInfo = {
+    number: string;
+    concurrentCallIn: number;
+    concurrentCallOut: number;
+}
+
 export type TenantCallCenterConfig = {
-    status:string;
-    billingType:string;
-    rating:any;
-    recordCall:boolean;
-    afterCallState:string;
-    satisfactionMode:string;
-    useBlackList:boolean;
+    status: string;
+    billingType: string;
+    rating: any;
+    recordCall: boolean;
+    afterCallState: string;
+    satisfactionMode: string;
+    useBlackList: boolean;
 }
 
 const tenantSchema = new mongoose.Schema({
@@ -57,7 +64,7 @@ const tenantSchema = new mongoose.Schema({
         required: true,
         default: ''
     },
-    dids:{
+    dids: {
         type: Array,
         required: true
     },
@@ -93,7 +100,7 @@ const tenantSchema = new mongoose.Schema({
             type: Boolean,
             default: true
         },
-        useBlackList:{
+        useBlackList: {
             type: Boolean,
             default: false
         },
@@ -105,6 +112,11 @@ const tenantSchema = new mongoose.Schema({
             },
             default: () => 'idle'
         },
+        dnds: [{
+            number: String,
+            concurrentCallIn: Number,
+            concurrentCallOut: Number
+        }],
         satisfactionMode: {
             type: String,
             enum: {

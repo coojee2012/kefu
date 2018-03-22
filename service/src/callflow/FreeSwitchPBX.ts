@@ -315,6 +315,30 @@ export class FreeSwitchPBX {
   }
 
 
+  async createUuid(): Promise<string> {
+    try {
+      const newUuid: string = await new Promise<string>((resolve, reject) => {
+        this.conn.api('create_uuid', '', (evt) => {
+          this.logger.debug('create_uuid', evt.getHeader('Application'));
+          const body = evt.getBody();
+          if (body != '') {
+            resolve(body);
+          } else {
+            reject(body);
+          }
+        })
+      })
+      return newUuid;
+    } catch (ex) {
+      this.logger.error('createUuid error:', ex);
+      return Promise.reject(ex);
+    }
+
+  }
+
+
+
+
   async uuidRead({ uuid, file, terminators = 'none', min = 1, max = 1, variableName, timeout = 30000, legs = 'aleg' }: uuidReadOptions) {
     try {
       let inputs = '';
@@ -521,9 +545,9 @@ export class FreeSwitchPBX {
     }
 
   }
-  
-  async uuidKill(uuid:string, cause:string = 'NORMAL_CLEARING'): Promise<string>  {
-    try{
+
+  async uuidKill(uuid: string, cause: string = 'NORMAL_CLEARING'): Promise<string> {
+    try {
       await new Promise((resolve, reject) => {
         if (this.conn.socket) {
           this.conn.api('uuid_kill', [uuid, cause], (evt) => {
@@ -540,9 +564,9 @@ export class FreeSwitchPBX {
           resolve('Socket is null!');
         }
       });
-    }catch(ex){
+    } catch (ex) {
       return Promise.reject(ex);
-    } 
+    }
   }
 
   /**
@@ -604,29 +628,29 @@ export class FreeSwitchPBX {
     }
   }
 
-  addConnLisenter(evetName:string,eventType:string='once',cb?:any){
-    try{
-      if(!cb || typeof cb !== 'function') cb=()=>{};
-      if(eventType === 'once'){
-        this.conn.once(evetName,cb);
-      }else{
-        this.conn.on(evetName,cb); 
+  addConnLisenter(evetName: string, eventType: string = 'once', cb?: any) {
+    try {
+      if (!cb || typeof cb !== 'function') cb = () => { };
+      if (eventType === 'once') {
+        this.conn.once(evetName, cb);
+      } else {
+        this.conn.on(evetName, cb);
       }
-    }catch(ex){
-      this.logger.error('addConnLisenter error',ex);
+    } catch (ex) {
+      this.logger.error('addConnLisenter error', ex);
     }
   }
 
-  removeConnLisenter(evetName:string,cb?:any){
-    try{
-      if(!cb || typeof cb !== 'function') {
-        this.conn.removeAllListeners(evetName); 
+  removeConnLisenter(evetName: string, cb?: any) {
+    try {
+      if (!cb || typeof cb !== 'function') {
+        this.conn.removeAllListeners(evetName);
       }
-      else{
-        this.conn.off(evetName,cb); 
-      }  
-    }catch(ex){
-      this.logger.error('addConnLisenter error',ex);
+      else {
+        this.conn.off(evetName, cb);
+      }
+    } catch (ex) {
+      this.logger.error('addConnLisenter error', ex);
     }
   }
 

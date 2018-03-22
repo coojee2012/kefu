@@ -5,8 +5,12 @@ import { Queue, Job, QueueOptions } from 'bull';
 import { LoggerService } from '../service/LogService';
 import { ConfigService } from '../service/ConfigService';
 import { RedisService } from '../service/RedisService';
+import { EventService } from '../service/EventService';
 
 import { TenantController } from '../controllers/tenant';
+import { PBXExtensionController } from '../controllers/pbx_extension';
+import { PBXAgentController } from '../controllers/pbx_agent';
+
 import { RedisOptions, Redis } from 'ioredis';
 import Redlock = require('redlock');
 import { Lock } from 'redlock';
@@ -25,12 +29,21 @@ export class QueueWorkerService {
     private redLockClient: Redis;
     private bullQueueClient: Redis;
     private redisService: RedisService;
+    private eventService: EventService;
+
+    private pbxAgentController: PBXAgentController;
+    private pbxExtensionController: PBXExtensionController;
+
     constructor(private injector: Injector, private logger: LoggerService, private config: ConfigService) {
-       
+        this.createChildInjector();
+        this.pbxAgentController = this.childInjector.get(PBXAgentController);
+        this.pbxExtensionController = this.childInjector.get(PBXExtensionController);
+
     }
 
-    async init(){
-        try{
+
+    async init() {
+        try {
             this.redisService = this.injector.get(RedisService);
             this.queueOptions = {
                 redis: {
@@ -40,11 +53,11 @@ export class QueueWorkerService {
                     db: 10,
                 },
                 prefix: 'esl_bull'
-    
+
             }
             this.redLockClient = this.redisService.getClientByName('RedLock');
             this.bullQueueClient = this.redisService.getClientByName('BullQueue');
-         
+
             this.redlock = new Redlock(
                 // you should have one client for each redis node
                 // in your cluster
@@ -66,7 +79,7 @@ export class QueueWorkerService {
             })
             this.queueTopics = [];
             this.queues = []
-        }catch(ex){
+        } catch (ex) {
 
         }
     }
@@ -249,21 +262,8 @@ export class QueueWorkerService {
                 //redis锁定成员
                 //检查是否可用
                 const member = members[i];
-                const query = {
-                    tenantId,
-                    accountCode: Number(member),
-                    state: 'waiting',
-                    status: 'Login'
-                }
-                const finds: any[] = await new Promise<any[]>((resolve, reject) => {
-                    this.extensionEntity.list$(query, (err, list) => {
-                        err ? reject(err) : resolve(list)
-                    })
-                })
-                if (finds.length) {
-                    finded = finds[0];
-                    break;
-                }
+                finded = await this.pbxExtensionController.checkAgentCanDail(tenantId, member);
+                if (finded) break;
             }
             return Promise.resolve(finded);
         }
@@ -275,19 +275,7 @@ export class QueueWorkerService {
 
     async roundRobinStrategy({ members, tenantId, queueNumber }) {
         try {
-            const query = {
-                tenantId,
-                queueNumber,
-                sort$: {
-                    lastBridgeStart: -1,
-                    position: -1
-                }
-            }
-            const finds: any[] = await new Promise<any[]>((resolve, reject) => {
-                this.agentsEntity.list$(query, (err, list) => {
-                    err ? reject(err) : resolve(list)
-                })
-            })
+            const finds = await this.pbxAgentController.getRoundRobinAgents(tenantId, queueNumber);
             let newArray = [];
             if (finds && finds.length) {
                 const agent = finds[0];
@@ -328,7 +316,7 @@ export class QueueWorkerService {
     async getLockedMembers({ tenantId }) {
         try {
             const regKey = `esl::queue::member::locked::${tenantId}::*`;
-            const keys = await this.redisQC.keys(regKey);
+            const keys = await this.redLockClient.keys(regKey);
             const members = [];
             keys.forEach(key => {
                 const items = key.split('::');
@@ -363,14 +351,16 @@ export class QueueWorkerService {
                 const { queue, tenantId, callId } = argData;
                 this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
                 const { members, queueNumber } = queue;
-                const eventName = `stop::find::agent::${args.id}`;
+                const eventName = `stopFindAgent::${tenantId}::${callId}`;
                 this.logger.debug('doneInComeCall', eventName);
                 let eslSendStop = false;
                 let maxTimeOut = false;
-                // this.EE3.once(eventName, () => {
-                //     this.logger.info('ESL Send Stop Job!');
-                //     eslSendStop = true;
-                // })
+                this.eventService.once(eventName, (data) => {
+                    //if(data.jobId === args.id){
+                    this.logger.info(`ESL Send Stop Job!${data.jobId} - ${args.id}`);
+                    eslSendStop = true;
+                    //}                  
+                })
                 const startTime = new Date().getTime();
                 let isMyTurn = false;
 
@@ -451,13 +441,7 @@ export class QueueWorkerService {
                             phoneNumber: data ? data.phoneNumber : '',
                             loginType: data ? data.loginType : ''
                         }
-
-                        // await new Promise((resolve, reject) => {
-                        //     this.seneca.act({ role: 'pubsub', path: 'phone_queue', data: JSON.stringify(pubData) }, (err, rsp) => {
-                        //         err ? reject(err) : resolve(rsp)
-                        //     })
-                        // })
-
+                        await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member',JSON.stringify(pubData));                   
                         break;
                     }
                     else {
@@ -486,6 +470,8 @@ export class QueueWorkerService {
     createChildInjector(): void {
         this.childInjector = ReflectiveInjector.resolveAndCreate([
             TenantController,
+            PBXExtensionController,
+            PBXAgentController
         ])
     }
 
