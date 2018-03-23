@@ -22,6 +22,9 @@ import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
 import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
 import { PBXBlackListController } from '../controllers/pbx_blacklist';
 import { PBXQueueController } from '../controllers/pbx_queue';
+import { PBXExtensionController } from '../controllers/pbx_extension';
+import { PBXAgentController } from '../controllers/pbx_agent';
+
 import { TenantController} from '../controllers/tenant';
 
 @Injectable()
@@ -84,6 +87,11 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             PBXAgentStatisticController,
             PBXBlackListController,
             PBXQueueController,
+            PBXExtensionController,
+            PBXAgentController,
+
+
+
             TenantController,
         ], this.injector);
     }

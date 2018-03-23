@@ -5,6 +5,8 @@ import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
 
+
+@Injectable()
 export class PBXAgentController {
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
 

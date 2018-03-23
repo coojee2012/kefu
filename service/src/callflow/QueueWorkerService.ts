@@ -38,7 +38,6 @@ export class QueueWorkerService {
         this.createChildInjector();
         this.pbxAgentController = this.childInjector.get(PBXAgentController);
         this.pbxExtensionController = this.childInjector.get(PBXExtensionController);
-
     }
 
 
@@ -472,7 +471,7 @@ export class QueueWorkerService {
             TenantController,
             PBXExtensionController,
             PBXAgentController
-        ])
+        ], this.injector)
     }
 
     async wait(millisecond) {
