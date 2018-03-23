@@ -65,4 +65,22 @@ export class PBXExtensionController {
         }
     }
 
+    async setAgentState(tenantId: string, agentId: string, state: string) {
+        try {
+            const query = {
+                tenantId,
+                agentId
+            }
+            const setData = {
+                state: state,
+                stateLastModified: new Date()
+            }
+            const res = await this.mongoDB.models.PBXExtension.update(query, { $set: setData }, { multi: false });
+            return Promise.resolve(res);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
 }

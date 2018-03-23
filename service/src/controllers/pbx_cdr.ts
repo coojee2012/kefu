@@ -10,52 +10,73 @@ export class PBXCDRController {
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
 
     }
-    async updateCalled(tenantId:string,callId:string,called:string) {
-        try{
+    async updateCalled(tenantId: string, callId: string, called: string) {
+        try {
             const result = await this.mongoDB.models.PBXCDR.update({
                 tenantId,
                 callId
-            },{
-                $set:{
-                    called,
-                }
-            },{
-                multi: false, 
-                safe: true
-            });
+            }, {
+                    $set: {
+                        called,
+                    }
+                }, {
+                    multi: false,
+                    safe: true
+                });
             return result;
 
-        }catch(ex){
+        } catch (ex) {
             return Promise.reject(ex);
         }
     }
 
-    async lastApp(callId:string, tenantId:string, lastApp:string) {
+    async lastApp(callId: string, tenantId: string, lastApp: string) {
         const _this = this;
         try {
             const result = await this.mongoDB.models.PBXCDR.update({
                 tenantId,
                 callId
-            },{
-                $set:{
-                    lastApp,
-                }
-            },{
-                multi: false, 
-                safe: true
-            });
+            }, {
+                    $set: {
+                        lastApp,
+                    }
+                }, {
+                    multi: false,
+                    safe: true
+                });
             return result;
         } catch (ex) {
-          return Promise.reject(ex);
+            return Promise.reject(ex);
         }
-      }
+    }
 
-    async create(data){
-        try{
+    async create(data) {
+        try {
             const newDoc = await this.mongoDB.models.PBXCDR.create(data);
             return newDoc;
-        }catch(ex){
-            return Promise.reject(ex); 
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+    async setAgentId({ callId, tenantId, accountCode, whenAnswer = false, answerUuid }: { callId: string, tenantId: string, accountCode: string, whenAnswer?: boolean, answerUuid?: string }) {
+        const _this = this;
+        try {
+            let updateData = {
+                accountCode
+            }
+            if (whenAnswer) {
+                updateData = Object.assign({}, updateData, {
+                    answerStatus: 'answered',
+                    answerTime: new Date()
+                })
+            }
+            const result = await this.mongoDB.models.PBXCDR.updateOne({
+                callId,
+                tenantId,
+            }, { $set: updateData });
+            return result;
+        } catch (ex) {
+            return Promise.reject(ex);
         }
     }
 }

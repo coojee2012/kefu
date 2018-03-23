@@ -33,6 +33,18 @@ export type uuidReadOptions = {
   timeout?: number;
   legs?: string;
 }
+
+export type originateReturn = {
+  success: boolean;
+  uuid?: string;
+  failType?: string;
+}
+
+export type uuidBridgeReturn = {
+  success: boolean;
+  bridgeId?: string;
+  reason?: string;
+}
 @Injectable()
 export class FreeSwitchPBX {
   private logger: LoggerService;
@@ -338,6 +350,33 @@ export class FreeSwitchPBX {
 
 
 
+  async originate(dialStr: string, appOrExten: string = 'park', argStrs?: string, originationUuid?: string): Promise<originateReturn> {
+    try {
+      const result: originateReturn = await new Promise<originateReturn>((resolve, reject) => {
+        this.conn.bgapi('originate', [`{${argStrs}}${dialStr}`, appOrExten], (evt) => {
+          const body = evt.getBody();
+          this.logger.debug('after originate:', body);
+          if (/^\+OK/.test(body)) {
+            const newId = body.split(/\s+/)[1];
+            resolve({
+              success: true,
+              uuid: newId
+            });
+          } else {
+            resolve({
+              success: false,
+              failType: body.split(/\s+/)[1]
+            });
+          }
+        });
+      })
+
+    }
+    catch (ex) {
+      return Promise.reject(ex);
+    }
+
+  }
 
   async uuidRead({ uuid, file, terminators = 'none', min = 1, max = 1, variableName, timeout = 30000, legs = 'aleg' }: uuidReadOptions) {
     try {
@@ -611,6 +650,32 @@ export class FreeSwitchPBX {
 
   }
 
+  async uuidBridge(callerLegId, agentLegId): Promise<uuidBridgeReturn> {
+    try {
+      const result: uuidBridgeReturn = await new Promise<uuidBridgeReturn>((resolve, reject) => {
+        this.conn.api('uuid_bridge', [callerLegId, agentLegId], (evt) => {
+          const body = evt.getBody();
+          this.logger.debug('uuid_bridge result:', body);
+          if (/^\+OK/.test(body)) {
+            const bridgeId = body.split(/\s+/)[1];
+            resolve({
+              success: true,
+              bridgeId
+            });
+          } else {
+            resolve({
+              success: false,
+              reason: body.split(/\s+/)[1]
+            });
+          }
+        })
+      })
+      return result
+    } catch (ex) {
+      this.logger.error('uuidBridge error:', ex);
+      return Promise.reject(ex);
+    }
+  }
 
   async wait(millisecond) {
     try {

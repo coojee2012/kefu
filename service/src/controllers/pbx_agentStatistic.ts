@@ -19,7 +19,7 @@ export class PBXAgentStatisticController {
         }
     }
 
-    async setSatisfaction(callId:string, bLegId:string, satisfaction:number){
+    async setSatisfaction(callId: string, bLegId: string, satisfaction: number) {
         try {
             const { nModified } = await this.mongoDB.models.PBXAgentStatistic.update({
                 callId: callId,
@@ -34,5 +34,24 @@ export class PBXAgentStatisticController {
         catch (ex) {
             return Promise.reject(ex);
         }
+    }
+
+    async answerCall({ callId, bLegId }) {
+        const _this = this;
+        try {
+            const { nModified } = await this.mongoDB.models.PBXAgentStatistic.update({
+                callId,
+                bLegId,
+            }, {
+                    $set: { answerTime: new Date() }
+                }, {
+                    multi: false, safe: true
+                });
+            return nModified;
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+
     }
 }

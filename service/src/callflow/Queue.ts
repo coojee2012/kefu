@@ -11,6 +11,7 @@ import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXQueueController } from '../controllers/pbx_queue';
 import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
 import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXAgentController } from '../controllers/pbx_agent';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXQueueModel } from '../models/pbx_queues';
 import { PBXExtensionController } from '../controllers/pbx_extension';
@@ -32,14 +33,17 @@ export class Queue {
     private pbxQueueController: PBXQueueController;
     private pbxQueueStatisticController: PBXQueueStatisticController;
     private pbxAgentStatisticController: PBXAgentStatisticController;
-    private pbxExtensionController:PBXExtensionController;
-    private pbxTenantController:TenantController;
-    private cdrControl: PBXCDRController;
+    private pbxExtensionController: PBXExtensionController;
+    private pbxTenantController: TenantController;
+    private pbxAgentController: PBXAgentController;
+    private pbxCdrControl: PBXCDRController;
     private originationUuid: string;
     private hangupBySystem: string;
 
     private setIntervalTimeout: NodeJS.Timer;
     private startTime: number;
+    private ringTime: number;
+    private answerTime: number;
     private queueJob: Job;
 
     private vipLevel: number;
@@ -49,6 +53,7 @@ export class Queue {
     private findQueueMemberExec: boolean;
     private isCallerHangup: boolean;
     private agentEndState: string;
+    private tryCallAgentTimes: number;
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -62,10 +67,14 @@ export class Queue {
         this.pbxQueueStatisticController = this.injector.get(PBXQueueStatisticController);
         this.pbxTenantController = this.injector.get(this.pbxTenantController);
         this.pbxExtensionController = this.injector.get(PBXExtensionController);
+        this.pbxAgentController = this.injector.get(PBXAgentController);
+        this.pbxCdrControl = this.injector.get(PBXCDRController);
+
 
         this.runtimeData = this.injector.get(RuntimeData);
 
         this.isCallerHangup = false;
+        this.tryCallAgentTimes = 0;
 
     }
     /**
@@ -552,11 +561,7 @@ export class Queue {
             }
             else if (agentInfo && agentInfo.accountCode) {
                 const startCallAgentTime = new Date();
-                const dialResult = await this.dialQueueMember({
-                    agentInfo,
-                    queueInfo: this.queue,
-                    agentType,
-                });
+                const dialResult = await this.dialQueueMember({agentInfo});
                 this.logger.debug('dialQueueMember result:', dialResult);
                 // 不成功重新放回队列
                 if (this.isCallerHangup) {
@@ -590,7 +595,7 @@ export class Queue {
                     if (agentInfo.phoneLogin === 'yes') {
                         const { channelName, useContext } = this.runtimeData.getChannelData();
                         const tenantInfo = this.runtimeData.getTenantInfo();
-                        await this.cdrControl.create({
+                        await this.pbxCdrControl.create({
                             tenantId,
                             routerLine: routerLine,
                             srcChannel: channelName,
@@ -796,7 +801,7 @@ export class Queue {
     }
 
 
-    async dialQueueMember({agentInfo}) {
+    async dialQueueMember({ agentInfo }) {
         const _this = this;
         const dialMemberResult = {
             success: false,
@@ -808,32 +813,32 @@ export class Queue {
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
             const { phoneNumber, accountCode, phoneLogin, agentId } = agentInfo;
             const { queueName, queueNumber, queue: queueConf } = this.queue;
-            const { maxWaitTime, enterTipFile,forceDND,callerId } = queueConf;
+            const { maxWaitTime, enterTipFile, forceDND, callerId, ringTimeOut, jobNumberTipFile } = queueConf;
             await this.pbxExtensionController.setAgentLastCallId(tenantId, accountCode, callId);
 
-            let dialStr = `sofia/external/${accountCode}@${tenantId}`;
+            let dialStr = `user/${accountCode}@${tenantId}`;
 
             let loginType = 'web';
             if (phoneLogin === 'yes') {
                 if (phoneNumber && phoneNumber.length > 4) {
-                
                     const { dnd, gateway } = await this.pbxTenantController.getDialGateWay({
                         tenantId,
                         callId,
                         dnd: callerId,
                         forceDND,
                     });
-                    this.gateway = gateway;
-                    this.DND = dnd;
+                    //this.gateway = gateway;
+                    //this.DND = dnd;
 
-                    if (this.gateway && this.gateway !== '') {
-                        dialStr = `sofia/external/${phoneNumber}@${this.gateway}`;
-                    } else {
-                        dialStr = `sofia/external/${phoneNumber}@${tenantId}`;
-                    }
+                    // if (this.gateway && this.gateway !== '') {
+                    //     dialStr = `sofia/external/${phoneNumber}@${this.gateway}`;
+                    // } else {
+                    //     dialStr = `sofia/external/${phoneNumber}@${tenantId}`;
+                    // }
                     this.agentEndState = 'waiting';
                     loginType = 'phone';
-                    this.cgrCategory = 'call_out';
+
+                    //this.cgrCategory = 'call_out';
                 }
                 // 用思科的分机号当做是手机签入
                 else {
@@ -854,106 +859,107 @@ export class Queue {
                     // }
                 }
             }
-            if (agentType == 'user') {
-                dialStr = `user/${accountCode}`;
-            }
+            // if (agentType == 'user') {
+            //     dialStr = `user/${accountCode}`;
+            // }
 
             this.originationUuid = await this.fsPbx.createUuid();
-            _this.R.agentLeg[`${accountCode}`] = _this.R.originationUuid;
-            _this.R.agentId = agentId;
+            this.runtimeData.addBleg(this.originationUuid, accountCode);
+            // _this.R.agentLeg[`${accountCode}`] = _this.R.originationUuid;
+            // _this.R.agentId = agentId;
 
 
-            _this.tryCallAgentTimes = _this.tryCallAgentTimes + 1;
+            this.tryCallAgentTimes = this.tryCallAgentTimes + 1;
+            const { FSName, CoreUuid, sipCallId } = this.runtimeData.getChannelData()
             pubData = {
                 tenantId,
                 agentId,
                 agent: accountCode,
                 state: '',
                 fromQueue: 'yes',
-                fsName: _this.R.fsName,
-                fsCoreId: _this.R.fsCoreId,
-                callType: _this.R.callType,
-                transferCall: _this.R.transferCall,
-                isClickOut: _this.R.clickOut === 'yes' ? true : false,
-                roomId: _this.R.callId + '_' + _this.R.originationUuid,
-                sipCallId: _this.R.pbxApi.getChannelData().sipCallId,
-                options: {
-                    callId: _this.R.callId + '_' + _this.R.originationUuid,
-                    callee: accountCode,
-                    caller: _this.R.caller,
-                    DND: _this.R.DND,
-                    direction: _this.R.direction,
-                },
+                fsName: FSName,
+                fsCoreId: CoreUuid,
+                //callType: callType,
+                //transferCall: transferCall,
+                isClickOut: false,
+                roomId: callId,
+                sipCallId: sipCallId,
+                // options: {
+                //     callId: _this.R.callId + '_' + _this.R.originationUuid,
+                //     callee: accountCode,
+                //     caller: _this.R.caller,
+                //     DND: _this.R.DND,
+                //     direction: _this.R.direction,
+                // },
             };
 
-            if (!_this.R.agentId || _this.R.agentId == '') {
-                // dialMemberResult.reason = 'ErrorAgentId';
-                // return dialMemberResult;
-                // throw new Error('ErrorAgentId');
-                _this.R.agentId = '';
-            }
+            // if (!_this.R.agentId || _this.R.agentId == '') {
+            // dialMemberResult.reason = 'ErrorAgentId';
+            // return dialMemberResult;
+            // throw new Error('ErrorAgentId');
+            //this.agentId = '';
+            //   }
 
-            _this.cdrUpdateCalled(accountCode, loginType, 'dialQueueMember');
-            _this.R.service.cdr.update({ tenantId, callId }, { agent: accountCode });
+            await this.pbxCdrControl.updateCalled(tenantId, callId, accountCode);
 
-            _this.R.service.agentStatistics.create({
-                callId: _this.R.callId,
-                bLegId: _this.R.originationUuid,
-                tenantId: _this.R.tenantId,
-                queueNumber: queueInfo.queueNumber,
+
+            await this.pbxAgentStatisticController.create({
+                callId: callId,
+                bLegId: this.originationUuid,
+                tenantId: tenantId,
+                queueNumber: queueNumber,
                 agentNumber: accountCode,
-                agentId: _this.R.agentId,
+                agentId: agentId,
             });
 
 
-            await _this.R.service.extension.setAgentState(Object.assign({}, pubData, {
-                state: AGENTSTATE.ringing,
-                agentId: _this.R.agentId,
-            }));
-            _this.R.service.callProcess.create({
-                caller: _this.R.caller,
+            await this.pbxExtensionController.setAgentState(tenantId, agentId, 'ring');
+            await this.pbxCallProcessController.create({
+                caller: caller,
                 called: accountCode,
                 tenantId,
                 callId,
                 processName: 'ringing',
                 passArgs: { number: accountCode, agentId },
             });
-            await _this.R.service.agents.newCall({
+            await this.pbxAgentController.newCall({
                 tenantId,
-                queueNumber: queueInfo.queueNumber,
+                queueNumber: queueNumber,
                 agentNumber: accountCode,
             });
             // _this.logger.debug(loggerPrefix, 'newcallRes:', newcallRes);
             // 设置呼叫参数
             const originateArgs = [];
             originateArgs.push('ignore_early_media=true');
-            originateArgs.push(`originate_timeout=${queueInfo.queue.ringTimeOut}`);
+            originateArgs.push(`originate_timeout=${ringTimeOut}`);
 
 
-            originateArgs.push(`origination_uuid=${_this.R.originationUuid}`);
+            originateArgs.push(`origination_uuid=${this.originationUuid}`);
             originateArgs.push('inherit_codec=false');
             originateArgs.push('originate_call=yes');
-            originateArgs.push(`originate_tenant=${_this.R.tenantId}`);
+            originateArgs.push(`originate_tenant=${tenantId}`);
             if (loginType === 'phone') {
-                originateArgs.push(`origination_caller_id_name=${_this.DND}`);
-                originateArgs.push(`origination_caller_id_number=${_this.DND}`);
+                // originateArgs.push(`origination_caller_id_name=${_this.DND}`);
+                // originateArgs.push(`origination_caller_id_number=${_this.DND}`);
             } else {
-                originateArgs.push(`origination_caller_id_name=${_this.R.caller}`);
-                originateArgs.push(`origination_caller_id_number=${_this.R.caller}`);
+                originateArgs.push(`origination_caller_id_name=${caller}`);
+                originateArgs.push(`origination_caller_id_number=${caller}`);
             }
             // 计费相关参数
-            originateArgs.push(`cgr_reqtype=${_this.R.cgrReqType}`);
-            originateArgs.push(`cgr_tenant=${_this.R.tenantId}`);
-            originateArgs.push(`cgr_subject=${_this.R.pbxApi.getChannelData().sipFromUser}`);
-            originateArgs.push('cgr_account=default');
-            originateArgs.push(`cgr_category=${_this.cgrCategory}`);
-            originateArgs.push('cgr_account=default');
+            // originateArgs.push(`cgr_reqtype=${_this.R.cgrReqType}`);
+            // originateArgs.push(`cgr_tenant=${_this.R.tenantId}`);
+            // originateArgs.push(`cgr_subject=${_this.R.pbxApi.getChannelData().sipFromUser}`);
+            // originateArgs.push('cgr_account=default');
+            // originateArgs.push(`cgr_category=${_this.cgrCategory}`);
+            // originateArgs.push('cgr_account=default');
+
             // originateArgs.push(`direction=inbound`);
             // originateArgs.push(`click_dialout=yes`);
-            originateArgs.push('cgr_ignorepark=true');
-            originateArgs.push('cgr_takethis=true');
-            originateArgs.push('process_cdr=true');
-            originateArgs.push(`cgr_destination=${accountCode}`);
+
+            // originateArgs.push('cgr_ignorepark=true');
+            // originateArgs.push('cgr_takethis=true');
+            // originateArgs.push('process_cdr=true');
+            // originateArgs.push(`cgr_destination=${accountCode}`);
 
             // originateArgs.push('sip_redirect_context=redirected2');
 
@@ -961,114 +967,94 @@ export class Queue {
             // 呼叫坐席
             // _this.R.agentId
 
-            _this.ringTime = new Date().getTime();
+            this.ringTime = new Date().getTime();
             const timestamp = new Date().getTime();
-            const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                type: 'ringing-queue',
-                bLegId: _this.R.originationUuid,
-                timestamp,
-                agentId: _this.R.agentId,
-                agentNumber: String(accountCode),
-                tryCall: _this.tryCallAgentTimes,
-                ringingTime: _this.ringTime,
-            });
-            _this.R.logger.debug('callControlMessageOriginData RingingQueue ', fluentData);
-            process.fluent['callControlMessageOrigin'].log(fluentData);
+
 
             let start = new Date();
-            await _this.R.pbxApi.set({
-                'sip_h_X-CID': _this.R.ChannelData.get('variable_sip_call_id'),
-            });
-            await _this.R.pbxApi.filter('Unique-ID', _this.R.originationUuid);
-            _this.R.allLegIds.push(_this.R.originationUuid);
-            const oriResult = await _this.R.pbxApi.originateQMember(dialStr, _this.R.originationUuid, argStrs);
+
+            await this.fsPbx.uuidSetvar({
+                uuid: callId,
+                varname: 'sip_h_X-CID',
+                varvalue: sipCallId
+            })
+            await this.fsPbx.filter('Unique-ID', this.originationUuid);
+
+            const oriResult = await this.fsPbx.originate(dialStr, '&park()', argStrs, this.originationUuid);
             // 坐席应答
             if (oriResult.success) {
-                _this.answerTime = new Date().getTime();
-                _this.R.service.callProcess.create({
-                    caller: _this.R.caller,
+                this.answerTime = new Date().getTime();
+                await this.pbxCallProcessController.create({
+                    caller: caller,
                     called: accountCode,
                     tenantId,
                     callId,
                     processName: 'answer',
                     passArgs: { number: accountCode, agentId },
                 });
-                EE3.emit(`queue::busytip::findagent::${callId}`);
-                await _this.R.pbxApi.uuidBreak(_this.R.callId);
-                await _this.R.service.extension.setAgentState(Object.assign({}, pubData, { state: AGENTSTATE.inthecall }));
+                // EE3.emit(`queue::busytip::findagent::${callId}`);
+                await this.fsPbx.uuidBreak(callId);
+                await this.pbxExtensionController.setAgentState(tenantId, agentId, 'inthecall');
 
 
 
 
                 // await _this.R.pbxApi.uuidDebugMedia(newId);
                 // await _this.R.pbxApi.uuidDebugMedia(_this.R.callId);
-                await _this.wait(200);
-                await _this.R.pbxApi.set({
+                await this.fsPbx.wait(200);
+                await this.fsPbx.uuidSetvar({
                     // "hangup_after_bridge": false, //无效很奇怪
-                    'park_after_bridge': true,
+                    uuid: callId,
+                    varname: 'park_after_bridge',
+                    varvalue: 'true'
                 });
-                const dialResult = await _this.R.pbxApi.uuidBridge(callId, _this.R.originationUuid);
-                _this.R.logger.debug(loggerPrefix, 'dialResult:', dialResult);
+                const dialResult = await this.fsPbx.uuidBridge(callId, this.originationUuid);
+                this.logger.debug('dialResult:', dialResult);
 
                 // bridge来电成功
                 if (dialResult.success) {
-                    const timestamp = parseInt(new Date().getTime());
-                    _this.R.roomId = `${callId}_${_this.R.originationUuid}`;
-                    _this.R.service.agentStatistics.answerCall({ callId: _this.R.callId, bLegId: _this.R.originationUuid });
-                    _this.R.service.agents.answerCall({
+                    const timestamp = new Date().getTime();
+                    //_this.R.roomId = `${callId}_${_this.R.originationUuid}`;
+                    await this.pbxAgentStatisticController.answerCall({ callId: callId, bLegId: this.originationUuid });
+                    await this.pbxAgentController.answerCall({
                         tenantId,
-                        queueNumber: queueInfo.queueNumber,
+                        queueNumber: queueNumber,
                         agentNumber: accountCode,
                     });
                     // 在cdr中更新呼叫应答
-                    _this.db.cdrAnswer('agent', _this.R.originationUuid);
-                    _this.R.service.cdr.setAgentId({
-                        callId: _this.R.callId,
-                        tenantId: _this.R.tenantId,
-                        accountCode: _this.R.agentId,
+
+                    await this.pbxCdrControl.setAgentId({
+                        callId: callId,
+                        tenantId: tenantId,
+                        accountCode: agentId,
+                        whenAnswer: true,
+                        answerUuid: this.originationUuid
                     });
                     dialMemberResult.success = true;
 
-
-                    const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                        type: 'connected-queue',
-                        bLegId: _this.R.originationUuid,
-                        timestamp,
-                        agentId: _this.R.agentId,
-                        agentNumber: String(accountCode),
-                        tryCall: _this.tryCallAgentTimes,
-                        ringingTime: _this.ringTime,
-                        answerTime: _this.answerTime,
-                    });
-                    _this.R.logger.debug('callControlMessageOriginData DialAgentSuccess', fluentData);
-                    process.fluent['callControlMessageOrigin'].log(fluentData);
-
                     // 想客户播放工号
-                    if (queueInfo.queue.jobNumberTipFile) {
-                        const tipContent = queueInfo.queue.jobNumberTipFile.replace('{accountCode}', accountCode);
+                    if (jobNumberTipFile) {
+                        const tipContent = jobNumberTipFile.replace('{accountCode}', accountCode);
                         // await _this.ttsClient.playback(callId, tipContent, _this.R.pbxApi, 'both');
                         await Promise.all([
-                            _this.ttsClient.broadcast(callId, tipContent, _this.R.pbxApi, 'aleg'),
-                            _this.ttsClient.broadcast(_this.R.originationUuid, tipContent, _this.R.pbxApi, 'aleg'),
+                           // _this.ttsClient.broadcast(callId, tipContent, _this.R.pbxApi, 'aleg'),
+                           // _this.ttsClient.broadcast(_this.R.originationUuid, tipContent, _this.R.pbxApi, 'aleg'),
                         ]);
                     }
                 }
                 // bridge失败
                 else {
-                    _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: 'visitor' });
-                    _this.R.alegHangupBy = 'visitor';
-                    _this.R.service.agentStatistics.hangupCall({
-                        callId: _this.R.callId,
-                        bLegId: _this.R.originationUuid,
-                        hangupCase: 'visitor',
-                    });
-                    _this.R.service.extension.setAgentState(Object.assign({}, pubData, {
-                        state: _this.endState,
-                        hangup: true,
-                    }));
+                    // _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: 'visitor' });
+                    // _this.R.alegHangupBy = 'visitor';
+                    // _this.R.service.agentStatistics.hangupCall({
+                    //     callId: _this.R.callId,
+                    //     bLegId: _this.R.originationUuid,
+                    //     hangupCase: 'visitor',
+                    // });
+                    this.pbxExtensionController.setAgentState(tenantId,agentId,'idle');
                     dialMemberResult.reason = dialResult.reason;
                 }
-                EE3.emit(`queue::after::bridge::${callId}`);
+               // EE3.emit(`queue::after::bridge::${callId}`);
 
                 return dialMemberResult;
             }
@@ -1138,7 +1124,7 @@ export class Queue {
                 return dialMemberResult;
             }
         } catch (ex) {
-            _this.R.logger.error('dialMemberResult', ex, _this.endState);
+            this.logger.error('dialMemberResult', ex);
             _this.R.service.extension.setAgentState(Object.assign({}, pubData, { state: _this.endState, hangup: true }));
             dialMemberResult.reason = ex.toString();
             return dialMemberResult;

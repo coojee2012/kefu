@@ -118,33 +118,33 @@ export class TenantController {
     async checkDndConcureent(dnd, concurrentCall, tenantId, callId) {
         const _this = this;
         try {
-            // 从redis缓存中获取某个dnd对应的trunk信息
-            const dndTrunkKey = `CallControl::DND::TRUNK::CACHE::${dnd}`;
-            let dndTrunkInfo = await _this.redisQC.hgetall(dndTrunkKey);
-            // 如果不存在从mongoDB中获取并写入到redis缓存
-            if (!dndTrunkInfo) {
-                dndTrunkInfo = await _this.dbi.trunk.getTrunkInfoByDND(dnd);// 如果无法获取到,会reject
-                await _this.redisQC.multi([
-                    ['hmset', dndTrunkKey, 'name', dndTrunkInfo.name, 'concurrentCall', dndTrunkInfo.concurrentCall || 0, 'transport', dndTrunkInfo.transport, 'gateway', dndTrunkInfo.gateway, 'protocol', dndTrunkInfo.protocol
-                    ],
-                    ['expire', dndTrunkKey, 8 * 60 * 60]
-                ]);
-            }
-            const step = concurrentCall > 999 ? 100 :
-                concurrentCall > 99 ? 50 :
-                    concurrentCall > 60 ? 2 : 1
-            const retry = concurrentCall > 999 ? 20 :
-                concurrentCall > 499 ? 15 :
-                    concurrentCall > 60 ? 10 : 1;
-            const { lock, resource } = await _this.getAResource({ dnd, max: concurrentCall, index: 0, retry, step });
-            if (lock) {
-                const callResourceKey = `CallControl::DND::Resource::${callId}`;
-                await _this.redisQC.set(callResourceKey, resource);
-                _this.freeAResource(lock, tenantId, callId);
-                return `${dndTrunkInfo.gateway};transport=${dndTrunkInfo.transport}`;
-            } else {
-                return '';
-            }
+            // // 从redis缓存中获取某个dnd对应的trunk信息
+            // const dndTrunkKey = `CallControl::DND::TRUNK::CACHE::${dnd}`;
+            // let dndTrunkInfo = await _this.redisQC.hgetall(dndTrunkKey);
+            // // 如果不存在从mongoDB中获取并写入到redis缓存
+            // if (!dndTrunkInfo) {
+            //     dndTrunkInfo = await _this.dbi.trunk.getTrunkInfoByDND(dnd);// 如果无法获取到,会reject
+            //     await _this.redisQC.multi([
+            //         ['hmset', dndTrunkKey, 'name', dndTrunkInfo.name, 'concurrentCall', dndTrunkInfo.concurrentCall || 0, 'transport', dndTrunkInfo.transport, 'gateway', dndTrunkInfo.gateway, 'protocol', dndTrunkInfo.protocol
+            //         ],
+            //         ['expire', dndTrunkKey, 8 * 60 * 60]
+            //     ]);
+            // }
+            // const step = concurrentCall > 999 ? 100 :
+            //     concurrentCall > 99 ? 50 :
+            //         concurrentCall > 60 ? 2 : 1
+            // const retry = concurrentCall > 999 ? 20 :
+            //     concurrentCall > 499 ? 15 :
+            //         concurrentCall > 60 ? 10 : 1;
+            // const { lock, resource } = await _this.getAResource({ dnd, max: concurrentCall, index: 0, retry, step });
+            // if (lock) {
+            //     const callResourceKey = `CallControl::DND::Resource::${callId}`;
+            //     await _this.redisQC.set(callResourceKey, resource);
+            //     _this.freeAResource(lock, tenantId, callId);
+            //     return `${dndTrunkInfo.gateway};transport=${dndTrunkInfo.transport}`;
+            // } else {
+            //     return '';
+            // }
         } catch (ex) {
             return Promise.reject(ex);
         }
