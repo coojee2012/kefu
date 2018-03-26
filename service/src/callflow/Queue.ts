@@ -11,14 +11,17 @@ import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXQueueController } from '../controllers/pbx_queue';
 import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
 import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 import { PBXAgentController } from '../controllers/pbx_agent';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXQueueModel } from '../models/pbx_queues';
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { TenantController } from '../controllers/tenant';
 
+
+
 @Injectable()
-export class Queue {
+export class CCQueue {
 
     private cgrReqType: string;
     private queueWorker: QueueWorkerService;
@@ -37,8 +40,11 @@ export class Queue {
     private pbxTenantController: TenantController;
     private pbxAgentController: PBXAgentController;
     private pbxCdrControl: PBXCDRController;
+    private pbxRecordFileController: PBXRecordFileController;
+
     private originationUuid: string;
     private hangupBySystem: string;
+    private agentId: string;
 
     private setIntervalTimeout: NodeJS.Timer;
     private startTime: number;
@@ -57,6 +63,7 @@ export class Queue {
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
+        this.config = this.injector.get(ConfigService);
         this.queueWorker = this.injector.get(QueueWorkerService);
         this.eventService = this.injector.get(EventService);
 
@@ -65,10 +72,11 @@ export class Queue {
         this.pbxQueueController = this.injector.get(PBXQueueController);
         this.pbxCallProcessController = this.injector.get(PBXCallProcessController);
         this.pbxQueueStatisticController = this.injector.get(PBXQueueStatisticController);
-        this.pbxTenantController = this.injector.get(this.pbxTenantController);
+        this.pbxTenantController = this.injector.get(TenantController);
         this.pbxExtensionController = this.injector.get(PBXExtensionController);
         this.pbxAgentController = this.injector.get(PBXAgentController);
         this.pbxCdrControl = this.injector.get(PBXCDRController);
+        this.pbxRecordFileController = this.injector.get(PBXRecordFileController);
 
 
         this.runtimeData = this.injector.get(RuntimeData);
@@ -83,7 +91,7 @@ export class Queue {
    * @param queueNumber
    * @returns {Promise.<*>}
    */
-    async dialQueue(queueNumber: string): Promise<any> {
+    async dialQueue(queueNumber: string): Promise<dialQueueResult> {
         try {
             this.logger.debug(`queueNumber:${queueNumber},sipRegInFS:${this.config.getConfig().sipRegInFS}`);
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
@@ -93,7 +101,7 @@ export class Queue {
             this.bullQueue = await this.queueWorker.add(tenantId, queueNumber);
             this.addBullQueueMonitor();
 
-            const result = {
+            const result:dialQueueResult = {
                 success: false,
                 app: 'dial-queue',
                 gotoIvrNumber: '', // 队列执行完毕后,去向IVR
@@ -162,15 +170,10 @@ export class Queue {
                         file: enterTipFile2,
                     });
                 }
-
-
-
-
                 // 每隔1秒检查是否超时了
                 this.setIntervalTimeout = setInterval(this.timoutCheck.bind(this), 1000);
 
                 let findQueueMemberExec = false;
-
 
                 // 未应答前主叫挂机,坐席接听电话后将取消这个监听
 
@@ -207,7 +210,7 @@ export class Queue {
                     let doneOver = false;
                     const doneAfter = async () => {
                         try {
-                            await _this.afterQueueEnd({
+                            await this.afterQueueEnd({
                                 answered: result.answered,
                                 agentNumber: result.agentNumber,
                                 queueNumber,
@@ -232,37 +235,37 @@ export class Queue {
                                     const timestamp = new Date().getTime();
 
 
-                                    _this.R.service.agentStatistics.hangupCall({
-                                        callId: _this.R.callId,
-                                        bLegId: _this.R.originationUuid,
+                                    await this.pbxAgentStatisticController.hangupCall({
+                                        callId: callId,
+                                        bLegId: this.originationUuid,
                                         hangupCase: 'agent',
                                     });
 
-                                    _this.R.service.callProcess.create({
-                                        caller: _this.R.caller,
-                                        called: String(whoAnswered),
+                                    await this.pbxCallProcessController.create({
+                                        caller: caller,
+                                        called: whoAnswered,
                                         tenantId,
                                         callId,
                                         processName: 'hangup',
-                                        passArgs: { number: String(whoAnswered), agentId: _this.R.agentId, hangupMsg: '结束通话' },
+                                        passArgs: { number: String(whoAnswered), agentId: '', hangupMsg: '结束通话' },
                                     });
 
                                     if (queueConf && queueConf.transferStatic) {
-                                        _this.R.service.queueStatistics.transferStatic({
-                                            callId: _this.R.callId,
-                                            tenantId: _this.R.tenantId,
+                                        await this.pbxQueueStatisticController.transferStatic({
+                                            callId: callId,
+                                            tenantId: tenantId,
                                             queueNumber,
                                         });
                                     }
-                                    _this.R.service.queueStatistics.hangupCall({
-                                        callId: _this.R.callId,
-                                        tenantId: _this.R.tenantId,
+                                    await this.pbxQueueStatisticController.hangupCall(
+                                        callId,
+                                        tenantId,
                                         queueNumber,
-                                        hangupCase: 'agent',
-                                    });
-                                    _this.R.alegHangupBy = 'agent';
-                                    const roommId = _this.R.originationUuid ? `${callId}_${_this.R.originationUuid}` : callId;
-                                    _this.R.service.queue.hangupBy({ tenantId, callId: roommId, hangupBy: 'agent' });
+                                        'agent',
+                                    );
+                                    //this.alegHangupBy = 'agent';
+                                    const roommId = this.originationUuid ? `${callId}_${this.originationUuid}` : callId;
+                                    //this.R.service.queue.hangupBy({ tenantId, callId: roommId, hangupBy: 'agent' });
                                 }
                                 resolve();
                             }
@@ -272,43 +275,30 @@ export class Queue {
                         };
                         const onCallerHangup = async (evt) => {
                             try {
-                                _this.R.logger.debug(loggerPrefix, 'FIND_QUEUE_MEMBER_DONE中监听到主叫挂机了!');
+                                this.logger.debug('FIND_QUEUE_MEMBER_DONE中监听到主叫挂机了!');
                                 if (!doneOver) {
                                     doneOver = true;
-                                    _this.R.satisData.hangup = true;
+
+                                    this.runtimeData.setStatisData({ hangup: true });
                                     result.callerHangup = true;
                                     const timestamp = new Date().getTime();
-                                    const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                                        type: 'hangUp-queue',
-                                        bLegId: _this.R.originationUuid,
-                                        timestamp,
-                                        agentId: _this.R.agentId,
-                                        agentNumber: String(whoAnswered),
-                                        answerTime: _this.answerTime,
-                                        queueName: queue.queueName,
-                                        queueNumber,
-                                        tryCall: _this.tryCallAgentTimes,
-                                        ringingTime: _this.ringTime,
-                                        by: 'visitor',
-                                    });
-                                    _this.R.logger.debug('callControlMessageOriginData VisitorHangupFirst ', fluentData);
-                                    process.fluent['callControlMessageOrigin'].log(fluentData);
 
-                                    service.agentStatistics.hangupCall({
-                                        callId: _this.R.callId,
-                                        bLegId: _this.R.originationUuid,
+
+                                    await this.pbxAgentStatisticController.hangupCall({
+                                        callId: callId,
+                                        bLegId: this.originationUuid,
                                         hangupCase: 'user',
                                     });
-                                    service.queueStatistics.hangupCall({
-                                        callId: _this.R.callId,
-                                        tenantId: _this.R.tenantId,
+                                    await this.pbxQueueStatisticController.hangupCall(
+                                        callId,
+                                        tenantId,
                                         queueNumber,
-                                        hangupCase: 'user',
-                                    });
+                                        'user',
+                                    );
 
-                                    _this.R.alegHangupBy = 'visitor';
+                                    // _this.R.alegHangupBy = 'visitor';
 
-                                    _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: _this.R.alegHangupBy });
+                                    //  _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: _this.R.alegHangupBy });
                                     // await doneAfter();
                                     // resolve();
                                 }
@@ -331,58 +321,63 @@ export class Queue {
                             }
                         };
 
-                        _this.R.pbxApi.conn.once(`esl::event::CHANNEL_HANGUP::${_this.R.originationUuid}`, onAgentHangup);
+                        this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${this.originationUuid}`, 'once', onAgentHangup);
 
-                        _this.R.pbxApi.conn.once(`esl::event::CHANNEL_HANGUP::${callId}`, onCallerHangup);
+                        this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${callId}`, 'once', onCallerHangup);
 
 
                         // TODO 在坐席统计表中,发现挂机由system的原因可能是这里引起的,如果先监听到此事件,是否能从evt中获取到是谁引起的挂机,否者要考虑如何确定
-                        _this.R.pbxApi.conn.once('esl::event::disconnect::notice', onDisconnect);
+                        this.fsPbx.addConnLisenter('esl::event::disconnect::notice', 'once', onDisconnect);
 
-                        if (_this.R.tenantInfo && _this.R.tenantInfo.recordCall !== false) {
-                            _this.R.recordFiles[_this.R.callId] = `${_this.R.callId}`;
-                            _this.R.pbxApi.uuidRecord(_this.R.callId, 'start', _this.R.tenantId, _this.R.config.s3FileProxy, _this.R.recordFiles[_this.R.callId])
+                        if (tenantInfo && tenantInfo.callCenterOpts.recordCall !== false) {
+                            // _this.R.recordFiles[.callId] = `${_this.R.callId}`;
+                            this.fsPbx.uuidRecord(callId, 'start', tenantId)
                                 .then(res => {
-                                    _this.R.service.record.create({
-                                        tenantId: _this.R.tenantId,
-                                        direction: _this.R.callType,
-                                        callId: _this.R.callId,
-                                        filename: `${_this.R.recordFiles[_this.R.callId]}`,
-                                        agentId: `${_this.R.agentId}`,
+                                    this.pbxRecordFileController.create({
+                                        tenantId: tenantId,
+                                        direction: '',//callType,
+                                        callId: callId,
+                                        filename: `${callId}`,
+                                        agentId: `${this.agentId}`,
                                         extension: whoAnswered,
                                     });
-                                    _this.R.logger.debug(loggerPrefix.concat(['dialQueue']), '启动录音成功!');
+                                    this.logger.debug('启动队列录音成功!');
                                 })
                                 .catch(err => {
-                                    _this.R.logger.error(loggerPrefix.concat(['dialQueue']), '启动录音失败:', err);
+                                    this.logger.error('启动队列录音失败:', err);
                                 });
                         }
 
 
                         if (queueConf && queueConf.transferStatic) {
-                            _this.R.satisData.sType = 'queue';
-                            _this.R.satisData.agentId = _this.R.agentId;
-                            _this.R.satisData.answerTime = _this.answerTime;
-                            _this.R.satisData.agentNumber = whoAnswered;
-                            _this.R.satisData.agentLeg = _this.R.originationUuid;
-                            _this.R.satisData.ringTime = _this.ringTime;
-                            _this.R.satisData.queueName = queue.queueName;
-                            _this.R.satisData.queueNumber = queueNumber;
+
+
+                            this.runtimeData.setStatisData({
+                                sType: 'queue',
+                                agentId: this.agentId,
+                                answerTime: this.answerTime,
+                                agentNumber: whoAnswered,
+                                agentLeg: this.originationUuid,
+                                ringTime: this.ringTime,
+                                queueName,
+                                queueNumber,
+
+                            })
                             // TODO 从配置文件中读取满意度IVR
-                            _this.R.satisData.gotoIvrNumber = 166;
-                            _this.R.satisData.gotoIvrActId = 1;
-                            result.gotoIvrNumber = 166;
+                            // _this.R.satisData.gotoIvrNumber = 166;
+                            // _this.R.satisData.gotoIvrActId = 1;
+                            result.gotoIvrNumber = '166';
                             result.gotoIvrActId = 1;
 
-                            _this.R.transferData.afterTransfer = 'satisfaction';
+                            //_this.R.transferData.afterTransfer = 'satisfaction';
                         }
 
-                        service.queueStatistics.answerCall({
-                            callId: _this.R.callId,
-                            tenantId: _this.R.tenantId,
+                        this.pbxQueueStatisticController.answerCall({
+                            callId: callId,
+                            tenantId: tenantId,
                             queueNumber,
                             answerAgent: whoAnswered,
-                            answerAgentId: _this.R.agentId,
+                            answerAgentId: this.agentId,
                         });
                     }
                 });
@@ -394,6 +389,50 @@ export class Queue {
         }
         catch (ex) {
             this.logger.error('ESL DialQueue Error:', ex);
+            return Promise.reject(ex);
+        }
+    }
+
+    async afterQueueEnd({ answered, agentNumber, queueNumber }) {
+
+        // const _this = this;
+        // const { tenantId, fsName, fsCoreId, callType, callId, originationUuid, caller, DND, direction, logger, service } = _this.R;
+        // const pubData = {
+        //   tenantId, agent: agentNumber, state: '', fsName, fsCoreId, callType,
+        //   transferCall: _this.R.transferCall,
+        //   isClickOut: _this.R.clickOut === 'yes' ? true : false,
+        //   agentId: _this.R.agentId,
+        //   roomId: _this.R.roomId,
+        //   sipCallId: _this.R.pbxApi.getChannelData().sipCallId,
+        //   options: {
+        //     callId: callId + '_' + _this.R.originationUuid,
+        //     callee: agentNumber,
+        //     caller,
+        //     DND,
+        //     direction,
+        //   },
+        // };
+        try {
+            this.logger.debug('afterQueueEnd', { answered, agentNumber, queueNumber });
+            //   const stateResult = await service.extension.setAgentState(Object.assign({}, pubData, {
+            //     state: _this.endState,
+            //     fromQueue: 'yes',
+            //     answered,
+            //     hangup: true,
+            //   }));
+            if (answered) {
+                // _this.R.logger.debug(loggerPrefix, 'afterQueueEnd', stateResult);
+                // _this.db.cdrAgentHangup('Queue Agent', 'agent');
+                // const endCallRes = await service.agents.endCall({
+                //   tenantId,
+                //   queueNumber,
+                //   agentNumber,
+                // });
+                // _this.logger.debug(loggerPrefix, 'afterQueueEnd', endCallRes);
+            }
+            return Promise.resolve('afterQueueEnd done!');
+        } catch (ex) {
+            this.logger.error('afterQueueEnd error:', ex);
             return Promise.reject(ex);
         }
     }
@@ -561,7 +600,8 @@ export class Queue {
             }
             else if (agentInfo && agentInfo.accountCode) {
                 const startCallAgentTime = new Date();
-                const dialResult = await this.dialQueueMember({agentInfo});
+                this.agentId = agentInfo.agentId;
+                const dialResult = await this.dialQueueMember({ agentInfo });
                 this.logger.debug('dialQueueMember result:', dialResult);
                 // 不成功重新放回队列
                 if (this.isCallerHangup) {
@@ -620,7 +660,7 @@ export class Queue {
             }
             // 
             else {
-                this.logger.error('findQueueMemberEvent Error', agentInfo);
+                this.logger.error('findQueueMemberEvent Error:', agentInfo);
             }
         }
         catch (ex) {
@@ -630,8 +670,10 @@ export class Queue {
 
     async callerHangupHandle(evt) {
         try {
-            result.callerHangup = true;
-            result.hasDone = true;
+            const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
+            const { queueName, queueNumber, queue: queueConf } = this.queue;
+            // result.callerHangup = true;
+            // result.hasDone = true;
             // if (findQueueMemberExec) {
             //   _this.R.logger.debug(loggerPrefix, '已经找到坐席');
             //   return Promise.resolve();
@@ -639,82 +681,50 @@ export class Queue {
             this.logger.debug(`主叫在队列中排队等候中先挂机!hangupBySystem=${this.hangupBySystem}`);
             // _this.R.EE3.off(findQueueMemberEvent, onFindQueueMember);
 
-            if (setIntervalTimeout) {
-                clearInterval(setIntervalTimeout);
+            if (this.setIntervalTimeout) {
+                clearInterval(this.setIntervalTimeout);
             }
 
-            if (queueJob) {
-                queueJob.getState()
-                    .then(state => {
-                        this.logger.error('jobGetState', state);
-                        if (state !== 'active' && state !== 'stalled') {
-                            return queueJob.remove();
-                        }
-                        else {
-                            await this.stopFindAgentJob(queueJob.id);
-                        }
-                    })
-                    .then(res => {
-                        this.logger.debug('jobRemoveResult', res);
-                    })
-                    .catch(err => {
-                        this.logger.error('jobGetStateError', err);
-                    });
+            if (this.queueJob) {
+                const jobState = await this.queueJob.getState();
+                // !== 'stalled' 这个状态在新版本中没有了吗？
+
+                if (jobState !== 'active') {
+                    await this.queueJob.remove();
+                } else {
+                    await this.stopFindAgentJob(this.queueJob.id);
+                }
+
+
             }
 
-            this.fsPbx.wait(3000)
-                .then(res => {
-                    this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
-                })
-                .catch(err => {
-                    this.logger.error('after hangup setQueueWaitingInfo error:', err);
-                });
+            await this.fsPbx.wait(3000);
+            await this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
 
-            _this.R.service.queue.giveupInQueue({ tenantId, callNum: caller, callId, queueName });
-            _this.R.alegHangupBy = _this.hangupBySystem ? 'system' : 'visitor';
-            _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: _this.R.alegHangupBy });
 
-            const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                type: 'hangUp-queue',
-                queueNumber: queue.queueNumber,
-                queueName: queue.queueName,
-                timestamp: parseInt(new Date().getTime()),
-                by: 'visitor',
-            });
-            _this.R.logger.debug('callControlMessageOriginData LeaveQueueByVisitor ', fluentData);
-            process.fluent['callControlMessageOrigin'].log(fluentData);
+            // _this.R.service.queue.giveupInQueue({ tenantId, callNum: caller, callId, queueName });
+            // _this.R.alegHangupBy = _this.hangupBySystem ? 'system' : 'visitor';
+            // _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: _this.R.alegHangupBy });
+
+
 
             // await _this.bullQueue.empty();
 
             const tasks = [];
 
-            tasks.push(
-
-                _this.R.service.queueStatistics.hangupCall({
-                    callId: _this.R.callId,
-                    tenantId: _this.R.tenantId,
-                    queueNumber,
-                    hangupCase: 'ring',
-                })
-
-            )
+            tasks.push(this.pbxQueueStatisticController.hangupCall(callId, tenantId, queueNumber, 'ring'))
 
             tasks.push(
-                _this.R.service.agentStatistics.hangupCall({
-                    callId: _this.R.callId,
-                    bLegId: _this.R.originationUuid,
-                    hangupCase: 'ring',
-                })
-
+                this.pbxAgentStatisticController.hangupCall({ callId, bLegId: this.originationUuid, hangupCase: 'ring', })
             )
 
 
             tasks.push(
 
-                _this.afterQueueEnd({
+                this.afterQueueEnd({
                     answered: false,
-                    agentNumber: result.agentNumber,
-                    queueNumber: queue.queueNumber,
+                    agentNumber: '',
+                    queueNumber: queueNumber,
                 })
 
             )
@@ -723,16 +733,16 @@ export class Queue {
 
             // 挂掉响铃中的坐席
             tasks.push(
-                _this.R.pbxApi.uuidKill(_this.R.originationUuid, `Caller Is Hangup Yet!${_this.R.originationUuid}`)
+                this.fsPbx.uuidKill(this.originationUuid, `Caller Is Hangup Yet!${this.originationUuid}`)
             )
             await Promise.all(tasks);
 
-            if (findQueueMemberExec) {
-                EE3.emit(`queue::after::bridge::${callId}`);
+            if (this.findQueueMemberExec) {
+                // EE3.emit(`queue::after::bridge::${callId}`);
             }
         }
         catch (ex) {
-            _this.R.logger.error('Done Caller Hangup ERROR:', ex);
+            this.logger.error('Done Caller Hangup ERROR:', ex);
         }
     }
 
@@ -801,15 +811,14 @@ export class Queue {
     }
 
 
-    async dialQueueMember({ agentInfo }) {
-        const _this = this;
-        const dialMemberResult = {
+    async dialQueueMember({ agentInfo }): Promise<dialQueueMemberResult> {
+
+        const dialMemberResult: dialQueueMemberResult = {
             success: false,
             reason: '',
         };
-        let pubData = null;
-
         try {
+            let pubData = null;
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
             const { phoneNumber, accountCode, phoneLogin, agentId } = agentInfo;
             const { queueName, queueNumber, queue: queueConf } = this.queue;
@@ -1037,8 +1046,8 @@ export class Queue {
                         const tipContent = jobNumberTipFile.replace('{accountCode}', accountCode);
                         // await _this.ttsClient.playback(callId, tipContent, _this.R.pbxApi, 'both');
                         await Promise.all([
-                           // _this.ttsClient.broadcast(callId, tipContent, _this.R.pbxApi, 'aleg'),
-                           // _this.ttsClient.broadcast(_this.R.originationUuid, tipContent, _this.R.pbxApi, 'aleg'),
+                            // _this.ttsClient.broadcast(callId, tipContent, _this.R.pbxApi, 'aleg'),
+                            // _this.ttsClient.broadcast(_this.R.originationUuid, tipContent, _this.R.pbxApi, 'aleg'),
                         ]);
                     }
                 }
@@ -1051,31 +1060,31 @@ export class Queue {
                     //     bLegId: _this.R.originationUuid,
                     //     hangupCase: 'visitor',
                     // });
-                    this.pbxExtensionController.setAgentState(tenantId,agentId,'idle');
+                    this.pbxExtensionController.setAgentState(tenantId, agentId, 'idle');
                     dialMemberResult.reason = dialResult.reason;
                 }
-               // EE3.emit(`queue::after::bridge::${callId}`);
+                // EE3.emit(`queue::after::bridge::${callId}`);
 
                 return dialMemberResult;
             }
             // 呼叫坐席失败
             else {
                 const failType = oriResult.failType;
-                const timestamp = parseInt(new Date().getTime());
-                const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
-                    type: 'hangUp-queue',
-                    bLegId: _this.R.originationUuid,
-                    timestamp,
-                    agentId: _this.R.agentId,
-                    agentNumber: String(accountCode),
-                    queueNumber: queueInfo.queueNumber,
-                    queueName: queueInfo.queueName,
-                    tryCall: _this.tryCallAgentTimes,
-                    ringingTime: _this.ringTime,
-                    by: 'agent',
-                });
-                _this.R.logger.debug(`callControlMessageOriginData DialAgentFail ${failType}`, fluentData);
-                process.fluent['callControlMessageOrigin'].log(fluentData);
+                const timestamp = new Date().getTime();
+                // const fluentData = Object.assign({}, _this.callControlMessageOriginData, {
+                //     type: 'hangUp-queue',
+                //     bLegId: _this.R.originationUuid,
+                //     timestamp,
+                //     agentId: _this.R.agentId,
+                //     agentNumber: String(accountCode),
+                //     queueNumber: queueInfo.queueNumber,
+                //     queueName: queueInfo.queueName,
+                //     tryCall: _this.tryCallAgentTimes,
+                //     ringingTime: _this.ringTime,
+                //     by: 'agent',
+                // });
+                // this.logger.debug(`callControlMessageOriginData DialAgentFail ${failType}`, fluentData);
+                // process.fluent['callControlMessageOrigin'].log(fluentData);
                 let hangupMsg = '超时未接听';
 
                 switch (failType) {
@@ -1095,25 +1104,23 @@ export class Queue {
                         break;
                 }
                 // _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: 'system' });
-                await _this.R.service.extension.setAgentState(Object.assign({}, pubData, {
-                    state: _this.endState,
-                    hangup: true,
-                }));
-                await _this.R.service.agents.noAnsweredCall({
+
+                await this.pbxExtensionController.setAgentState(tenantId, agentId, 'dile');
+                await this.pbxAgentController.noAnsweredCall({
                     tenantId,
-                    queueNumber: queueInfo.queueNumber,
+                    queueNumber: queueNumber,
                     agentNumber: accountCode,
                 });
                 // TODO 将来在这里编写根据呼叫坐席失败的原因，需要处理的业务数据等
-                _this.R.service.agentStatistics.hangupCall({
-                    callId: _this.R.callId,
-                    bLegId: _this.R.originationUuid,
+                await this.pbxAgentStatisticController.hangupCall({
+                    callId: callId,
+                    bLegId: this.originationUuid,
                     hangupCase: 'agent',
                 });
 
 
-                _this.R.service.callProcess.create({
-                    caller: _this.R.caller,
+                await this.pbxCallProcessController.create({
+                    caller: caller,
                     called: accountCode,
                     tenantId,
                     callId,
@@ -1125,7 +1132,7 @@ export class Queue {
             }
         } catch (ex) {
             this.logger.error('dialMemberResult', ex);
-            _this.R.service.extension.setAgentState(Object.assign({}, pubData, { state: _this.endState, hangup: true }));
+            //_this.R.service.extension.setAgentState(Object.assign({}, pubData, { state: _this.endState, hangup: true }));
             dialMemberResult.reason = ex.toString();
             return dialMemberResult;
             // DESTINATION_OUT_OF_ORDER
@@ -1133,7 +1140,7 @@ export class Queue {
         }
     }
 
-    async stopFindAgentJob(jobId: number) {
+    async stopFindAgentJob(jobId: number | string) {
         try {
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
             const data = {
@@ -1272,8 +1279,12 @@ export class Queue {
         }
     }
 
-    setQueueWaitingInfo(tenantId: string, queueNumber: string, queueName: string) {
+    async setQueueWaitingInfo(tenantId: string, queueNumber: string, queueName: string) {
+        try {
 
+        } catch (ex) {
+
+        }
     }
 
     async dialMemberTimeOut() {
@@ -1364,4 +1375,20 @@ export class Queue {
         }
 
     }
+}
+
+export type dialQueueMemberResult = {
+    success: boolean;
+    reason?: string
+}
+
+export type dialQueueResult = {
+    success: boolean;
+    app: string,
+    gotoIvrNumber: string, // 队列执行完毕后,去向IVR
+    gotoIvrActId: number,
+    callerHangup: boolean,
+    answered: boolean,
+    hasDone: boolean,
+    agentNumber: string,
 }

@@ -36,8 +36,10 @@ export class QueueWorkerService {
 
     constructor(private injector: Injector, private logger: LoggerService, private config: ConfigService) {
         this.createChildInjector();
+        this.eventService = this.injector.get(EventService);
         this.pbxAgentController = this.childInjector.get(PBXAgentController);
         this.pbxExtensionController = this.childInjector.get(PBXExtensionController);
+        
     }
 
 

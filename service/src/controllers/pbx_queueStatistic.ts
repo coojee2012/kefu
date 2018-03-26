@@ -46,7 +46,7 @@ export class PBXQueueStatisticController {
 
     async findOne(query): Promise<PBXQueueStatisticsModel> {
         try {
-            const doc: PBXQueueStatisticsModel = await this.mongoDB.models.PBXQueueStatistic.findOne(query,{}, {
+            const doc: PBXQueueStatisticsModel = await this.mongoDB.models.PBXQueueStatistic.findOne(query, {}, {
                 lean: true,
             });
             return doc;
@@ -74,4 +74,41 @@ export class PBXQueueStatisticController {
             return Promise.reject(ex);
         }
     }
+
+    async transferStatic({ callId, tenantId, queueNumber }) {
+        try {
+            const { nModified } = await this.mongoDB.models.PBXQueueStatistic.updateOne({
+                callId,
+                tenantId,
+                queueNumber,
+            }, {
+                    $set: {
+                        transferStatic: new Date()
+                    }
+                });
+            return nModified;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async answerCall({ callId, tenantId, queueNumber, answerAgent, answerAgentId }) {
+        try {
+            const { nModified } = await this.mongoDB.models.PBXQueueStatistic.updateOne({
+                callId,
+                tenantId,
+                queueNumber,
+            }, {
+                    $set: {
+                        answerAgent,
+                        answerAgentId,
+                        answerTime: new Date()
+                    }
+                })
+            return nModified;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
 }

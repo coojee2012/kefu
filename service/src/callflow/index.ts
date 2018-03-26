@@ -10,6 +10,7 @@ import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 import { FlowBase } from './FlowBase';
 import { IVR } from './IVR';
+import { CCQueue } from './Queue';
 
 import { PBXRouterController } from '../controllers/pbx_router';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
@@ -24,6 +25,7 @@ import { PBXBlackListController } from '../controllers/pbx_blacklist';
 import { PBXQueueController } from '../controllers/pbx_queue';
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { PBXAgentController } from '../controllers/pbx_agent';
+import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 
 import { TenantController} from '../controllers/tenant';
 
@@ -41,6 +43,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private cdrControl: PBXCDRController;
     private flowBase:FlowBase;
     private ivr:IVR;
+    private queue:CCQueue;
 
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
@@ -58,6 +61,8 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         this.callId = connEvent.getHeader('Unique-ID');
     }
     createChildInjector(conn: Connection): void {
+        this.logger.debug('ccQueueccQueueccQueue',typeof CCQueue);
+        this.logger.debug('IVR',typeof IVR);
         this.childInjector = ReflectiveInjector.resolveAndCreate([
 
             {
@@ -66,15 +71,18 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 },
                 deps: [] //这里不能丢
             },
-            {
-                provide: RuntimeData, useFactory: () => {
-                    return new RuntimeData(conn, this.injector);
-                },
-                deps: [] //这里不能丢
-            },
+            RuntimeData,
+            // {
+            //     provide: RuntimeData, useFactory: () => {
+            //         return new RuntimeData(conn, this.injector);
+            //     },
+            //     deps: [] //这里不能丢
+            // },
             // 功能服务注入
-            FlowBase,
             IVR,
+            CCQueue,
+            FlowBase,
+
             // 数据库相关服务注入
             PBXRouterController,
             PBXCallProcessController,
@@ -89,6 +97,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             PBXQueueController,
             PBXExtensionController,
             PBXAgentController,
+            PBXRecordFileController,
 
 
 

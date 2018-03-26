@@ -1,4 +1,5 @@
 import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
+import moment = require('moment');
 import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
 import { Connection } from '../lib/NodeESL/Connection';
@@ -53,6 +54,10 @@ export class FreeSwitchPBX {
     this.logger = this.injector.get(LoggerService);
     this.logger.debug('init freeswitch PBX!');
     this.lastInputKey = '';
+  }
+
+  getConnInfo(){
+    return this.conn.getInfo();
   }
   /**
    * @description
@@ -428,9 +433,9 @@ export class FreeSwitchPBX {
       })
 
       await this.uuidBroadcast(uuid, file, legs);
-      this.logger.debug('uuidRead BBBB', this.conn.listeners(`esl::event::DTMF::${uuid}`))
+      // this.logger.debug('uuidRead BBBB', this.conn.listeners(`esl::event::DTMF::${uuid}`))
       this.conn.on(`esl::event::DTMF::${uuid}`, getTerminatorsKey);
-      this.logger.debug('uuidRead EEEE', this.conn.listeners(`esl::event::DTMF::${uuid}`))
+      // this.logger.debug('uuidRead EEEE', this.conn.listeners(`esl::event::DTMF::${uuid}`))
       await new Promise((resolve, reject) => {
         const startOnHangup = () => {
           if (!playStoped) {
@@ -716,6 +721,86 @@ export class FreeSwitchPBX {
       }
     } catch (ex) {
       this.logger.error('addConnLisenter error', ex);
+    }
+  }
+
+
+  /**
+   * @description
+   * 录音控制
+   * uuid_record <uuid> [start|stop|mask|unmask] <path> [<limit>]
+   * @param uuid
+   * @param opt - start,stop,mask,unmask
+   * @param tenantId
+   * @param 录音路劲,可以是http_cache地址
+   * @return {Promise}
+   */
+  async uuidRecord(uuid:string, opt:string, tenantId:string, path?:string, fileName?:string) {
+    try {
+      await this.uuidSetMutilVar(uuid, `RECORD_TITLE=YunKeFu;RECORD_COPYRIGHT=YunKeFu;RECORD_SOFTWARE=YunKeFu;RECORD_STEREO=true`);
+      path = path || '/usr/local/freeswitch/files/';
+      const folder = moment().format('YYYY-MM-DD');
+      let name = `${uuid}`;
+      if (fileName) {
+        name = fileName;
+      }
+      const recordFileName = `${path}${tenantId}/recordings/${folder}/${name}.wav`;
+      const result = await new Promise((resolve, reject) => {
+        this.conn.bgapi('uuid_record', [uuid, opt, recordFileName], (evt) => {
+          this.logger.debug(recordFileName);
+          const body = evt.getBody();
+          if (/^\+OK/.test(body)) {
+            resolve(body);
+          } else {
+            reject(body);
+          }
+        });
+      })
+      return Promise.resolve(result);
+    }
+    catch (ex) {
+      this.logger.error('uuidRecord error:', ex);
+      return Promise.reject(ex);
+    }
+
+  }
+
+
+  async uuidSetMutilVar(uuid, kv) {
+    try {
+      await this.checkUuid(uuid);
+      const result = await new Promise((resolve, reject) => {
+        this.conn.api('uuid_setvar_multi', [uuid, kv], (evt) => {
+          const body = evt.getBody();
+          this.logger.debug(' uuid_setvar_multi result:', body);
+          if (/^\+OK/.test(body)) {
+            resolve({
+              success: true
+            });
+          } else {
+            reject({
+              success: false,
+              reason: body.split(/\s+/)[1]
+            });
+          }
+        })
+      })
+      return result;
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
+
+  async checkUuid(uuid): Promise<boolean> {
+    try {
+      // if (!uuid || this.hangupedUUID.indexOf(uuid) > -1) {
+      //   return Promise.reject(`${uuid}通道已挂断!`);
+      // } else {
+      //   return Promise.resolve()
+      // }
+      return true;
+    } catch (ex) {
+      return Promise.reject(ex);
     }
   }
 

@@ -27,7 +27,7 @@ export class TenantController {
         }
     }
 
-    async getTenanByDomain(domain: string) {
+    async getTenantByDomain(domain: string) {
         try {
             const doc: TenantModel = await this.mongoDB.models.Tenants.findOne({
                 tenantId: domain

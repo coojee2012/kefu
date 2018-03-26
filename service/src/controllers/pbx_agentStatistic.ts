@@ -54,4 +54,24 @@ export class PBXAgentStatisticController {
         }
 
     }
+
+    async  hangupCall({ callId, bLegId, hangupCase }) {
+        try {
+            const { nModified } = await this.mongoDB.models.PBXAgentStatistic.update({
+                callId,
+                bLegId,
+            }, {
+                    $set: {
+                        hangupCase,
+                        hangupTime: new Date()
+                    }
+                }, {
+                    multi: false, safe: true
+                });
+            return nModified;
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 }

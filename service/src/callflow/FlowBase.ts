@@ -7,6 +7,7 @@ import { Event } from '../lib/NodeESL/Event';
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 import { IVR } from './IVR';
+import { CCQueue } from './Queue';
 
 
 import { PBXLocalNumberController } from '../controllers/pbx_localNumber';
@@ -17,7 +18,7 @@ type DialLocalResult = {
     localType: string;
 }
 
-interface IDialExtensionResult {
+interface IDialExtensionResult  {
 
 }
 
@@ -30,6 +31,7 @@ export class FlowBase {
     private runtimeData: RuntimeData;
     private fsPbx: FreeSwitchPBX;
     private ivr: IVR;
+    private ccQueue:CCQueue;
     private pbxIvrMenuController: PBXIVRMenuController;
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -40,13 +42,14 @@ export class FlowBase {
         this.fsPbx = this.injector.get(FreeSwitchPBX);
         this.pbxIvrMenuController = this.injector.get(PBXIVRMenuController);
         this.ivr = this.injector.get(IVR);
+        this.ccQueue = this.injector.get(CCQueue);
     }
     /**
      * @description 拨打本地号码，包括分机，队列，IVR等
      */
     async diallocal(number: string) {
         try {
-
+            this.logger.debug(`Dial A Local Number:${number}`);
             const { tenantId, callId, caller } = this.runtimeData.getRunData();
             if (/@/.test(number)) {
                 return Promise.reject(`Can't Dial Other Tenand!Called Is:${number}.`);
@@ -57,11 +60,12 @@ export class FlowBase {
                 };
 
                 await this.pbxCdrController.updateCalled(tenantId, callId, number);
-
+                this.logger.debug(`Local Number Type:${localType}`);
                 switch (localType) {
                     case 'ivr':
                         {
-                            await this.dialIVR(number);
+                          await this.dialIVR(number);
+                       
                             break;
                         }
                     case 'extension':
@@ -78,6 +82,10 @@ export class FlowBase {
                             break;
                         }
                     case 'queue':
+                    {
+                        await this.dialQueue(number);
+                        break;
+                    }
                     case 'voicemail':
                     case 'conference':
                     case 'fax':
@@ -136,16 +144,27 @@ export class FlowBase {
                 uuid:callId
             })
             // 下一步需要拨打一个本地号码
-            if(result.nextArgs === 'diallocal'){
+            if(result.nextType === 'diallocal'){
+                this.logger.debug('拨打IVR的结果是要继续拨打local')
                 await this.diallocal(result.nextArgs);
+               
             }
             // 正常结束IVR
             else{
-
+                this.logger.debug('拨打IVR结束:',result);
             }
            
 
         } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async dialQueue(number:string){
+        try{
+           const result =  await this.ccQueue.dialQueue(number);
+           this.logger.debug(`Dial Queue ${number} Result:`,result);
+        }catch(ex){
             return Promise.reject(ex);
         }
     }

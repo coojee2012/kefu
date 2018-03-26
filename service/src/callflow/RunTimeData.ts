@@ -1,6 +1,7 @@
 import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
 import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
+import { FreeSwitchPBX, uuidPlayAndGetDigitsOptions } from './FreeSwitchPBX';
 import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 
@@ -41,6 +42,8 @@ interface ISatisData {
     queueNumber?: string;
     queueName?: string;
     hangupCase?: string;
+    answerTime?: number;
+    ringTime?: number;
     agentLeg?: string;
 }
 @Injectable()
@@ -51,11 +54,14 @@ export class RuntimeData {
     private statisData: ISatisData;
     private tenantInfo: TenantModel;
     private tenantController: TenantController;
-    private blegIds:string[];
-    private blegUsers:string[]; // 可以使agentId,extension,外线号码
+    private blegIds: string[];
+    private blegUsers: string[]; // 可以使agentId,extension,外线号码
+    private fsPbx:FreeSwitchPBX;
 
-    constructor(private conn: Connection, private injector: Injector) {
+    constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
+        this.tenantController = this.injector.get(TenantController);
+        this.fsPbx = this.injector.get(FreeSwitchPBX);
         this.logger.debug('Init Runtime Data!');
         this.channelData = {};
         this.runData = {
@@ -67,7 +73,7 @@ export class RuntimeData {
         this.logger.debug('Runtime Data:', this.channelData);
     }
     initData() {
-        const connEvent: Event = this.conn.getInfo();
+        const connEvent: Event = this.fsPbx.getConnInfo();
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
         this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
@@ -106,7 +112,7 @@ export class RuntimeData {
 
     async setTenantInfo() {
         try {
-            this.tenantInfo = await this.tenantController.getTenanByDomain(this.runData.tenantId);
+            this.tenantInfo = await this.tenantController.getTenantByDomain(this.runData.tenantId);
             if (!this.tenantInfo) {
                 throw new Error(`Can't find tenant: ${this.runData.tenantId}!!!`);
             }
@@ -142,7 +148,7 @@ export class RuntimeData {
         return;
     }
 
-    addBleg(uuid:string,user:string){
+    addBleg(uuid: string, user: string) {
         this.blegIds.push(uuid);
         this.blegUsers.push(user);
     }

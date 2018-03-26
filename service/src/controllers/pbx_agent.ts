@@ -66,6 +66,28 @@ export class PBXAgentController {
             return Promise.reject(ex);
         }
     }
+    async noAnsweredCall({tenantId, queueNumber, agentNumber}) {
+     
+        try {
+          const result = await  this.mongoDB.models.PBXAgent.updateOne(
+            {
+              tenantId,
+              queueNumber,
+              agentNumber,
+            },
+            {
+              $set: {
+                callId: ''
+              },
+              $inc: {
+                noAnsweredCalls: 1
+              }
+            })
+          return result;
+        } catch (ex) {
+          return Promise.reject(ex);
+        }
+      }
 
     async checkRow({ agentNumber, tenantId, queueNumber }): Promise<boolean> {
         try {

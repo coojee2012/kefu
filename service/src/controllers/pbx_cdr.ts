@@ -79,4 +79,21 @@ export class PBXCDRController {
             return Promise.reject(ex);
         }
     }
+
+    async endChannel({ callId, tenantId, hangupCase }) {
+
+        try {
+            const result = await this.mongoDB.models.PBXCDR.updateOne({
+                callId,
+                tenantId,
+            }, {
+                    alive: 'no',
+                    hangupCase: hangupCase,
+                    endTime: new Date()
+                });
+            return result;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 }
