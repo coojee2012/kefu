@@ -56,7 +56,7 @@ export class FreeSwitchPBX {
     this.lastInputKey = '';
   }
 
-  getConnInfo(){
+  getConnInfo() {
     return this.conn.getInfo();
   }
   /**
@@ -245,9 +245,9 @@ export class FreeSwitchPBX {
         tries--;
         this.logger.debug(`uuidPlayAndGetDigits:input_err_retry[${input_err_retry}],input_timeout_retry${input_timeout_retry}`);
         const res = await this.uuidRead(readArgs);
-        regexp = regexp ? regexp :'\\d+';
+        regexp = regexp ? regexp : '\\d+';
         const reg = new RegExp(regexp);
-        if (res && res !== 'timeout' && reg.test(res)) {      
+        if (res && res !== 'timeout' && reg.test(res)) {
           inputKeys = res;
           success = true;
           break;
@@ -300,7 +300,7 @@ export class FreeSwitchPBX {
     }
   }
 
-  async uuidPlayback({ uuid, file, terminators = 'none', legs = 'aleg' }: { uuid: string, file: string, terminators?: string, legs?: string }) {
+  async uuidPlayback({ uuid, file, terminators = 'none', legs = 'aleg', async = false }: { uuid: string, file: string, terminators?: string, legs?: string, async?: boolean }) {
     try {
       const getTerminatorsKey = (evt) => {
         const input = evt.headers.get('DTMF-Digit');
@@ -310,6 +310,7 @@ export class FreeSwitchPBX {
         }
       }
       await this.uuidBroadcast(uuid, file, legs);
+
       const playResult = await new Promise((resolve, reject) => {
         if (terminators && terminators !== 'none') {
           this.conn.on(`esl::event::DTMF::${uuid}`, getTerminatorsKey)
@@ -329,6 +330,8 @@ export class FreeSwitchPBX {
         this.conn.off(`esl::event::DTMF::${uuid}`, getTerminatorsKey);
       }
       return playResult;
+
+
     } catch (ex) {
       this.logger.error('uuidPlayback', ex);
       return Promise.reject(ex);
@@ -359,6 +362,8 @@ export class FreeSwitchPBX {
 
 
 
+
+
   async originate(dialStr: string, appOrExten: string = 'park', argStrs?: string, originationUuid?: string): Promise<originateReturn> {
     try {
       const result: originateReturn = await new Promise<originateReturn>((resolve, reject) => {
@@ -379,7 +384,7 @@ export class FreeSwitchPBX {
           }
         });
       })
-
+      return result;
     }
     catch (ex) {
       return Promise.reject(ex);
@@ -394,18 +399,12 @@ export class FreeSwitchPBX {
       let isTimeOut = false;
       let isOver = false; //是否接收按键结束
       let channelHangup = false;
-      const getTerminatorsKey = (evt) => {
+      const getTerminatorsKey = async (evt) => {
         const input = evt.headers.get('DTMF-Digit');
-        this.logger.debug('DTMF-Digit:', input);
+        this.logger.debug(`DTMF-Digit:${input},playStoped:${playStoped}`);
         // 一旦接收到按键信息,立即终止播放音乐
         if (!playStoped) {
-          this.uuidBreak(uuid)
-            .then(res => {
-              this.logger.debug('终止播放语音结果:', res);
-            })
-            .catch(err => {
-              this.logger.error('终止播放语音错误:', err);
-            });
+          await this.uuidBreak(uuid);
         }
         if (input == terminators) {
           isOver = true;
@@ -435,11 +434,8 @@ export class FreeSwitchPBX {
       this.conn.once(`esl::event::PLAYBACK_START::${uuid}`, (evt) => {
         this.logger.debug(`uuidPlay start ${uuid}!`);
       })
-
-      await this.uuidBroadcast(uuid, file, legs);
-      // this.logger.debug('uuidRead BBBB', this.conn.listeners(`esl::event::DTMF::${uuid}`))
       this.conn.on(`esl::event::DTMF::${uuid}`, getTerminatorsKey);
-      // this.logger.debug('uuidRead EEEE', this.conn.listeners(`esl::event::DTMF::${uuid}`))
+      await this.uuidBroadcast(uuid, file, legs);
       await new Promise((resolve, reject) => {
         const startOnHangup = () => {
           if (!playStoped) {
@@ -739,7 +735,7 @@ export class FreeSwitchPBX {
    * @param 录音路劲,可以是http_cache地址
    * @return {Promise}
    */
-  async uuidRecord(uuid:string, opt:string, tenantId:string, path?:string, fileName?:string) {
+  async uuidRecord(uuid: string, opt: string, tenantId: string, path?: string, fileName?: string) {
     try {
       await this.uuidSetMutilVar(uuid, `RECORD_TITLE=YunKeFu;RECORD_COPYRIGHT=YunKeFu;RECORD_SOFTWARE=YunKeFu;RECORD_STEREO=true`);
       path = path || '/usr/local/freeswitch/files/';

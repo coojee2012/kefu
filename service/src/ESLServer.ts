@@ -75,6 +75,9 @@ export class ESLServer extends EventEmitter2 {
             this.eventService = this.injector.get(EventService);
             this.eventService.initRedisSub();
 
+            this.eventService.addARedisSub('stopFindAgent');
+            this.eventService.addARedisSub('esl::callcontrol::queue::finded::member');
+
             this.queueWorker = this.injector.get(QueueWorkerService);            
             await this.queueWorker.init();
             await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列

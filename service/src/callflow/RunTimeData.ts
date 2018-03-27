@@ -71,6 +71,9 @@ export class RuntimeData {
         };
         this.initData();
         this.logger.debug('Runtime Data:', this.channelData);
+
+        this.blegIds = [];
+        this.blegUsers = [];
     }
     initData() {
         const connEvent: Event = this.fsPbx.getConnInfo();
@@ -94,6 +97,9 @@ export class RuntimeData {
         this.runData.routerLine = '呼入';
         this.runData.caller = this.setCaller();
         this.runData.callee = this.setCalled();
+
+
+
 
     }
 

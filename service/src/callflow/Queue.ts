@@ -51,6 +51,7 @@ export class CCQueue {
     private ringTime: number;
     private answerTime: number;
     private queueJob: Job;
+    private queueMusicFile: string;
 
     private vipLevel: number;
     private maxLevel: number;
@@ -60,6 +61,9 @@ export class CCQueue {
     private isCallerHangup: boolean;
     private agentEndState: string;
     private tryCallAgentTimes: number;
+
+    private isDoneBusyTip: boolean;
+    private isDoneTimeoutTip: boolean;
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -72,6 +76,7 @@ export class CCQueue {
         this.pbxQueueController = this.injector.get(PBXQueueController);
         this.pbxCallProcessController = this.injector.get(PBXCallProcessController);
         this.pbxQueueStatisticController = this.injector.get(PBXQueueStatisticController);
+        this.pbxAgentStatisticController = this.injector.get(PBXAgentStatisticController);
         this.pbxTenantController = this.injector.get(TenantController);
         this.pbxExtensionController = this.injector.get(PBXExtensionController);
         this.pbxAgentController = this.injector.get(PBXAgentController);
@@ -101,7 +106,7 @@ export class CCQueue {
             this.bullQueue = await this.queueWorker.add(tenantId, queueNumber);
             this.addBullQueueMonitor();
 
-            const result:dialQueueResult = {
+            const result: dialQueueResult = {
                 success: false,
                 app: 'dial-queue',
                 gotoIvrNumber: '', // 队列执行完毕后,去向IVR
@@ -171,38 +176,33 @@ export class CCQueue {
                     });
                 }
                 // 每隔1秒检查是否超时了
-                this.setIntervalTimeout = setInterval(this.timoutCheck.bind(this), 1000);
+                // this.setIntervalTimeout = setInterval(this.timoutCheck.bind(this), 1000);
 
                 let findQueueMemberExec = false;
 
                 // 未应答前主叫挂机,坐席接听电话后将取消这个监听
 
                 this.fsPbx.addConnLisenter(callerHangupEvent, 'once', this.callerHangupHandle.bind(this))
-                this.fsPbx.addConnLisenter(`esl::event::PLAYBACK_START::${callId}`, 'once', this.onPlaybackStart.bind(this));
+                this.fsPbx.addConnLisenter(`esl::event::PLAYBACK_START::${callId}`, 'once', this.startFindMemberJob.bind(this));
 
 
                 this.eventService.on(findQueueMemberEvent, this.onFindQueueMember.bind(this));
 
-                this.logger.debug('=====PLAY QUEUE MUSIC START=====');
-                await this.fsPbx.uuidPlayback({
-                    uuid: callId,
-                    terminators: 'none',
-                    file: this.queue.queue.mohSound || 'local_stream://moh/8000'
-                });
-                this.logger.debug('=====PLAY QUEUE MUSIC STOP=====');
-                // 下面的代码只有在answer之后才能执行，或者提前执行uuid_break后才会执行
-                await new Promise((resolve) => {
-                    this.logger.debug('等待桥接！');
-                    if (result.callerHangup) {
-                        resolve(result);
-                    }
-                    else {
-                        this.eventService.once(`queue::after::bridge::${callId}`, () => {
-                            this.fsPbx.removeConnLisenter(callerHangupEvent, this.callerHangupHandle.bind(this));
-                            this.eventService.removeListener(findQueueMemberEvent, this.onFindQueueMember.bind(this));
-                            resolve();
-                        });
-                    }
+                this.queueMusicFile = this.queue.queue.mohSound || 'local_stream://moh/8000';
+                await this.playQueueMusic();
+
+
+                // 下面的代码只有在answer之后才能执行
+                await new Promise((resolve, reject) => {
+                    this.eventService.once(`caller::hangup::when::wait::${callId}`, () => {
+                        reject('Caller Is Hangup In Wait Queue!');
+                    })
+
+                    this.eventService.once(`queue::after::bridge::${callId}`, () => {
+                        this.fsPbx.removeConnLisenter(callerHangupEvent, this.callerHangupHandle.bind(this));
+                        this.eventService.removeListener(findQueueMemberEvent, this.onFindQueueMember.bind(this));
+                        resolve();
+                    });
                 });
                 await this.fsPbx.wait(300);
                 await new Promise((resolve, reject) => {
@@ -440,30 +440,28 @@ export class CCQueue {
     addBullQueueMonitor() {
         this.bullQueue.on('error', (error) => {
             // An error occured.
-            this.logger.error('bullqueue error:', error);
-        })
-            // .on('active', function(job, jobPromise){
-            //   // A job has started. You can use `jobPromise.cancel()`` to abort it.
-            //   console.log('bullqueue active', job);
-            //   jobPromise.cancel();
-            // })
-            // .on('stalled', function(job){
-            //   // A job has been marked as stalled. This is useful for debugging job
-            //   // workers that crash or pause the event loop.
-            //   console.log('bullqueue stalled')
-            // }) 
-            .on('progress', function (job, progress) {
-                // A job's progress was updated!
-                console.log('bullqueue progress')
-            })
-            .on('completed', function (job, result) {
-                // A job successfully completed with a `result`.
-                console.log('bullqueue completed')
-            })
-            .on('failed', function (job, err) {
-                // A job failed with reason `err`!
-                console.log('bullqueue failed')
-            })
+            this.logger.error('in queue bullqueue error:', error);
+        });
+        // .on('active', function (job, jobPromise) {
+        //     // A job has started. You can use `jobPromise.cancel()`` to abort it.
+        //     console.log('in queue bullqueue active', job.id);
+        //     // jobPromise.cancel();
+        // })
+        // .on('stalled', function (job) {
+        //     // A job has been marked as stalled. This is useful for debugging job
+        //     // workers that crash or pause the event loop.
+        //     console.log('bullqueue stalled')
+        // })
+        // .on('progress', function (job, progress) {
+        //     // A job's progress was updated!
+        //     console.log('in queue bullqueue progress')
+        // })
+
+        this.bullQueue.on('completed', function (job, result) {
+            // A job successfully completed with a `result`.
+            console.log('in queue bullqueue completed ', job.id, result)
+        });
+        this.bullQueue.on('failed', this.onJobFail.bind(this));
         // .on('global:failed', function(job, err) {
         //   console.log(`global:failed Job :`,job,err);
         // })
@@ -476,11 +474,10 @@ export class CCQueue {
 
     async timoutCheck() {
         try {
+            const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
             let busyTipTime = this.startTime;
-            let isDoneTimeoutTip = false;
-            let isDoneBusyTip = false;
             const now = new Date().getTime();
-            if (isDoneBusyTip || isDoneTimeoutTip) {
+            if (this.isDoneBusyTip || this.isDoneTimeoutTip) {
                 this.logger.debug('有其他提示任务在处理中');
                 busyTipTime = now;
                 this.startTime = now;
@@ -492,22 +489,24 @@ export class CCQueue {
             const { queueName, queueNumber, queue: queueConf } = this.queue;
             const { maxWaitTime, enterTipFile } = queueConf;
             // 超时时处理
-            if (diffTime > maxWaitTime * 1000 && !isDoneTimeoutTip && !isDoneBusyTip) {
-                isDoneTimeoutTip = true;
-                const res = await this.dialMemberTimeOut();
+            if (diffTime > maxWaitTime * 1000 && !this.isDoneTimeoutTip && !this.isDoneBusyTip) {
+                this.isDoneTimeoutTip = true;
+                await this.fsPbx.uuidBreak(callId);
+                const res = await this.dialQueueTimeOut();
                 // 客户选择继续等待
                 if (res && res.wait) {
                     this.startTime = new Date().getTime();
+                    await this.playQueueMusic();
                 }
                 // 客户挂机
                 else {
                 }
-                isDoneTimeoutTip = false;
+                this.isDoneTimeoutTip = false;
             }
             // 默认30秒提醒一次
-            else if (busyTipCheckTime > 30 * 1000 && !isDoneBusyTip && !isDoneTimeoutTip) {
-                isDoneBusyTip = true;
-                this.logger.debug('坐席全部忙!');
+            else if (busyTipCheckTime > 30 * 1000 && !this.isDoneBusyTip && !this.isDoneTimeoutTip) {
+                this.isDoneBusyTip = true;
+                this.logger.debug('30秒未找到空闲坐席，坐席全部忙');
                 const {
                     abtFile,
                     abtKeyTimeOut = 15,
@@ -519,6 +518,7 @@ export class CCQueue {
                     abtTimeoutRetry = 2,
                     abtInputErrRetry = -1,
                 } = this.queue.queue;
+                await this.fsPbx.uuidBreak(callId);
                 const res = await this.allBusyTip({
                     abtFile,
                     abtKeyTimeOut,
@@ -533,8 +533,9 @@ export class CCQueue {
                 this.logger.debug(`队列全忙，用户是否选择继续等待:${res}`);
                 if (res) {
                     busyTipTime = new Date().getTime();
+                    await this.playQueueMusic();
                 }
-                isDoneBusyTip = false;
+                this.isDoneBusyTip = false;
             }
             else {
                 this.logger.debug('队列时间检查！');
@@ -548,10 +549,10 @@ export class CCQueue {
         }
     }
 
-    async onPlaybackStart(evt) {
+    async startFindMemberJob() {
         try {
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
-            this.logger.debug('Queue PLAYBACK_START Core-UUID:', evt.getHeader('Core-UUID'));
+            this.logger.debug('Start Find Member!');
             const { queueName, queueNumber, queue: queueConf } = this.queue;
             const { maxWaitTime, enterTipFile } = queueConf;
 
@@ -559,10 +560,11 @@ export class CCQueue {
                 callId: callId,
                 tenantId: tenantId,
                 queue: this.queue,
+                timeout:(maxWaitTime+1) * 1000,
             }, {
                     priority: this.priority < 1 ? 1 : this.priority,
                     // jobId: _this.R.callId,
-                    timeout: (maxWaitTime + 1) * 1000 * 3,
+                    timeout: (maxWaitTime + 1) *3*1000,
                     // timeout: 30 * 1000,
                 });
 
@@ -574,6 +576,29 @@ export class CCQueue {
             }
         } catch (ex) {
             this.logger.error('On Playback Start Error:', ex);
+        }
+    }
+
+    async onJobFail(job, err) {
+        try {
+            if (job.id === this.queueJob.id) {
+                this.logger.info('queue job fail:', err);
+                if (err && err.eslSendStop) {
+
+                }
+                else if (err && err.maxTimeOut) {
+                    const result = await this.dialQueueTimeOut();
+                    if (result.wait) {
+                        await this.playQueueMusic();
+                        await this.startFindMemberJob();
+                       
+                   }
+                }
+            }
+
+        }
+        catch (ex) {
+            return Promise.reject(ex);
         }
     }
 
@@ -622,6 +647,8 @@ export class CCQueue {
                     this.logger.debug('不成功重新放回队列:', this.queueJob ? this.queueJob.id : 'NULL');
                     this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
                     // 每隔1秒检查是否超时了
+                    this.isDoneTimeoutTip = false;
+                    this.isDoneBusyTip = false;
                     this.setIntervalTimeout = setInterval(this.timoutCheck.bind(this), 1000);
                     if (this.vipLevel && this.vipLevel > 0) {
                         await this.insertVip();
@@ -688,14 +715,14 @@ export class CCQueue {
             if (this.queueJob) {
                 const jobState = await this.queueJob.getState();
                 // !== 'stalled' 这个状态在新版本中没有了吗？
-
-                if (jobState !== 'active') {
-                    await this.queueJob.remove();
-                } else {
-                    await this.stopFindAgentJob(this.queueJob.id);
+                this.logger.debug(`Tell Bull Queue Stop The Job :${jobState}`);
+                
+                if (jobState === 'active') {
+                    await this.stopFindAgentJob(this.queueJob.id);      
                 }
-
-
+                else {
+                    await this.queueJob.remove(); 
+                }
             }
 
             await this.fsPbx.wait(3000);
@@ -705,9 +732,6 @@ export class CCQueue {
             // _this.R.service.queue.giveupInQueue({ tenantId, callNum: caller, callId, queueName });
             // _this.R.alegHangupBy = _this.hangupBySystem ? 'system' : 'visitor';
             // _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: _this.R.alegHangupBy });
-
-
-
             // await _this.bullQueue.empty();
 
             const tasks = [];
@@ -717,32 +741,29 @@ export class CCQueue {
             tasks.push(
                 this.pbxAgentStatisticController.hangupCall({ callId, bLegId: this.originationUuid, hangupCase: 'ring', })
             )
-
-
             tasks.push(
-
                 this.afterQueueEnd({
                     answered: false,
                     agentNumber: '',
                     queueNumber: queueNumber,
-                })
-
-            )
-
-
-
+                }))
             // 挂掉响铃中的坐席
-            tasks.push(
-                this.fsPbx.uuidKill(this.originationUuid, `Caller Is Hangup Yet!${this.originationUuid}`)
-            )
+            if (this.originationUuid) {
+                tasks.push(
+                    this.fsPbx.uuidKill(this.originationUuid, `Caller Is Hangup Yet!${this.originationUuid}`)
+                )
+            }
+
             await Promise.all(tasks);
 
             if (this.findQueueMemberExec) {
                 // EE3.emit(`queue::after::bridge::${callId}`);
             }
+            this.eventService.emit(`caller::hangup::when::wait::${callId}`);
         }
         catch (ex) {
             this.logger.error('Done Caller Hangup ERROR:', ex);
+            return Promise.resolve(); //监听的回调不要reject
         }
     }
 
@@ -809,6 +830,16 @@ export class CCQueue {
         //     return Promise.reject(ex);
         // }
     }
+
+    async playQueueMusic() {
+        try {
+            const { tenantId, callId } = this.runtimeData.getRunData();
+            await this.fsPbx.uuidBroadcast(callId, this.queueMusicFile, 'aleg');
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
 
 
     async dialQueueMember({ agentInfo }): Promise<dialQueueMemberResult> {
@@ -990,8 +1021,9 @@ export class CCQueue {
             await this.fsPbx.filter('Unique-ID', this.originationUuid);
 
             const oriResult = await this.fsPbx.originate(dialStr, '&park()', argStrs, this.originationUuid);
+            this.logger.debug('dial a  member result:',oriResult);
             // 坐席应答
-            if (oriResult.success) {
+            if (oriResult && oriResult.success) {
                 this.answerTime = new Date().getTime();
                 await this.pbxCallProcessController.create({
                     caller: caller,
@@ -1105,7 +1137,7 @@ export class CCQueue {
                 }
                 // _this.R.service.queue.hangupBy({ tenantId, callId: `${callId}_${_this.R.originationUuid}`, hangupBy: 'system' });
 
-                await this.pbxExtensionController.setAgentState(tenantId, agentId, 'dile');
+                await this.pbxExtensionController.setAgentState(tenantId, agentId, 'idle');
                 await this.pbxAgentController.noAnsweredCall({
                     tenantId,
                     queueNumber: queueNumber,
@@ -1211,68 +1243,60 @@ export class CCQueue {
             while (reReadDigits && !agentAnswered) {
                 reReadDigits = false;
                 // 提示是否继续等待音
-                const inputKey = await this.fsPbx.uuidRead(readArgs);
 
+                this.logger.debug(`busy tip abtTimeoutRetry=${abtTimeoutRetry},abtInputErrRetry=${abtInputErrRetry} readargs:`, readArgs)
+
+                const inputKey = await this.fsPbx.uuidRead(readArgs);
+                this.logger.debug(`agent busy tip user input:${inputKey}`);
                 if (inputKey === '1') {
                     this.logger.debug('abt-用户选择继续等待!');
                     continueWait = true;// 坐席全忙,继续等待!
                 }
                 else if (inputKey === 'timeout') {
                     // 输出超时音
-                    this.logger.debug('abt-用户输入超时,播放提示');
-                    if (abtTimeoutRetry === 0) {
-                        reReadDigits = false;
-                        continue;
-                    }
-                    await this.fsPbx.uuidPlayback({
-                        terminators: 'none',
-                        file: abtInputTimeoutFile,
-                        uuid: callId
-                    });
-                    // await _this.dialQueueTimeout(queue);
-                    // await _this.R.pbxApi.uuidBreak(_this.R.callId);
-                    await this.fsPbx.wait(500);
-                    reReadDigits = true;
+
                     if (abtTimeoutRetry > 0) {
+                        await this.fsPbx.uuidPlayback({
+                            terminators: 'none',
+                            file: abtInputTimeoutFile,
+                            uuid: callId
+                        });
+                        // await _this.dialQueueTimeout(queue);
+                        // await _this.R.pbxApi.uuidBreak(_this.R.callId);
+                        await this.fsPbx.wait(500);
                         abtTimeoutRetry--;
+                        reReadDigits = true;
                     }
+
                 }
                 else {
                     // 输入错误音
-                    this.logger.debug('abt-用户输入错误音');
-
-                    if (abtInputErrRetry === 0) {
-                        reReadDigits = false;
-                        continue;
-                    }
-
-                    await this.fsPbx.uuidPlayback({
-                        terminators: 'none',
-                        file: abtInputErrFile,
-                        uuid: callId
-                    });
-                    // readArgs.soundFile = 'demo/inputerror.wav';
-                    reReadDigits = true;
                     if (abtInputErrRetry > 0) {
+                        await this.fsPbx.uuidPlayback({
+                            terminators: 'none',
+                            file: abtInputErrFile,
+                            uuid: callId
+                        });
+                        // readArgs.soundFile = 'demo/inputerror.wav';
                         abtInputErrRetry--;
+                        reReadDigits = true;
                     }
                 }
-
             }
-            if (agentAnswered) {
-                return continueWait;
-            }
-            else if (!continueWait && (abtTimeoutRetry === 0 || abtInputErrRetry === 0)) {
-                this.logger.debug('abt-用户输入错误音');
-                await this.fsPbx.uuidPlayback({
-                    uuid: callId,
-                    terminators: 'none',
-                    file: abtTimeoutRetry === 0 ? abtInputTimeoutEndFile : abtInputErrEndFile,
-                });
-                //this.R.alegHangupBy = 'system';
-                //this.hangupBySystem = true;
-                await this.fsPbx.uuidKill(callId);
-            }
+            // if (agentAnswered) {
+            //     return continueWait;
+            // }
+            // else if (!continueWait && (abtTimeoutRetry === 0 || abtInputErrRetry === 0)) {
+            //     this.logger.debug('abt-用户输入错误音');
+            //     await this.fsPbx.uuidPlayback({
+            //         uuid: callId,
+            //         terminators: 'none',
+            //         file: abtTimeoutRetry === 0 ? abtInputTimeoutEndFile : abtInputErrEndFile,
+            //     });
+            //     //this.R.alegHangupBy = 'system';
+            //     //this.hangupBySystem = true;
+            //     await this.fsPbx.uuidKill(callId);
+            // }
             return continueWait;
         } catch (ex) {
             this.logger.error('allBusyTip-处理是否继续等待音错误:', ex);
@@ -1287,10 +1311,10 @@ export class CCQueue {
         }
     }
 
-    async dialMemberTimeOut() {
+    async dialQueueTimeOut() {
         try {
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
-            this.logger.error('超时没有空闲坐席应答');
+            this.logger.info(`${tenantId} dial queue time out!`);
             const readArgs = {
                 uuid: callId,
                 min: 1,
@@ -1310,6 +1334,7 @@ export class CCQueue {
             //     agentAnswered = true;
             //     _this.R.logger.debug('在超时提示的时候找到坐席且坐席已经接听！');
             // })
+            await this.fsPbx.uuidBreak(callId);
             while (reReadDigits && !agentAnswered) {
                 reReadDigits = false;
                 // 提示是否继续等待音

@@ -39,7 +39,7 @@ export class QueueWorkerService {
         this.eventService = this.injector.get(EventService);
         this.pbxAgentController = this.childInjector.get(PBXAgentController);
         this.pbxExtensionController = this.childInjector.get(PBXExtensionController);
-        
+
     }
 
 
@@ -119,7 +119,7 @@ export class QueueWorkerService {
                 })
                 .on('completed', function (job, result) {
                     // A job successfully completed with a `result`.
-                    console.log('bullqueue completed', job.id, new Date())
+                    console.log('in queueworker bullqueue completed', job.id, new Date())
                 })
 
                 .on('failed', function (job, err) {
@@ -262,8 +262,9 @@ export class QueueWorkerService {
             for (let i = 0; i < members.length; i++) {
                 //redis锁定成员
                 //检查是否可用
-                const member = members[i];
+                const member = `${members[i]}`;
                 finded = await this.pbxExtensionController.checkAgentCanDail(tenantId, member);
+                // this.logger.debug('find a member:', finded);
                 if (finded) break;
             }
             return Promise.resolve(finded);
@@ -306,7 +307,7 @@ export class QueueWorkerService {
             const unlockedMember = newArray.filter(x => {
                 return lockedMembers.indexOf(String(x)) === -1
             });
-            // this.logger.info('=====roundRobinStrategy newArray=====', members, newArray, unlockedMember);
+            this.logger.info('=====roundRobinStrategy newArray=====', members, newArray, unlockedMember);
             const member = this.cycleFind({ members: unlockedMember, tenantId });
             return Promise.resolve(member);
         } catch (ex) {
@@ -344,12 +345,12 @@ export class QueueWorkerService {
         }
     }
 
-    async doneInComeCall(args: Job, queueIndex, timeout: number) {
+    async doneInComeCall(args: Job, queueIndex, timeout2: number) {
         try {
             try {
 
                 const argData = args.data;
-                const { queue, tenantId, callId } = argData;
+                const { queue, tenantId, callId, timeout } = argData;
                 this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
                 const { members, queueNumber } = queue;
                 const eventName = `stopFindAgent::${tenantId}::${callId}`;
@@ -357,102 +358,107 @@ export class QueueWorkerService {
                 let eslSendStop = false;
                 let maxTimeOut = false;
                 this.eventService.once(eventName, (data) => {
-                    //if(data.jobId === args.id){
-                    this.logger.info(`ESL Send Stop Job!${data.jobId} - ${args.id}`);
-                    eslSendStop = true;
-                    //}                  
+                    this.logger.info(`ESL Send Stop Job:${data.jobId} ,My Job Is: ${args.id}`);
+                    if (data.jobId === args.id) {
+                        eslSendStop = true;
+                    }
                 })
                 const startTime = new Date().getTime();
                 let isMyTurn = false;
+                let pubData = null;
+                if (Array.isArray(members) && members.length > 0) {
+                    while (!eslSendStop && !isMyTurn) {
+                        const activeJobs = await this.queues[queueIndex].getActive();
+                        this.logger.info(`activeJobs:${activeJobs.length}`);
+                        isMyTurn = true;
+                        for (let k = 0; k < activeJobs.length; k++) {
+                            const actJob = activeJobs[k];
+                            const actJobOpts = actJob.opts;
+                            const actJobId = actJob.id;
+                            const { priority, timestamp } = actJobOpts;
+                            console.log(`myJob:[${args.id},${args.opts.priority},${args.opts.timestamp}],compareJob:[${actJobId},${priority},${timestamp}]`);
+                            if (priority < args.opts.priority) {
+                                this.logger.info('=============存在优先级比我高的=============');
+                                isMyTurn = false;
+                                await this.wait(1 * 1000);
+                                break;
+                            }
+                            else if (priority === args.opts.priority && timestamp < args.opts.timestamp) {
+                                this.logger.info('=============和我优先级别一样，但是比我进的早！===========');
+                                isMyTurn = false;
+                                await this.wait(1 * 1000);
+                                break;
+                            }
+                            else {
+                                await this.wait(1 * 1000);
+                            }
+                        }
+                    }
 
-                while (!eslSendStop && !isMyTurn) {
-                    const activeJobs = await this.queues[queueIndex].getActive();
-                    this.logger.info(`activeJobs:${activeJobs.length}`);
-                    isMyTurn = true;
-                    for (let k = 0; k < activeJobs.length; k++) {
-                        const actJob = activeJobs[k];
-                        const actJobOpts = actJob.opts;
-                        const actJobId = actJob.id;
-                        const { priority, timestamp } = actJobOpts;
-                        console.log(`myJob:[${args.id},${args.opts.priority},${args.opts.timestamp}],compareJob:[${actJobId},${priority},${timestamp}]`);
-                        if (priority < args.opts.priority) {
-                            this.logger.info('=============存在优先级比我高的=============');
-                            isMyTurn = false;
-                            await this.wait(1 * 1000);
+                    while (!eslSendStop && !maxTimeOut) {
+                        this.logger.info(`Job:[${tenantId} - ${args.id}] Finding A Queue Member IN [${members.join(',')}]:`);
+                        const now = new Date().getTime();
+                        if (now - startTime > timeout) {
+                            this.logger.info(`doneInComeCall Timeout ${timeout}`);
+                            maxTimeOut = true;
                             break;
                         }
-                        else if (priority === args.opts.priority && timestamp < args.opts.timestamp) {
-                            this.logger.info('=============和我优先级别一样，但是比我进的早！===========');
-                            isMyTurn = false;
-                            await this.wait(1 * 1000);
+                        let data = null;
+                        switch (queue.queue.strategy) {
+                            case 'round-robin':
+                                {
+                                    data = await this.roundRobinStrategy({
+                                        members,
+                                        queueNumber,
+                                        tenantId
+                                    })
+                                    break;
+                                }
+                            case 'top-down':
+                                {
+                                    data = await this.topDownStrategy({
+                                        members,
+                                        tenantId
+                                    })
+                                    break;
+                                }
+                            default:
+                                {
+                                    data = await this.randomStrategy({
+                                        members,
+                                        tenantId
+                                    })
+                                    break;
+                                }
+                        }
+
+                        if (data && data.accountCode) {
+                            await this.lockMember({ tenantId, member: data.accountCode });
+                            this.logger.info(`${tenantId} Find A Waiting Agent : ${data.accountCode}`);
+                            pubData = {
+                                tenantId,
+                                callId,
+                                accountCode: data ? data.accountCode : '',
+                                agentId: data ? data.agentId : '',
+                                phoneLogin: data ? data.phoneLogin : '',
+                                phoneNumber: data ? data.phoneNumber : '',
+                                loginType: data ? data.loginType : ''
+                            }
+                            await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify(pubData));
                             break;
                         }
                         else {
-                            await this.wait(1 * 1000);
+                            await this.wait(3 * 1000);
                         }
                     }
                 }
 
-                while (!eslSendStop && !maxTimeOut) {
-                    this.logger.info('==================该我寻找坐席拉！===================');
-                    const now = new Date().getTime();
-                    if (now - startTime > timeout) {
-                        this.logger.info(`doneInComeCall Timeout ${timeout}`);
-                        maxTimeOut = true;
-                        break;
-                    }
-                    let data = null;
-                    switch (queue.queue.strategy) {
-                        case 'round-robin':
-                            {
-                                data = await this.roundRobinStrategy({
-                                    members,
-                                    queueNumber,
-                                    tenantId
-                                })
-                                break;
-                            }
-                        case 'top-down':
-                            {
-                                data = await this.topDownStrategy({
-                                    members,
-                                    tenantId
-                                })
-                                break;
-                            }
-                        default:
-                            {
-                                data = await this.randomStrategy({
-                                    members,
-                                    tenantId
-                                })
-                                break;
-                            }
-                    }
 
-                    if (data && data.accountCode) {
-                        await this.lockMember({ tenantId, member: data.accountCode });
-                        this.logger.info(`${tenantId}找到坐席${data.accountCode}`);
-                        const pubData = {
-                            tenantId,
-                            callId,
-                            accountCode: data ? data.accountCode : '',
-                            agentId: data ? data.agentId : '',
-                            phoneLogin: data ? data.phoneLogin : '',
-                            phoneNumber: data ? data.phoneNumber : '',
-                            loginType: data ? data.loginType : ''
-                        }
-                        await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member',JSON.stringify(pubData));                   
-                        break;
-                    }
-                    else {
-                        await this.wait(3 * 1000);
-                    }
-                }
-                if (eslSendStop) {
+                if (eslSendStop || maxTimeOut) {
                     return Promise.reject({ success: false, eslSendStop, maxTimeOut });
-                } else {
-                    return Promise.resolve({ success: true });
+                }
+                else {
+                    return Promise.resolve({ success: true,data:pubData });
                 }
 
 
