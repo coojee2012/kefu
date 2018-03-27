@@ -27,23 +27,23 @@ import { PBXExtensionController } from '../controllers/pbx_extension';
 import { PBXAgentController } from '../controllers/pbx_agent';
 import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 
-import { TenantController} from '../controllers/tenant';
+import { TenantController } from '../controllers/tenant';
 
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
     private fsPbx: FreeSwitchPBX;
     private childInjector: Injector;
-    private isEnd: Boolean;
-    private callId: String;
+    private isEnd: boolean;
+    private callId: string;
     private runtimeData: RuntimeData;
     private eslEventNames: ESLEventNames;
     private routerControl: PBXRouterController;
     private callProcessControl: PBXCallProcessController;
     private cdrControl: PBXCDRController;
-    private flowBase:FlowBase;
-    private ivr:IVR;
-    private queue:CCQueue;
+    private flowBase: FlowBase;
+    private ivr: IVR;
+    private queue: CCQueue;
 
     constructor(private injector: Injector, private conn: Connection) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
@@ -61,8 +61,8 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         this.callId = connEvent.getHeader('Unique-ID');
     }
     createChildInjector(conn: Connection): void {
-        this.logger.debug('ccQueueccQueueccQueue',typeof CCQueue);
-        this.logger.debug('IVR',typeof IVR);
+        this.logger.debug('ccQueueccQueueccQueue', typeof CCQueue);
+        this.logger.debug('IVR', typeof IVR);
         this.childInjector = ReflectiveInjector.resolveAndCreate([
 
             {
@@ -119,6 +119,9 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                     this.logger.debug(`ESL Conn is disconnecting!!!`);
                 }
             })
+            // 没有租户的用户是非法的用户
+            await this.runtimeData.setTenantInfo();
+
             // 当A-leg结束之后，还允许esl socket驻留的最长时间s
             await this.fsPbx.linger(30);
             const subRes = await this.fsPbx.subscribe(['ALL']);
@@ -127,7 +130,9 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             await this.billing();
             this.listenAgentEvent();
             await this.route();
-            this.logger.debug('CallFlowEND:');
+            this.logger.debug('Call Flow Exec END!');
+            this.fsPbx.uuidKill(this.callId)
+            
         } catch (ex) {
             this.logger.error('In Call Flow Sart:', ex);
         }

@@ -211,7 +211,7 @@ export class FreeSwitchPBX {
     try {
       let {
         transfer_on_failure,
-        digit_timeout,
+        digit_timeout = 10 * 1000,
         regexp,
         var_name,
         input_err_file,
@@ -243,10 +243,11 @@ export class FreeSwitchPBX {
       let success = false;
       while (input_err_retry > 0 && input_timeout_retry > 0) {
         tries--;
+        this.logger.debug(`uuidPlayAndGetDigits:input_err_retry[${input_err_retry}],input_timeout_retry${input_timeout_retry}`);
         const res = await this.uuidRead(readArgs);
-        this.logger.debug('uuidPlayAndGetDigits:', input_err_retry, input_timeout_retry);
+        regexp = regexp ? regexp :'\\d+';
         const reg = new RegExp(regexp);
-        if (res && reg.test(res)) {
+        if (res && res !== 'timeout' && reg.test(res)) {      
           inputKeys = res;
           success = true;
           break;
@@ -257,9 +258,11 @@ export class FreeSwitchPBX {
         else {
           let tipFile;
           if (res == 'timeout') {
+            this.logger.debug(`uuidPlayAndGetDigits:timeout`)
             tipFile = input_timeout_file ? input_timeout_file : 'demo/timeout.wav';
             input_timeout_retry--;
           } else {
+            this.logger.debug(`uuidPlayAndGetDigits:inputerror`)
             tipFile = input_err_file ? input_err_file : 'demo/inputerror.wav';
             input_err_retry--;
           }
@@ -289,6 +292,7 @@ export class FreeSwitchPBX {
           varvalue: inputKeys
         });
       }
+      this.logger.debug(`uuidPlayAndGetDigits inputKeys:${inputKeys}`);
       return inputKeys;
     } catch (ex) {
       this.logger.error('uuidReadDigits', ex);
@@ -451,7 +455,7 @@ export class FreeSwitchPBX {
             playStoped = true;
             this.conn.removeListener(`esl::event::CHANNEL_HANGUP::${uuid}`, startOnHangup);
             const stopReason = evt.headers.get('Playback-Status');
-            this.logger.debug(`uuidPlay stop${uuid}:`, stopReason);
+            this.logger.debug(`uuidPlay stop ${uuid}:`, stopReason);
             resolve(stopReason);
           }
         })
@@ -461,7 +465,7 @@ export class FreeSwitchPBX {
       await this.wait(1 * 1000);
 
       if (!isOver) {
-        this.logger.debug('uuidRead等待超时处理11111');
+        this.logger.debug('uuidRead等待超时处理');
 
         await new Promise((resolve, reject) => {
           let time = process.hrtime();

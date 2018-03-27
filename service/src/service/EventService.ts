@@ -22,6 +22,7 @@ export class EventService extends EventEmitter2 {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.redisService = this.injector.get(RedisService);
         this.redisPubClient = this.redisService.getClientByName('PUB');
+        this.logger.debug('Init Runtime Data!');
 
     }
 

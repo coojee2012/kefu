@@ -119,20 +119,20 @@ export class IVR {
             let result: TDoneIvrActionResult;
             switch (actionType) {
                 case 1: {
-                    this.logger.debug('执行IVR播放语音菜单。');
+                    this.logger.debug('执行IVR-播放语音菜单。');
                     result = await this.playback(ivrNumber, <ActionPlaybackArgs>args, uuid);
                     break;
                 }
                 case 4:
                     {
-                        this.logger.debug('录制用户数字按键');
+                        this.logger.debug('执行IVR-录制用户数字按键');
                         result = await this.recordKeys(ivrNumber, args, uuid);
                         break;
                     }
                 case 6:
                     {
                         let dialNumber = args.pbx.number;
-                        this.logger.debug(`拨打号码:${dialNumber}`);
+                        this.logger.debug(`执行IVR-拨打号码:${dialNumber}`);
                         if (args.pbx.var_name && args.pbx.var_name !== '') {
                             const varNumber = await this.fsPbx.uuidGetvar({ varname: args.pbx.var_name, uuid });
                             console.log('FFFFFFFFFFFuuid_getvar', varNumber);
@@ -162,6 +162,7 @@ export class IVR {
                     }
                 case 9:
                     {
+                        this.logger.debug('执行IVR-日期时间检测');
                         result = await this.checkDateTime(ivrNumber, args);
                         break;
                     }
@@ -174,6 +175,7 @@ export class IVR {
                 case 14:
                     {
                         // WEB交互接口
+                        this.logger.debug('执行IVR-WEB交互接口');
                         result = await this.webApi(uuid, ivrNumber, args);
                         break;
                     }
@@ -188,11 +190,13 @@ export class IVR {
                 }
                 case 20: {
                     // 比较
+                    this.logger.debug('执行IVR-值比较');
                     result = await this.compareValues(uuid, ivrNumber, args);
                     break;
                 }
                 case 21:
                     {
+                        this.logger.debug('执行IVR-设置通道变量');
                         result = await this.setChannelVar(uuid, args);
                         break;
                     }
@@ -203,12 +207,14 @@ export class IVR {
 
                 case 23:
                     {
+                        this.logger.debug('执行IVR-满意度');
                         result = await this.satisfaction({ uuid, options: args.pbx });
                         break;
                     }
 
                 case 24:
                     {
+                        this.logger.debug('执行IVR-黑名单');
                         result = await this.blackListAction(uuid);
                         break;
                     }
@@ -232,7 +238,7 @@ export class IVR {
     async playback(ivrNumber: string, args: ActionPlaybackArgs, uuid: string): Promise<TDoneIvrActionResult> {
         try {
             const { tenantId, callId, caller, ivrCurrentDeep, ivrMaxDeep } = this.runtimeData.getRunData();
-            let { input, doneGo, errorGo } = args.logic;
+            let { input, doneGo, errorGo } = args.logic; // 不定义errorGo和doneGo默认会走IVR的下一步
             let result: TDoneIvrActionResult;
             const opsTmp = Object.assign({}, args.pbx);
             if (opsTmp.file_from_var) {
@@ -240,6 +246,7 @@ export class IVR {
             }
             if (input) {
                 const ops: uuidPlayAndGetDigitsOptions = <uuidPlayAndGetDigitsOptions>opsTmp;
+                this.logger.debug('uuidPlayAndGetDigitsOptions:',ops);
                 const inputKey = await this.fsPbx.uuidPlayAndGetDigits({ options: ops, uuid: callId, includeLast: false });
                 await this.pbxCallProcessController.create({
                     caller,
@@ -249,6 +256,7 @@ export class IVR {
                     processName: 'input',
                     passArgs: { key: inputKey }
                 });
+                this.logger.debug(`IVR Playback Get InputKey:${inputKey}`);
                 if (inputKey && inputKey != '' && inputKey != '_invalid_') {
                     // _this.lastInputKey = inputKey;
                     // result = await _this.doneIvrInput(ivrNumber, inputKey);
@@ -267,7 +275,7 @@ export class IVR {
                 }
                 // 获取按键错误超过限制的次数,或者等待按键超时
                 else {
-                    this.logger.warn(`获取按键${inputKey}错误或超时！！！`);
+                    this.logger.warn(`获取按键【${inputKey}】是错误的或等待按键超时！！！`);
                     result = {
                         nextType: 'ivr',
                         nextArgs: errorGo

@@ -18,7 +18,7 @@ type DialLocalResult = {
     localType: string;
 }
 
-interface IDialExtensionResult  {
+interface IDialExtensionResult {
 
 }
 
@@ -31,7 +31,7 @@ export class FlowBase {
     private runtimeData: RuntimeData;
     private fsPbx: FreeSwitchPBX;
     private ivr: IVR;
-    private ccQueue:CCQueue;
+    private ccQueue: CCQueue;
     private pbxIvrMenuController: PBXIVRMenuController;
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -64,8 +64,7 @@ export class FlowBase {
                 switch (localType) {
                     case 'ivr':
                         {
-                          await this.dialIVR(number);
-                       
+                            await this.dialIVR(number);
                             break;
                         }
                     case 'extension':
@@ -82,10 +81,10 @@ export class FlowBase {
                             break;
                         }
                     case 'queue':
-                    {
-                        await this.dialQueue(number);
-                        break;
-                    }
+                        {
+                            await this.dialQueue(number);
+                            break;
+                        }
                     case 'voicemail':
                     case 'conference':
                     case 'fax':
@@ -139,35 +138,32 @@ export class FlowBase {
                 passArgs: { number, ivrName: ivrInfo ? ivrInfo.ivrName : `${number}` }
             })
             const result = await this.ivr.ivrAction({
-                ivrNumber:number,
-                ordinal:1,
-                uuid:callId
+                ivrNumber: number,
+                ordinal: 1,
+                uuid: callId
             })
             // 下一步需要拨打一个本地号码
-            if(result.nextType === 'diallocal'){
+            if (result.nextType === 'diallocal') {
                 this.logger.debug('拨打IVR的结果是要继续拨打local')
                 await this.diallocal(result.nextArgs);
-               
             }
             // 正常结束IVR
-            else{
-                this.logger.debug('拨打IVR结束:',result);
+            else {
+                this.logger.debug('拨打IVR结束:', result);
             }
-           
-
         } catch (ex) {
             return Promise.reject(ex);
         }
     }
 
-    async dialQueue(number:string){
-        try{
-           const result =  await this.ccQueue.dialQueue(number);
-           this.logger.debug(`Dial Queue ${number} Result:`,result);
-        }catch(ex){
+    async dialQueue(number: string) {
+        try {
+            const result = await this.ccQueue.dialQueue(number);
+            this.logger.debug(`Dial Queue ${number} Result:`, result);
+        } catch (ex) {
             return Promise.reject(ex);
         }
     }
 
-  
+
 }

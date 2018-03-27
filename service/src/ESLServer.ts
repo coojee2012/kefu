@@ -34,9 +34,7 @@ export class ESLServer extends EventEmitter2 {
         private redisService:RedisService,
         private mongoDB: MongoService) {
         super();
-        this.eslServer = new FreeSwitchServer(DefaultESLCONF);
-        this.queueWorker = this.injector.get(QueueWorkerService);
-        this.eventService = this.injector.get(EventService);
+       
         
     }
 
@@ -71,8 +69,13 @@ export class ESLServer extends EventEmitter2 {
         try {
             await this.readyMongoDB();
             await this.readyRedisClients();
-            
+
+            this.eslServer = new FreeSwitchServer(DefaultESLCONF);
+
+            this.eventService = this.injector.get(EventService);
             this.eventService.initRedisSub();
+
+            this.queueWorker = this.injector.get(QueueWorkerService);            
             await this.queueWorker.init();
             await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列
             const res = await this.eslServer.createOutboundServer();

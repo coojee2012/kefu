@@ -95,11 +95,6 @@ export class RuntimeData {
         this.runData.caller = this.setCaller();
         this.runData.callee = this.setCalled();
 
-        this.setTenantInfo()
-            .then()
-            .catch(err => {
-                this.logger.error(err);
-            })
     }
 
     getChannelData() {
