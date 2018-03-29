@@ -159,6 +159,14 @@ export class FlowBase {
     async dialQueue(number: string) {
         try {
             const result = await this.ccQueue.dialQueue(number);
+            const { answered, tenantId, callId, caller } = this.runtimeData.getRunData();
+            if (result.gotoIvrNumber) {
+                await this.ivr.ivrAction({
+                    ivrNumber: result.gotoIvrNumber,
+                    ordinal: result.gotoIvrActId,
+                    uuid: callId
+                })
+            }
             this.logger.debug(`Dial Queue ${number} Result:`, result);
         } catch (ex) {
             return Promise.reject(ex);

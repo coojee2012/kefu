@@ -477,7 +477,7 @@ export class FreeSwitchPBX {
            }, 1000);*/
           const checkTimeout = () => {
             const diff = process.hrtime(time);
-            this.logger.debug(`uuidRead检查超时:diff = ${diff[0] * 1000} ,timeout=${timeout}`);
+            // this.logger.debug(`uuidRead检查超时:diff = ${diff[0] * 1000} ,timeout=${timeout}`);
             if (isOver) {
               resolve();
             } else if (diff[0] * 1000 > timeout) {
@@ -606,6 +606,29 @@ export class FreeSwitchPBX {
           });
         } else {
           resolve('Socket is null!');
+        }
+      });
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
+
+  async uuidTryKill(uuid: string, cause: string = 'NORMAL_CLEARING'): Promise<string> {
+    try {
+      await new Promise((resolve, reject) => {
+        if (this.conn.socket) {
+          this.conn.api('uuid_kill', [uuid, cause], (evt) => {
+            const body = evt.getBody();
+            if (/^\+OK/.test(body)) {
+              this.logger.debug(`UUID Kill [ ${uuid} ] OK!`);
+              resolve();
+            } else {
+              this.logger.warn(`UUID Kill [ ${uuid} ] Fail:${body}!`);
+              resolve();
+            }
+          });
+        } else {
+          resolve(`UUID Kill [ ${uuid} ] Socket Is NULL!`);
         }
       });
     } catch (ex) {
@@ -745,12 +768,12 @@ export class FreeSwitchPBX {
         name = fileName;
       }
       const recordFileName = `${path}${tenantId}/recordings/${folder}/${name}.wav`;
-      const result = await new Promise((resolve, reject) => {
+      const result = await new Promise<{folder:string,name:string,success:boolean}>((resolve, reject) => {
         this.conn.bgapi('uuid_record', [uuid, opt, recordFileName], (evt) => {
           this.logger.debug(recordFileName);
           const body = evt.getBody();
           if (/^\+OK/.test(body)) {
-            resolve(body);
+            resolve({success:true,folder,name});
           } else {
             reject(body);
           }

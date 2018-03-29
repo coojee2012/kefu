@@ -307,7 +307,7 @@ export class QueueWorkerService {
             const unlockedMember = newArray.filter(x => {
                 return lockedMembers.indexOf(String(x)) === -1
             });
-            this.logger.info('=====roundRobinStrategy newArray=====', members, newArray, unlockedMember);
+            // this.logger.info('=====roundRobinStrategy newArray=====', members, newArray, unlockedMember);
             const member = this.cycleFind({ members: unlockedMember, tenantId });
             return Promise.resolve(member);
         } catch (ex) {
@@ -396,7 +396,7 @@ export class QueueWorkerService {
                     }
 
                     while (!eslSendStop && !maxTimeOut) {
-                        this.logger.info(`Job:[${tenantId} - ${args.id}] Finding A Queue Member IN [${members.join(',')}]:`);
+                        this.logger.info(`Job:[${tenantId} - ${args.id}] Finding A Queue Member IN [${members.join(',')}]！`);
                         const now = new Date().getTime();
                         if (now - startTime > timeout) {
                             this.logger.info(`doneInComeCall Timeout ${timeout}`);

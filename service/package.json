@@ -14,8 +14,6 @@
   },
   "private": true,
   "dependencies": {
-    "@types/ioredis": "^3.2.6",
-    "@types/redlock": "^3.0.1",
     "async": "^2.4.1",
     "bcrypt": "^1.0.2",
     "bluebird": "^3.5.1",
@@ -63,6 +61,8 @@
     "@types/winston": "^2.3.7",
     "@types/bull": "^3.3.9",
     "@types/eventemitter3": "^2.0.2",
+    "@types/ioredis": "^3.2.6",
+    "@types/redlock": "^3.0.1",
     "concurrently": "^3.4.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
