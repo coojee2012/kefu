@@ -708,7 +708,7 @@ export class FreeSwitchPBX {
 
   async bridge(uuid, dialStr): Promise<{ success: boolean, cause: string, evt: Event }> {
     try {
-      const result = new Promise((resolve, reject) => {
+      const result = await new Promise<{ success: boolean, cause: string, evt: Event }>((resolve, reject) => {
         // const dialStr = `sofia/external/${number}@${domain}`;
         this.conn.executeAsync('bridge', dialStr, uuid, (evt: Event) => {
           this.logger.debug('PBX Bridge A Call:', evt.getHeader('Event-Name'));
@@ -730,6 +730,7 @@ export class FreeSwitchPBX {
           }
         });
       });
+      return result;
     } catch (ex) {
       return Promise.reject(ex);
     }

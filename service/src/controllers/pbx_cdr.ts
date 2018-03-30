@@ -80,8 +80,7 @@ export class PBXCDRController {
         }
     }
 
-    async endChannel({ callId, tenantId, hangupCase }) {
-
+    async endChannel({ callId, tenantId, hangupCase,hangupBy='' }) {
         try {
             const result = await this.mongoDB.models.PBXCDR.updateOne({
                 callId,
@@ -89,6 +88,7 @@ export class PBXCDRController {
             }, {
                     alive: 'no',
                     hangupCase: hangupCase,
+                    hangupBy,
                     endTime: new Date()
                 });
             return result;
@@ -97,22 +97,64 @@ export class PBXCDRController {
         }
     }
 
-    async cdrBLegHangup(id:string,hangupCase:string) {
+    async cdrBLegHangup(id: string, hangupCase: string) {
         const _this = this;
         try {
-          const query = {
-            _id:id,
-          }
-          const data = 
-          {
-            alive: 'no',
-            hangupCase:hangupCase,
-            endTime: new Date()
-          }
-          const result = await this.mongoDB.models.PBXCDR.updateOne(query, {$set:data});
-          return result;
+            const query = {
+                _id: id,
+            }
+            const data =
+                {
+                    alive: 'no',
+                    hangupCase: hangupCase,
+                    
+                    endTime: new Date()
+                }
+            const result = await this.mongoDB.models.PBXCDR.updateOne(query, { $set: data });
+            return result;
         } catch (ex) {
-          return Promise.reject(ex);
+            return Promise.reject(ex);
         }
-      }
+    }
+
+    async bLegAnswered(_id: string, bLegId: string) {
+        try {
+            const query = {
+                _id,
+            }
+            const data = {
+                callId: bLegId,
+                answerStatus: 'answered',
+                answerTime: new Date()
+            }
+            const result = await this.mongoDB.models.PBXCDR.updateOne(query, { $set: data });
+            return result;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async answered(tenantId: string, callId: string, associateId: string) {
+        const _this = this;
+        try {
+            const query = {
+                callId,
+                tenantId,
+            }
+            const data = {
+                $set: {
+                    answerStatus: 'answered',
+                    associateId: associateId,
+                    answerTime: new Date()
+                }
+            };
+            //   if (associateId && associateId !== '') {
+            //     upObj.$push = {associateId};
+            //   }
+            const result = await this.mongoDB.models.PBXCDR.updateOne(query, data);
+            return result;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 }

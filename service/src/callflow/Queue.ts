@@ -106,7 +106,7 @@ export class CCQueue {
         try {
             this.logger.debug(`queueNumber:${queueNumber},sipRegInFS:${this.config.getConfig().sipRegInFS}`);
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
-            const { CallDirection } = this.runtimeData.getChannelData();
+            const { CallDirection ,callType} = this.runtimeData.getChannelData();
             const tenantInfo = await this.runtimeData.getTenantInfo();
             this.agentEndState = 'idle';
             const bullQueueName = `esl_q_queue::${tenantId}::${queueNumber}`;
@@ -349,14 +349,15 @@ export class CCQueue {
 
                         //if (tenantInfo && tenantInfo.callCenterOpts && tenantInfo.callCenterOpts.recordCall !== false) {
                         // _this.R.recordFiles[.callId] = `${_this.R.callId}`;
-                        this.fsPbx.uuidRecord(callId, 'start', tenantId)
+                        const recordFileName = `${callId}.${this.originationUuid}`;
+                        this.fsPbx.uuidRecord(callId, 'start', tenantId,'',recordFileName)
                             .then(res => {
                                 this.logger.debug('启动队列录音成功!');
                                 return this.pbxRecordFileController.create({
                                     tenantId: tenantId,
-                                    direction: CallDirection,//callType,
+                                    direction: callType,
                                     callId: callId,
-                                    filename: `${callId}.wav`,
+                                    filename: `${recordFileName}`,
                                     folder: res.folder,
                                     agentId: `${this.agentId}`,
                                     extension: whoAnswered,

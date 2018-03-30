@@ -21,6 +21,7 @@ interface IChannelData {
     sipCallId?: string;
     channelName?: string;
     useContext?: string;
+    callType?: string;
 }
 
 interface IRunData {
@@ -33,6 +34,7 @@ interface IRunData {
     isOriginateCall?: boolean;
     routerLine?: string;
     answered?: boolean;
+    hangupBy?: string;
 }
 interface ISatisData {
     hangup?: any;
@@ -56,7 +58,7 @@ export class RuntimeData {
     private tenantController: TenantController;
     private blegIds: string[];
     private blegUsers: string[]; // 可以使agentId,extension,外线号码
-    private fsPbx:FreeSwitchPBX;
+    private fsPbx: FreeSwitchPBX;
 
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
@@ -88,19 +90,28 @@ export class RuntimeData {
         this.channelData.sipCallId = connEvent.getHeader('variable_sip_call_id');
         this.channelData.channelName = connEvent.getHeader('Caller-Channel-Name');
         this.channelData.useContext = connEvent.getHeader('Caller-Context');
+        this.channelData.callType = connEvent.getHeader('variable_call_direction')
         //originateCall: chanData.get('variable_originate_call'),
         //originateTenant: chanData.get('variable_originate_tenant'),
         this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
 
         this.runData.tenantId = connEvent.getHeader('variable_sip_to_host');
         this.runData.callId = connEvent.getHeader('Unique-ID');
-        this.runData.routerLine = '呼入';
+        this.runData.routerLine = this.getRouterLine(this.channelData.callType);
         this.runData.caller = this.setCaller();
         this.runData.callee = this.setCalled();
 
 
 
 
+    }
+    getRouterLine(callType) {
+        const routerLine = {
+            calllocal: '本地',
+            callin: '呼入',
+            callout: '呼出'
+        }
+        return routerLine[callType];
     }
 
     getChannelData() {
@@ -160,6 +171,11 @@ export class RuntimeData {
     setStatisData(data: ISatisData) {
         this.statisData = Object.assign({}, this.statisData, data);
     }
+
+    setHangupBy(hangupBy: string) {
+        this.runData.hangupBy = hangupBy;
+    }
+
     getStatisData() {
         return this.statisData;
     }

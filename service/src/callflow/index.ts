@@ -126,6 +126,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             await this.fsPbx.linger(30);
             const subRes = await this.fsPbx.subscribe(['ALL']);
             await this.fsPbx.filter('Unique-ID', this.callId);
+            await this.fsPbx.filter('Other-Leg-Unique-ID',this.callId)
 
             await this.billing();
             this.listenAgentEvent();

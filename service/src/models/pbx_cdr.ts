@@ -7,6 +7,7 @@ export type PBXCDRModel = mongoose.Document & {
     callId:string;
     caller:string;
     called:string;
+    hangupBy?:string;
 }
 
 const pbxCDRSchema = new mongoose.Schema({
@@ -119,6 +120,10 @@ const pbxCDRSchema = new mongoose.Schema({
         default: () => null,
       }, // 线路挂断时间
       hangupCase: {
+        type: String,
+        default: () => '',
+      },
+      hangupBy: {
         type: String,
         default: () => '',
       },
