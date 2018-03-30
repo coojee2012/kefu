@@ -175,7 +175,7 @@ export class QueueWorkerService {
     async readyCacheBullQueue() {
         try {
             const keys: string[] = await this.bullQueueClient.keys('bullQueueCache*');
-            this.logger.debug('readyCacheBullQueue', keys);
+            this.logger.debug('readyCacheBullQueue:', keys.join(','));
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i] || 'bullQueueCache';
                 const works = key.split('::');
@@ -192,6 +192,7 @@ export class QueueWorkerService {
     }
 
     setCacheBullKey(name) {
+        this.logger.debug('Cache Bull Key : ', name);
         this.bullQueueClient.set(`bullQueueCache::${name}`, 1)
             .then()
             .catch(err => {
