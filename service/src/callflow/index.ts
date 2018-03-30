@@ -130,9 +130,8 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             await this.billing();
             this.listenAgentEvent();
             await this.route();
-            this.logger.debug('Call Flow Exec END!');
-            this.fsPbx.uuidKill(this.callId)
-            
+            await this.fsPbx.uuidTryKill(this.callId)
+            this.logger.debug('Call Flow Exec END!');          
         } catch (ex) {
             this.logger.error('In Call Flow Sart:', ex);
         }

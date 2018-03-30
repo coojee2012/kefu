@@ -705,6 +705,37 @@ export class FreeSwitchPBX {
     }
   }
 
+
+  async bridge(uuid, dialStr): Promise<{ success: boolean, cause: string, evt: Event }> {
+    try {
+      const result = new Promise((resolve, reject) => {
+        // const dialStr = `sofia/external/${number}@${domain}`;
+        this.conn.executeAsync('bridge', dialStr, uuid, (evt: Event) => {
+          this.logger.debug('PBX Bridge A Call:', evt.getHeader('Event-Name'));
+          const dialstatus = evt.getHeader('variable_DIALSTATUS');
+          if (dialstatus == 'SUCCESS') {
+            const cause = evt.getHeader('variable_bridge_hangup_cause');
+            resolve({
+              success: true,
+              cause,
+              evt
+            });
+          } else {
+            this.logger.debug('Bridge FAIL:', dialstatus);
+            resolve({
+              success: false,
+              cause: dialstatus,
+              evt
+            });
+          }
+        });
+      });
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+
+  }
+
   async wait(millisecond) {
     try {
       if (millisecond <= 0) {
@@ -768,12 +799,12 @@ export class FreeSwitchPBX {
         name = fileName;
       }
       const recordFileName = `${path}${tenantId}/recordings/${folder}/${name}.wav`;
-      const result = await new Promise<{folder:string,name:string,success:boolean}>((resolve, reject) => {
+      const result = await new Promise<{ folder: string, name: string, success: boolean }>((resolve, reject) => {
         this.conn.bgapi('uuid_record', [uuid, opt, recordFileName], (evt) => {
           this.logger.debug(recordFileName);
           const body = evt.getBody();
           if (/^\+OK/.test(body)) {
-            resolve({success:true,folder,name});
+            resolve({ success: true, folder, name });
           } else {
             reject(body);
           }

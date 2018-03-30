@@ -66,11 +66,18 @@ export class PBXExtensionController {
         }
     }
 
-    async setAgentState(tenantId: string, agentId: string, state: string) {
+    /**
+     * @description
+     * 根据分机号更改分机状态
+     * @param tenantId 
+     * @param accountCode 
+     * @param state 
+     */
+    async setAgentState(tenantId: string, accountCode: string, state: string) {
         try {
             const query = {
                 tenantId,
-                agentId
+                accountCode
             }
             const setData = {
                 state: state,
@@ -78,6 +85,24 @@ export class PBXExtensionController {
             }
             const res = await this.mongoDB.models.PBXExtension.update(query, { $set: setData }, { multi: false });
             return Promise.resolve(res);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async getExtenByNumber(tenantId,accountCode){
+        try {
+            const query = {
+                tenantId,
+                accountCode,
+            }
+            const fields = null;
+            const options = {
+                lean: true
+            }
+            const doc = await this.mongoDB.models.PBXExtension.findOne(query, fields, options);
+            return doc;
         }
         catch (ex) {
             return Promise.reject(ex);

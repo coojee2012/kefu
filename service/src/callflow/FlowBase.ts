@@ -14,6 +14,9 @@ import { PBXLocalNumberController } from '../controllers/pbx_localNumber';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
+import { PBXRecordFileController } from '../controllers/pbx_recordFile';
+import { PBXExtensionController } from '../controllers/pbx_extension';
+
 type DialLocalResult = {
     localType: string;
 }
@@ -28,19 +31,27 @@ export class FlowBase {
     private pbxLocalNumberController: PBXLocalNumberController;
     private pbxCdrController: PBXCDRController;
     private pbxCallProcessController: PBXCallProcessController;
+    private pbxExtensionController: PBXExtensionController;
+    private pbxIvrMenuController: PBXIVRMenuController;
+    private pbxRecordFileController: PBXRecordFileController;
+
     private runtimeData: RuntimeData;
     private fsPbx: FreeSwitchPBX;
     private ivr: IVR;
     private ccQueue: CCQueue;
-    private pbxIvrMenuController: PBXIVRMenuController;
+
     constructor(private injector: Injector) {
         this.logger = this.injector.get(LoggerService);
         this.pbxLocalNumberController = this.injector.get(PBXLocalNumberController);
         this.pbxCdrController = this.injector.get(PBXCDRController);
         this.pbxCallProcessController = this.injector.get(PBXCallProcessController);
+        this.pbxIvrMenuController = this.injector.get(PBXIVRMenuController);
+        this.pbxRecordFileController = this.injector.get(PBXRecordFileController);
+        this.pbxExtensionController = this.injector.get(PBXExtensionController);
+
         this.runtimeData = this.injector.get(RuntimeData);
         this.fsPbx = this.injector.get(FreeSwitchPBX);
-        this.pbxIvrMenuController = this.injector.get(PBXIVRMenuController);
+
         this.ivr = this.injector.get(IVR);
         this.ccQueue = this.injector.get(CCQueue);
     }
@@ -91,7 +102,6 @@ export class FlowBase {
                     default:
                         break;
                 }
-
             }
         } catch (ex) {
             return Promise.reject(ex);
@@ -112,11 +122,326 @@ export class FlowBase {
     /**
      * @description 拨打分机
      */
-    async dialExtension(number: string) {
+    async dialExtension(number: string, args) {
         try {
+            const { tenantId, callId, caller, answered, routerLine } = this.runtimeData.getRunData();
+            this.pbxCdrController.lastApp(callId, tenantId, 'extension');
+            const setData = {
+                "call_timeout": 60, // 呼叫超时
+                // "effective_caller_id_name": '', // 主叫名称
+                //"effective_caller_id_number": '', // 主叫号码
+                //"ringback":'', // 回铃音
+            };
+            if (args.timeout) {
+                setData.call_timeout = args.timeout;
+            }
+            if (args.ringback) {
+                setData['ringback'] = args.ringback || '${us-ring}';
+            }
+            await this.fsPbx.uuidSetMutilVar(callId, setData);
+            let cgr_category = '';
+            let cdrUid = '';
+            //if (_this.R.clickOut === 'yes') {
+            cgr_category = 'call_internal';
+            // }
 
+            const blegArgs = [];
+            // blegArgs.push('bridge_pre_execute_bleg_app=start_dtmf'); // brige前,bleg执行的APP
+            // blegArgs.push('bridge_pre_execute_bleg_data=');
+            // blegArgs.push('exec_after_bridge_app=start_dtmf');
+            blegArgs.push('hangup_after_bridge=false');
+            blegArgs.push(`bridge_answer_timeout=30`);
+
+
+            const bLegCgrVars = `{${blegArgs.join(',')}}`;
+            // let dialStr = `${bLegCgrVars}sofia/external/${number}@${tenantId}`;
+            let dialStr = `user/${number}@${tenantId}`;
+
+
+            await this.pbxExtensionController.setAgentLastCallId(tenantId, number, callId);
+
+            const onAnswer = async () => {
+                if (!answered) {
+                    this.runtimeData.setAnswered();
+                }
+                await this.pbxCallProcessController.create({
+                    caller,
+                    called: number,
+                    tenantId,
+                    callId,
+                    processName: 'answer',
+                    passArgs: { number: number, agentId: agentId }
+                })
+                if (!_this.R.transferCall && _this.R.routerLine === '本地') {
+                    _this.db.setAgentState(Object.assign({}, pubData, { agent: _this.R.caller, state: AGENTSTATE.inthecall }));
+                }
+                _this.db.setAgentState(Object.assign({}, pubData, { agent: number, state: AGENTSTATE.inthecall }));
+            }
+
+            const onHangup = async ({ evt, bLegId, hangupBy }) => {
+                const transferInfo = {
+                    transferDisposition: evt.getHeader('variable_transfer_disposition'),
+                    transferTo: evt.getHeader('variable_transfer_to'),
+                    transferDestination: evt.getHeader('variable_transfer_destination'),
+                    transferFallbackExtension: evt.getHeader('variable_transfer_fallback_extension'),
+                    endpointDisposition: evt.getHeader('variable_endpoint_disposition'),
+                }
+                // 被叫分机盲转
+                if (transferInfo && transferInfo.endpointDisposition === 'BLIND_TRANSFER') {
+
+                }
+                //此处处理被叫分机挂机后的业务,默认是挂断通话
+                else {
+                    _this.R.logger.debug(`处理被叫分机挂机后的业务,默认是挂断通话!hangupBy:${hangupBy}`);
+                    if (hangupBy === 'callee') {
+                        _this.R.pbxApi.hangup();
+                        _this.db.cdrHangup('CHANNEL_HANGUP', hangupBy);
+                    }
+                }
+                _this.R.service.callProcess.create({
+                    caller,
+                    called: number,
+                    tenantId,
+                    callId,
+                    processName: 'hangup',
+                    passArgs: { number: number, agentId: agentId, desc: 'calledExtension' }
+                })
+            }
+
+
+
+            const originationUuid = await this.fsPbx.createUuid();
+            this.runtimeData.addBleg(originationUuid, number);
+            await this.fsPbx.filter('Unique-ID', originationUuid);
+
+            this.fsPbx.addConnLisenter(`esl::event::CHANNEL_ANSWER::${originationUuid}`, 'once', onAnswer);
+            this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${originationUuid}`, 'once', onHangup);
+            this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${callId}`, 'once', onAnswer);
+
+            const extensionInfo = await this.pbxExtensionController.getExtenByNumber(tenantId, number);
+            const { state: agentState, agentId, status: agentStatus } = extensionInfo;
+            // 本地呼叫时,改变坐席状态为dialout
+            if (routerLine === '本地') {
+                await this.pbxExtensionController.setAgentState(tenantId, number, 'dialout');
+            }
+            const canCallState = ['waiting', 'busy', 'idle', 'rest'];
+
+            if (canCallState.indexOf(agentState) > -1) {
+                await this.pbxExtensionController.setAgentState(tenantId, number, 'ringing');
+            }
+            else {
+                // TODO 系统提示所拨打的用户忙,稍后再拨打
+                const errMsg = `被叫分机:${number}状态${agentState}无法呼叫,呼叫失败!`
+                this.logger.info(errMsg);
+                await this.pbxExtensionController.setAgentState(tenantId, caller, 'idle');
+
+                // await _this.R.pbxApi.hangup('USER_BUSY');
+                // return Promise.resolve(result);
+            }
+            const oriResult = await this.fsPbx.originate(dialStr, '&park()', blegArgs.join(','), originationUuid);
+
+            const bridgeResult = await _this.bridgeACall('extension', dialStr, number, '本地', onAnswer, onHangup);
+            _this.R.logger.debug('结束本地呼叫分机!更改主叫,被叫分机状态!', _this.R.routerLine);
+
+
+
+
+            result.answered = bridgeResult.success;
+            result.error = bridgeResult.cause;
+            if (!_this.R.transferCall && _this.R.routerLine === '本地') {
+                await _this.db.setAgentState(Object.assign({}, pubData, {
+                    agent: _this.R.caller,
+                    hangup: true,
+                    state: _this.R.tenantInfo.afterCallState || AGENTSTATE.idle
+                }));
+            }
+            await _this.db.setAgentState(Object.assign({}, pubData, {
+                agent: number,
+                hangup: true,
+                state: _this.R.tenantInfo.afterCallState || AGENTSTATE.idle
+            }));
+            // await _this.R.pbxApi.disconnect('拨打本地分机结束,关闭ESL Socket!');
+            // }
+            if (!bridgeResult.success && args.failDone) {
+                switch (args.failDone.type) {
+                    case 'ivr':
+                        {
+                            await _this.ivr.ivrAction(args.failDone.gotoIvr, args.failDone.gotoIvrActId || 1);
+                            break;
+                        }
+                    default:
+                        {
+
+                        }
+                }
+            }
+
+
+            return result;
         } catch (ex) {
             return Promise.reject(ex);
+        }
+    }
+
+
+
+    /**
+     * @description
+     * 外呼或者呼叫内部分机时,发起bridge B-leg
+     * @param tag
+     * @param dialStr
+     * @param calledNumber
+     * @param rLine
+     * @param onAnswer
+     * @param onHangup
+     * @param onOriginate
+     * @return {*}
+     */
+    async bridgeACall(dialStr, calledNumber, rLine, onAnswer, onHangup, onOriginate) {
+        try {
+            const { callId, tenantId, caller } = this.runtimeData.getRunData();
+            const { channelName, useContext, sipCallId, CallDirection } = this.runtimeData.getChannelData();
+            let cdrUid = '';
+            let hasListenOutGoing = false;
+            let BLegId = '';
+
+            const onOutGoing = async (evt) => {
+                const aLegId = evt.getHeader('Other-Leg-Unique-ID');
+                const bLegId = BLegId = evt.getHeader('Unique-ID');
+                this.logger.debug('Dial A Call CHANNEL_OUTGOING', aLegId, bLegId);
+
+                if (aLegId === callId && !hasListenOutGoing) {
+                    this.fsPbx.removeConnLisenter(`esl::event::CHANNEL_OUTGOING::**`, onOutGoing);
+                    if (onOriginate && typeof onOriginate === 'function') {
+                        onOriginate({ bLegId, evt });
+                    }
+                    let answered = false;
+                    let doneHangup = false;
+                    this.runtimeData.addBleg(bLegId, calledNumber);
+                    await this.fsPbx.filter('Unique-ID', bLegId);
+
+
+                    const cdrCreateR = await this.pbxCdrController.create({
+                        tenantId: tenantId,
+                        routerLine: rLine,
+                        srcChannel: channelName,
+                        context: useContext,
+                        caller: caller,
+                        called: calledNumber,
+                        callFrom: caller,
+                        callTo: calledNumber,
+                        callId: `unknown-${callId}-${new Date().getTime()}`,
+                        recordCall: true,
+                        isTransfer: false,
+                        agiType: 'b-leg',
+                        isClickOut: false,
+                        associateId: callId
+                    });
+                    cdrUid = cdrCreateR._id;
+
+
+
+                    const onCallerHangup = async (evt) => {
+                        try {
+                            if (!answered) {
+                                this.logger.debug('bridgeACall被叫未接听,主叫先挂机!');
+                                if (!doneHangup && onHangup && typeof onHangup === 'function') {
+                                    doneHangup = true;
+                                    await onHangup({ bLegId, evt, hangupBy: 'caller' });
+                                }
+                            } else {
+                                this.logger.debug('bridgeACall被叫已接听,主叫先挂机!');
+                            }
+                        } catch (ex) {
+                            this.logger.error('Bridge a call on handle caller hangup error:', ex);
+                        }
+                    }
+
+
+                    const onBlegAnswer = async (evt) => {
+                        try {
+                            this.logger.debug(`bridgeACall被叫应答了:${bLegId}`);
+                            answered = true;
+                            //  if (!_this.R.transferCall) {
+                            // if (_this.R.tenantInfo && _this.R.tenantInfo.recordCall !== false) {
+
+                            this.fsPbx.uuidRecord(callId, 'start', tenantId)
+                                .then(res => {
+                                    this.logger.debug('Bridge a call record success!');
+                                    return this.pbxRecordFileController.create({
+                                        tenantId: tenantId,
+                                        direction: CallDirection,
+                                        callId: callId,
+                                        filename: `${callId}`,
+                                        agentId: '' //`${agentId}`
+                                    });
+
+                                })
+                                .catch(err => {
+                                    this.logger.error('Bridge a call record error:', err);
+                                });
+                            //  }
+                            _this.db.cdrAnswer(tag, bLegId);
+                            //   }
+                            _this.db.cdrBlegAnswer(tag, cdrUid, bLegId);
+                            if (onAnswer && typeof onAnswer === 'function') {
+                                onAnswer({ bLegId, evt });
+                            }
+                        } catch (ex) {
+                            this.logger.error('Bridge a call on handle bleg answer error:', ex);
+                        }
+
+                    }
+
+
+                    const onBelgHangup = async (evt) => {
+                        try {
+                            const hangupCause = evt.getHeader('Hangup-Cause');
+                            await this.pbxCdrController.cdrBLegHangup(cdrUid, hangupCause);
+                            this.logger.debug(`bridgeACall bleg[${bLegId}] hangup！`, bLegId);
+                            if (!doneHangup && answered && onHangup && typeof onHangup === 'function') {
+                                doneHangup = true;
+                                await onHangup({ bLegId, evt, hangupBy: 'callee' });
+                            }
+                        } catch (ex) {
+                            this.logger.error('Bridge a call on handle bleg hangup error:', ex);
+                        }
+                    }
+
+                    this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${callId}`, 'once', onCallerHangup);
+
+
+
+                    this.fsPbx.addConnLisenter(`esl::event::CHANNEL_ANSWER::${bLegId}`, 'once', onBlegAnswer);
+                    hasListenOutGoing = true;
+                    // _this.R.pbxApi.filterDelete('Event-Name', 'CHANNEL_OUTGOING');
+
+                    this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${bLegId}`, 'once', onBelgHangup)
+                }
+            }
+
+
+            this.fsPbx.addConnLisenter(`esl::event::CHANNEL_OUTGOING::**`, 'on', onOutGoing);
+           
+
+            await this.fsPbx.uuidSetMutilVar(callId, {
+                'hangup_after_bridge': 'false',
+                'sip_h_X': sipCallId
+            })
+            // await _this.R.pbxApi.filter('Event-Name', 'CHANNEL_OUTGOING');
+            const bridgeResult = await this.fsPbx.bridge(callId, dialStr);
+            if (!bridgeResult.success) {
+                await this.pbxCdrController.cdrBLegHangup(cdrUid, bridgeResult.cause);
+            }
+            this.logger.debug(`BridgeResult:`, bridgeResult);
+            // if (_this.R.lastLogic === 'hold' || _this.R.lastLogic === 'consult' || _this.R.lastLogic === 'ivr-transfer') {
+            //     _this.R.logger.debug(_this.loggerPrefix, 'In Bridge A Call When Last Logic Is :', _this.R.lastLogic);
+            //     await _this.onCallerHangup();
+            // }
+            return Object.assign({}, bridgeResult, { bLegId: BLegId });
+        } catch (ex) {
+            this.logger.error(ex);
+            return Promise.resolve({ success: false, cause: 'Bridge异常!' });
         }
     }
 
@@ -158,8 +483,10 @@ export class FlowBase {
 
     async dialQueue(number: string) {
         try {
-            const result = await this.ccQueue.dialQueue(number);
             const { answered, tenantId, callId, caller } = this.runtimeData.getRunData();
+            const result = await this.ccQueue.dialQueue(number);
+            this.logger.debug(`Dial Queue ${number} Result:`, result);
+
             if (result.gotoIvrNumber) {
                 await this.ivr.ivrAction({
                     ivrNumber: result.gotoIvrNumber,
@@ -167,7 +494,7 @@ export class FlowBase {
                     uuid: callId
                 })
             }
-            this.logger.debug(`Dial Queue ${number} Result:`, result);
+
         } catch (ex) {
             return Promise.reject(ex);
         }

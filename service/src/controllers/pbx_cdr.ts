@@ -96,4 +96,23 @@ export class PBXCDRController {
             return Promise.reject(ex);
         }
     }
+
+    async cdrBLegHangup(id:string,hangupCase:string) {
+        const _this = this;
+        try {
+          const query = {
+            _id:id,
+          }
+          const data = 
+          {
+            alive: 'no',
+            hangupCase:hangupCase,
+            endTime: new Date()
+          }
+          const result = await this.mongoDB.models.PBXCDR.updateOne(query, {$set:data});
+          return result;
+        } catch (ex) {
+          return Promise.reject(ex);
+        }
+      }
 }

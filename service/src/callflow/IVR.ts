@@ -809,7 +809,7 @@ export class IVR {
                 await this.saveSatisfaction(-1);
             }
             //_this.R.pbxApi.disconnect(`满意度结束!`);
-            this.logger.error('satisfaction end:', result);
+            this.logger.debug('satisfaction end:', result);
             return Promise.resolve(result);
         }
         catch (ex) {
