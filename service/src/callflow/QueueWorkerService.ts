@@ -445,7 +445,11 @@ export class QueueWorkerService {
                                 phoneNumber: data ? data.phoneNumber : '',
                                 loginType: data ? data.loginType : ''
                             }
-                            await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify(pubData));
+
+                            await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify({
+                                success: true,
+                                data: pubData
+                            }));
                             break;
                         }
                         else {
@@ -459,7 +463,7 @@ export class QueueWorkerService {
                     return Promise.reject({ success: false, eslSendStop, maxTimeOut });
                 }
                 else {
-                    return Promise.resolve({ success: true,data:pubData });
+                    return Promise.resolve({ success: true, data: pubData });
                 }
 
 
