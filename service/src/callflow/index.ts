@@ -196,10 +196,20 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     listenAgentEvent() {
         try {
             const agentEvents = this.eslEventNames.ESLUserEvents;
-            this.on(`${agentEvents.hangup}::${this.callId}`, this.onAgentHangup.bind(this))
+            this.once(`${agentEvents.hangup}::${this.callId}`, this.onAgentHangup.bind(this))
         }
         catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 
+    removeAllAgentListener(){
+        try {
+            const agentEvents = this.eslEventNames.ESLUserEvents;
+            this.removeAllListeners(`${agentEvents.hangup}::${this.callId}`);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
         }
     }
 
