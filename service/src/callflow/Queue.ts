@@ -275,6 +275,27 @@ export class CCQueue {
                                     //this.alegHangupBy = 'agent';
                                     const roommId = this.originationUuid ? `${callId}_${this.originationUuid}` : callId;
                                     //this.R.service.queue.hangupBy({ tenantId, callId: roommId, hangupBy: 'agent' });
+
+                                    if (!this.isCallerHangup && queueConf && queueConf.transferStatic) {
+                                        this.runtimeData.setStatisData({
+                                            sType: 'queue',
+                                            agentId: this.agentId,
+                                            answerTime: this.answerTime,
+                                            agentNumber: whoAnswered,
+                                            agentLeg: this.originationUuid,
+                                            ringTime: this.ringTime,
+                                            queueName,
+                                            queueNumber,
+            
+                                        })
+                                        // TODO 从配置文件中读取满意度IVR
+                                        // _this.R.satisData.gotoIvrNumber = 166;
+                                        // _this.R.satisData.gotoIvrActId = 1;
+                                        result.gotoIvrNumber = '166';
+                                        result.gotoIvrActId = 1;
+            
+                                        //_this.R.transferData.afterTransfer = 'satisfaction';
+                                    }
                                 }
                                 resolve();
                             }
@@ -285,6 +306,7 @@ export class CCQueue {
                         const onCallerHangup = async (evt) => {
                             try {
                                 this.logger.debug('FIND_QUEUE_MEMBER_DONE中监听到主叫挂机了!');
+                                this.isCallerHangup = true;
                                 if (!doneOver) {
                                     doneOver = true;
 
@@ -369,28 +391,7 @@ export class CCQueue {
                         // }
 
 
-                        if (queueConf && queueConf.transferStatic) {
 
-
-                            this.runtimeData.setStatisData({
-                                sType: 'queue',
-                                agentId: this.agentId,
-                                answerTime: this.answerTime,
-                                agentNumber: whoAnswered,
-                                agentLeg: this.originationUuid,
-                                ringTime: this.ringTime,
-                                queueName,
-                                queueNumber,
-
-                            })
-                            // TODO 从配置文件中读取满意度IVR
-                            // _this.R.satisData.gotoIvrNumber = 166;
-                            // _this.R.satisData.gotoIvrActId = 1;
-                            result.gotoIvrNumber = '166';
-                            result.gotoIvrActId = 1;
-
-                            //_this.R.transferData.afterTransfer = 'satisfaction';
-                        }
 
                         this.pbxQueueStatisticController.answerCall({
                             callId: callId,
@@ -439,7 +440,7 @@ export class CCQueue {
         try {
             this.logger.debug('afterQueueEnd', { answered, agentNumber, queueNumber });
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
-            await this.pbxExtensionController.setAgentState(tenantId, this.agentId, 'idle');
+            await this.pbxExtensionController.setAgentState(tenantId, agentNumber, 'idle');
             //   const stateResult = await service.extension.setAgentState(Object.assign({}, pubData, {
             //     state: _this.endState,
             //     fromQueue: 'yes',
