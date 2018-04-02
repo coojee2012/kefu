@@ -448,6 +448,8 @@ export class QueueWorkerService {
 
                             await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify({
                                 success: true,
+                                tenantId,
+                                callId,
                                 data: pubData
                             }));
                             break;
