@@ -106,7 +106,7 @@ export class CCQueue {
         try {
             this.logger.debug(`queueNumber:${queueNumber},sipRegInFS:${this.config.getConfig().sipRegInFS}`);
             const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
-            const { CallDirection ,callType} = this.runtimeData.getChannelData();
+            const { CallDirection, callType } = this.runtimeData.getChannelData();
             const tenantInfo = await this.runtimeData.getTenantInfo();
             this.agentEndState = 'idle';
             const bullQueueName = `esl_q_queue::${tenantId}::${queueNumber}`;
@@ -193,7 +193,7 @@ export class CCQueue {
                 this.fsPbx.addConnLisenter(`esl::event::PLAYBACK_START::${callId}`, 'once', this.startFindMemberJob.bind(this));
 
 
-                //this.eventService.on(findQueueMemberEvent, this.onFindQueueMember.bind(this));
+                this.eventService.once(findQueueMemberEvent, this.onFindQueueMember.bind(this));
 
                 this.queueMusicFile = this.queue.queue.mohSound || 'local_stream://moh/8000';
                 await this.playQueueMusic();
@@ -350,7 +350,7 @@ export class CCQueue {
                         //if (tenantInfo && tenantInfo.callCenterOpts && tenantInfo.callCenterOpts.recordCall !== false) {
                         // _this.R.recordFiles[.callId] = `${_this.R.callId}`;
                         const recordFileName = `${callId}.${this.originationUuid}`;
-                        this.fsPbx.uuidRecord(callId, 'start', tenantId,'',recordFileName)
+                        this.fsPbx.uuidRecord(callId, 'start', tenantId, '', recordFileName)
                             .then(res => {
                                 this.logger.debug('启动队列录音成功!');
                                 return this.pbxRecordFileController.create({
@@ -483,7 +483,7 @@ export class CCQueue {
         //     console.log('in queue bullqueue progress')
         // })
 
-        this.bullQueue.on('completed', this.onFindQueueMember.bind(this));
+        // this.bullQueue.on('completed', this.onFindQueueMember.bind(this)); 不知道为什么在其他机器上执行的在这里无法监听到
         this.bullQueue.on('failed', this.onJobFail.bind(this));
         // .on('global:failed', function(job, err) {
         //   console.log(`global:failed Job :`,job,err);
@@ -612,8 +612,8 @@ export class CCQueue {
 
     async onJobFail(job, err) {
         try {
+            this.logger.info('queue job fail:', err);
             if (job.id === this.queueJob.id) {
-                this.logger.info('queue job fail:', err);
                 // 主动发起的结束
                 if (err && err.eslSendStop) {
 
@@ -644,87 +644,87 @@ export class CCQueue {
      * @param job 
      * @param data 
      */
-    async onFindQueueMember(job, data) {
+    async onFindQueueMember(data) {
         const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
         try {
-            this.logger.debug(`On Find Queue Member ${job.id} ${this.queueJob.id}`)
-            if (job.id === this.queueJob.id) {
-                const agentInfo = data.success ? data.data : null;
-                const agentType = this.config.getConfig().sipRegInFS ? 'user' : 'kamailio';
-                const { queueName, queueNumber, queue: queueConf } = this.queue;
-                const { maxWaitTime, enterTipFile } = queueConf;
-                const result = {
-                    agentNumber: '',
-                    success: false,
-                    answered: false,
-                    hasDone: false
-                }
-                this.findQueueMemberExec = true;
-                if (this.setIntervalTimeout) {
-                    clearInterval(this.setIntervalTimeout);
-                }
-                this.logger.debug('findQueueMemberEvent return:', agentInfo);
-                result.agentNumber = agentInfo.accountCode;
+            //this.logger.debug(`On Find Queue Member ${job.id} ${this.queueJob.id}`)
+            // if (job.id === this.queueJob.id) {
+            const agentInfo = data.success ? data.data : null;
+            const agentType = this.config.getConfig().sipRegInFS ? 'user' : 'kamailio';
+            const { queueName, queueNumber, queue: queueConf } = this.queue;
+            const { maxWaitTime, enterTipFile } = queueConf;
+            const result = {
+                agentNumber: '',
+                success: false,
+                answered: false,
+                hasDone: false
+            }
+            this.findQueueMemberExec = true;
+            if (this.setIntervalTimeout) {
+                clearInterval(this.setIntervalTimeout);
+            }
+            this.logger.debug('findQueueMemberEvent return:', agentInfo);
+            result.agentNumber = agentInfo.accountCode;
+            if (this.isCallerHangup) {
+                this.logger.info('find one but Caller is Hangup');
+            }
+            else if (agentInfo && agentInfo.accountCode) {
+                const startCallAgentTime = new Date();
+                this.agentId = agentInfo.agentId;
+                // 拨打坐席，当坐席应答后桥接坐席和用户，返回桥接后的结果
+                const dialResult = await this.dialQueueMember({ agentInfo });
+                this.logger.debug('dialQueueMember result:', dialResult);
+                // 不成功重新放回队列
                 if (this.isCallerHangup) {
-                    this.logger.info('find one but Caller is Hangup');
+                    this.logger.info('When find Queue Member, Caller is Hangup');
                 }
-                else if (agentInfo && agentInfo.accountCode) {
-                    const startCallAgentTime = new Date();
-                    this.agentId = agentInfo.agentId;
-                    // 拨打坐席，当坐席应答后桥接坐席和用户，返回桥接后的结果
-                    const dialResult = await this.dialQueueMember({ agentInfo });
-                    this.logger.debug('dialQueueMember result:', dialResult);
-                    // 不成功重新放回队列
-                    if (this.isCallerHangup) {
-                        this.logger.info('When find Queue Member, Caller is Hangup');
-                    }
-                    else if (!dialResult.success) {
-                        await this.startFindMemberJob();
-                    }
-                    else {
-                        this.queueAnswered = true;
-                        result.success = true;
-                        result.answered = true;
-                        result.hasDone = true;
-                        this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
-                        // 针对电话签入方式的坐席 在桥接后的一些特殊处理
-                        if (agentInfo.phoneLogin === 'yes') {
-                            const { channelName, useContext } = this.runtimeData.getChannelData();
-                            const tenantInfo = this.runtimeData.getTenantInfo();
-                            await this.pbxCdrControl.create({
-                                tenantId,
-                                routerLine: routerLine,
-                                srcChannel: channelName,
-                                context: useContext,
-                                caller: caller,
-                                called: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
-                                callId: this.originationUuid,
-                                recordCall: true,//tenantInfo.recordCall,
-                                isTransfer: false,
-                                agiType: 'queue-leg',
-                                isClickOut: false,
-                                starTime: startCallAgentTime,
-                                agent: String(agentInfo.accountCode),
-                                callFrom: '',
-                                callTo: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
-                                answerTime: new Date(),
-                                answerStatus: 'answered',
-                                associateId: callId,
-                            });
-                        }
-                        // 告诉可以进行坐席接听后的处理了
-                        this.eventService.emit(`queue::after::bridge::${callId}`, result);
-                    }
+                else if (!dialResult.success) {
+                    await this.startFindMemberJob();
                 }
-                // 
                 else {
-                    this.logger.error('findQueueMemberEvent Error:', agentInfo);
-                    // 寻找坐席异常的通知
-                    if (!this.isCallerHangup) {
-                        await this.fsPbx.uuidTryKill(callId);
+                    this.queueAnswered = true;
+                    result.success = true;
+                    result.answered = true;
+                    result.hasDone = true;
+                    this.setQueueWaitingInfo(tenantId, queueNumber, queueName);
+                    // 针对电话签入方式的坐席 在桥接后的一些特殊处理
+                    if (agentInfo.phoneLogin === 'yes') {
+                        const { channelName, useContext } = this.runtimeData.getChannelData();
+                        const tenantInfo = this.runtimeData.getTenantInfo();
+                        await this.pbxCdrControl.create({
+                            tenantId,
+                            routerLine: routerLine,
+                            srcChannel: channelName,
+                            context: useContext,
+                            caller: caller,
+                            called: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
+                            callId: this.originationUuid,
+                            recordCall: true,//tenantInfo.recordCall,
+                            isTransfer: false,
+                            agiType: 'queue-leg',
+                            isClickOut: false,
+                            starTime: startCallAgentTime,
+                            agent: String(agentInfo.accountCode),
+                            callFrom: '',
+                            callTo: agentInfo.phoneLogin === 'yes' ? agentInfo.phoneNumber : agentInfo.accountCode,
+                            answerTime: new Date(),
+                            answerStatus: 'answered',
+                            associateId: callId,
+                        });
                     }
+                    // 告诉可以进行坐席接听后的处理了
+                    this.eventService.emit(`queue::after::bridge::${callId}`, result);
                 }
             }
+            // 
+            else {
+                this.logger.error('findQueueMemberEvent Error:', agentInfo);
+                // 寻找坐席异常的通知
+                if (!this.isCallerHangup) {
+                    await this.fsPbx.uuidTryKill(callId);
+                }
+            }
+            //}
         }
         catch (ex) {
             this.logger.error('onFindQueueMember:', ex);
