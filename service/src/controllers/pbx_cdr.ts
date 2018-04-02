@@ -58,6 +58,18 @@ export class PBXCDRController {
             return Promise.reject(ex);
         }
     }
+
+    async getByCallid(tenantId: string, callId: string) {
+        try {
+            const doc = await this.mongoDB.models.PBXCDR.findOne({
+                tenantId,
+                callId
+            });
+            return doc;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
     async setAgentId({ callId, tenantId, accountCode, whenAnswer = false, answerUuid }: { callId: string, tenantId: string, accountCode: string, whenAnswer?: boolean, answerUuid?: string }) {
         const _this = this;
         try {
@@ -80,7 +92,7 @@ export class PBXCDRController {
         }
     }
 
-    async endChannel({ callId, tenantId, hangupCase,hangupBy='' }) {
+    async endChannel({ callId, tenantId, hangupCase, hangupBy = '' }) {
         try {
             const result = await this.mongoDB.models.PBXCDR.updateOne({
                 callId,
@@ -107,7 +119,7 @@ export class PBXCDRController {
                 {
                     alive: 'no',
                     hangupCase: hangupCase,
-                    
+
                     endTime: new Date()
                 }
             const result = await this.mongoDB.models.PBXCDR.updateOne(query, { $set: data });

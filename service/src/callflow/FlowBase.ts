@@ -16,6 +16,7 @@ import { PBXCallProcessController } from '../controllers/pbx_callProcess';
 import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
 import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 import { PBXExtensionController } from '../controllers/pbx_extension';
+import { TenantController } from '../controllers/tenant';
 
 type DialLocalResult = {
     localType: string;
@@ -35,6 +36,8 @@ export class FlowBase {
     private pbxIvrMenuController: PBXIVRMenuController;
     private pbxRecordFileController: PBXRecordFileController;
 
+    private tenantController: TenantController;
+
     private runtimeData: RuntimeData;
     private fsPbx: FreeSwitchPBX;
     private ivr: IVR;
@@ -48,6 +51,7 @@ export class FlowBase {
         this.pbxIvrMenuController = this.injector.get(PBXIVRMenuController);
         this.pbxRecordFileController = this.injector.get(PBXRecordFileController);
         this.pbxExtensionController = this.injector.get(PBXExtensionController);
+        this.tenantController = this.injector.get(TenantController);
 
         this.runtimeData = this.injector.get(RuntimeData);
         this.fsPbx = this.injector.get(FreeSwitchPBX);
@@ -111,12 +115,267 @@ export class FlowBase {
     /** 
      * @description 拨打出局电话
      * */
-    async dialout() {
+    async dialout(number: string, args: any = {}) {
         try {
 
-        } catch (ex) {
+            this.logger.debug(`Dial A Outer Number:${number}`);
+            const { tenantId, callId, caller, transferCall, answered } = this.runtimeData.getRunData();
+            const { FSName, useContext, clickOut } = this.runtimeData.getChannelData();
 
+            await this.pbxCdrController.updateCalled(tenantId, callId, number);
+            const tenantInfo = await this.runtimeData.getTenantInfo();
+
+            const setData = {
+                call_timeout: 30, // 呼叫超时
+                bridge_answer_timeout: 30,
+                // exec_after_bridge_app: 'start_dtmf',
+                // "effective_caller_id_name": '', // 主叫名称
+                // "effective_caller_id_number": '', // 主叫号码
+                // "ringback":'', // 回铃音
+            };
+            if (args.timeout) {
+                setData.call_timeout = args.timeout;
+                setData.bridge_answer_timeout = args.timeout;
+            }
+            if (args.callerName) {
+                setData['effective_caller_id_name'] = args.callerName;
+            }
+            // TODO 是否需要验证该callerId的合法性?
+            // setData['effective_caller_id_number'] = tenantInfo && tenantInfo.options && tenantInfo.options.useExtenForCaller ? caller : DND;
+            this.pbxCallProcessController.create({
+                caller,
+                called: number,
+                tenantId,
+                callId,
+                processName: 'dialout',
+                passArgs: {},
+                // passArgs: { dnd: DND, caller, number, gateway: _this.R.gateway, agentId },
+            })
+
+            if (args.ringback) {
+                setData['ringback'] = args.ringback || '${us-ring}';
+            }
+
+            const { dnd, gateway } = await this.tenantController.getDialGateWay({
+                tenantId,
+                callId,
+
+            })
+            const pubData = {
+                tenantId: tenantId,
+                agentId: agentId,
+                agent: caller,
+                state: '',
+                fsName: _this.R.fsName,
+                fsCoreId: _this.R.fsCoreId,
+                callType: callType,
+                transferCall: _this.R.transferCall,
+                isClickOut: _this.R.clickOut === 'yes' ? true : false,
+                roomId: callId,
+                sipCallId: _this.R.pbxApi.getChannelData().sipCallId,
+                options: {
+                    callId: callId,
+                    callee: called,
+                    caller: caller,
+                    DND: _this.R.DND,
+                    direction: _this.R.direction
+                }
+            }
+
+            await this.pbxCdrController.lastApp(callId, tenantId, 'dialOut');
+            // _this.R.agentLeg[`${caller}`] = _this.R.callId;
+            let cgr_category = 'call_internal';
+            if (clickOut === 'yes' || transferCall || args.isLastService) {
+                cgr_category = 'call_out';
+            }
+            const bLegCgrVars = this.setBLegCgr();
+            if (/@/.test(number)) {
+                return Promise.reject(`Can't Dial Other Tenand!Called Is:${number}.`);
+            } else {
+                if (gateway && gateway !== '') {
+                    await this.fsPbx.uuidSetMutilVar(callId, setData);
+                    let dialStr = `${bLegCgrVars}sofia/external/${number}@${gateway}`;
+                    this.logger.debug('dialout dialStr:', dialStr);
+                    // if (this.config..gg) {
+                    //     // TODO 如果不用代理,正常情况应该是通过gateway,以下是开发测试
+                    //     dialStr = `${bLegCgrVars}user/${number}`;
+                    // }
+
+                    const onCallerHangup = async (evt) => {
+                        try {
+                            await this.pbxCdrController.lastApp(callId, tenantId, `Dialout Caller Hangup:${evt.getBody()}`);
+                            await this.pbxExtensionController.setAgentState(tenantId, caller, 'idle');
+
+                        } catch (ex) {
+                            this.logger.error(`Dialout Caller Hangup Error:`, ex);
+                        }
+                    }
+
+                    this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${callId}`, 'once', onCallerHangup);
+
+                    let ringTime: number;
+                    const onOriginate = async ({ bLegId, evt }) => {
+                        try {
+                            ringTime = new Date().getTime();
+                            await this.pbxCallProcessController.create({
+                                caller,
+                                called: number,
+                                tenantId,
+                                callId,
+                                processName: 'ringing',
+                                passArgs: { number: number, agentId: '' }
+                            })
+                        } catch (ex) {
+                            this.logger.error(`Dialout Caller On Originate Error:`, ex);
+                        }
+
+                    }
+
+                    let answerTime = 0;
+                    let doneDTMFEvent = false;
+
+
+
+                    const onAnswer = async ({ bLegId, evt }) => {
+                        try {
+                            await this.fsPbx.uuidSetvar({
+                                uuid: bLegId,
+                                varname: 'hangup_after_bridge',
+                                varvalue: 'false'
+                            })
+                            // // 华西证券业务插入
+                            // this.logger.debug(`HHHHHXXXX:isLastService-${args.isLastService},isClickOut-${clickOut}`);
+                            // if (tenantInfo && tenantInfo.options && tenantInfo.options.hx && (args.isLastService || clickOut === 'yes')) {
+                            //     _this.R.EE3.once('esl::callout::done::dtmf::presskey', () => {
+                            //         doneDTMFEvent = true;
+                            //     })
+                            //     _this.HxOnDtmf(callId, bLegId, caller, number)
+                            //         .then(res => { })
+                            //         .catch(err => { })
+                            // }
+
+                            if (!answered) {
+                                this.runtimeData.setAnswered();
+
+                            }
+                            await this.pbxCallProcessController.create({
+                                caller,
+                                called: number,
+                                tenantId,
+                                callId,
+                                processName: 'answer',
+                                passArgs: { number: number, agentId: '' }
+                            })
+                            answerTime = new Date().getTime();
+
+
+                            this.pbxExtensionController.setAgentState(tenantId, caller, 'inthecall')
+                        } catch (ex) {
+                            this.logger.error(`Dialout Caller On Answer Error:`, ex);
+                        }
+
+                    }
+
+                    const onHangup = async ({ bLegId, evt, hangupBy }) => {
+
+                        try {
+                            const hangUpCase = evt.getHeader('Hangup-Cause');
+                            let hangupType = !transferCall ? 'hangUp-callOut' : 'hangUp-transfer';
+                            let by = hangupBy == 'callee' ? 'visitor' : 'agent';
+
+                            let hangupMsg = '';
+                            switch (hangUpCase) {
+                                case 'ORIGINATOR_CANCEL':
+                                    hangupMsg = '取消呼叫';
+                                    by = 'agent';
+                                    break;
+                                case 'NO_USER_RESPONSE':
+                                    hangupMsg = '用户无应答';
+                                    by = 'visitor';
+                                    break;
+                                case 'NO_ANSWER':
+                                    hangupMsg = '用户未应答';
+                                    by = 'visitor';
+                                    break;
+                                case 'CALL_REJECTED':
+                                    hangupMsg = '用户拒接';
+                                    by = 'visitor';
+                                    break;
+                                case 'INCOMPATIBLE_DESTINATION':
+                                    hangupMsg = '用户无应答';
+                                    by = 'visitor';
+                                    break;
+                                case 'UNALLOCATED_NUMBER':
+                                    hangupMsg = '用户无应答';
+                                    by = 'visitor';
+                                    break;
+                                case 'USER_BUSY':
+                                    hangupMsg = '用户忙线';
+                                    by = 'visitor';
+                                    break;
+                                default:
+                                    break;
+                            }
+                            await this.pbxCallProcessController.create({
+                                caller,
+                                called: number,
+                                tenantId,
+                                callId,
+                                processName: 'hangup',
+                                passArgs: { number: number, agentId: '', hangupMsg: '结束通话' }
+                            })
+                        } catch (ex) {
+                            this.logger.error(`Dialout Caller On Hangup Error:`, ex);
+                        }
+
+                    }
+
+
+
+
+                    //const bridgeResult = await _this.bridgeAcallB(caller, number, onOriginate, onAnswer, onHangup)
+
+                    const bridgeResult = await this.bridgeACall(dialStr, number, onAnswer, onHangup, onOriginate);
+
+                    await this.fsPbx.wait(500);
+                    // 处理如果需要处理DTMF响应
+                    if (doneDTMFEvent) {
+                        // await new Promise((resolve, reject) => {
+                        //     EE3.once('esl::callout::done::dtmf::end', () => {
+                        //         logger.debug('esl::callout::done::dtmf::end');
+                        //         resolve();
+                        //     })
+                        // })
+                    }
+                    // 处理如果有失败流程需要处理
+                    else if ((!bridgeResult.success || bridgeResult.cause !== 'NORMAL_CLEARING') && args.failDone) {
+                        // await this.dialFailDone(args);
+                    }
+                    this.logger.debug('结束外呼');
+                    return bridgeResult;
+                } else {
+                    await this.pbxExtensionController.setAgentState(tenantId, caller, 'idle');
+                    return { success: false, cause: `DON'T HAVE A GATEWAY` };
+                }
+            }
+        } catch (ex) {
+            const { tenantId, callId, caller, transferCall, answered } = this.runtimeData.getRunData();
+            await this.pbxExtensionController.setAgentState(tenantId, caller, 'idle');
+            return Promise.reject(ex);
         }
+    }
+
+    setBLegCgr(timeout = 30) {
+        // absolute_codec_string='G729,OPUS,G722,PCMU,PCMA',
+        // bridge_filter_dtmf=true,
+        const args = [];
+        // args.push('bridge_pre_execute_bleg_app=start_dtmf'); // brige前,bleg执行的APP
+        // args.push('bridge_pre_execute_bleg_data=');
+        // args.push('exec_after_bridge_app=start_dtmf');
+        args.push('hangup_after_bridge=false');
+        args.push(`bridge_answer_timeout=${timeout}`);
+        const str = `{${args.join(',')}}`;
+        return str;
     }
 
     /**
@@ -299,7 +558,7 @@ export class FlowBase {
     async bridgeACall(dialStr, calledNumber, onAnswer?, onHangup?, onOriginate?) {
         try {
             const { callId, tenantId, caller, routerLine } = this.runtimeData.getRunData();
-            const { channelName, useContext, sipCallId, CallDirection,callType } = this.runtimeData.getChannelData();
+            const { channelName, useContext, sipCallId, CallDirection, callType } = this.runtimeData.getChannelData();
             let cdrUid = '';
             let hasListenOutGoing = false;
             let BLegId = '';
@@ -364,7 +623,7 @@ export class FlowBase {
                             //  if (!_this.R.transferCall) {
                             // if (_this.R.tenantInfo && _this.R.tenantInfo.recordCall !== false) {
                             const recordFileName = `${callId}.${bLegId}`;
-                            this.fsPbx.uuidRecord(callId, 'start', tenantId,'',recordFileName)
+                            this.fsPbx.uuidRecord(callId, 'start', tenantId, '', recordFileName)
                                 .then(res => {
                                     this.logger.debug('Bridge a call record success!');
                                     return this.pbxRecordFileController.create({
@@ -434,7 +693,7 @@ export class FlowBase {
             if (!bridgeResult.success) {
                 await this.pbxCdrController.cdrBLegHangup(cdrUid, bridgeResult.cause);
             }
-           
+
             // if (_this.R.lastLogic === 'hold' || _this.R.lastLogic === 'consult' || _this.R.lastLogic === 'ivr-transfer') {
             //     _this.R.logger.debug(_this.loggerPrefix, 'In Bridge A Call When Last Logic Is :', _this.R.lastLogic);
             //     await _this.onCallerHangup();

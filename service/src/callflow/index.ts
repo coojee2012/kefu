@@ -26,6 +26,7 @@ import { PBXQueueController } from '../controllers/pbx_queue';
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { PBXAgentController } from '../controllers/pbx_agent';
 import { PBXRecordFileController } from '../controllers/pbx_recordFile';
+import { PBXTrunkController } from '../controllers/pbx_trunk';
 
 import { TenantController } from '../controllers/tenant';
 
@@ -98,6 +99,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             PBXExtensionController,
             PBXAgentController,
             PBXRecordFileController,
+            PBXTrunkController,
 
 
 

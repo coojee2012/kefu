@@ -8,6 +8,7 @@ export type PBXCDRModel = mongoose.Document & {
     caller:string;
     called:string;
     hangupBy?:string;
+    alive?:string;
 }
 
 const pbxCDRSchema = new mongoose.Schema({

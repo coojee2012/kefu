@@ -2,7 +2,17 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXTrunkModel = mongoose.Document & {}
+export type PBXTrunkModel = mongoose.Document & {
+    name:string;
+    protocol:string;
+    gateway:string;
+    transport:string;
+    device?:string;
+    dnds:string[];
+    concurrentCall:number;
+    memo?:string;
+    args?:string;
+}
 
 const pbxTrunkSchema = new mongoose.Schema({
     name: {
@@ -12,6 +22,7 @@ const pbxTrunkSchema = new mongoose.Schema({
     },// 中继的名称
     protocol: {
         type: String,
+        default:()=>'SIP'
     },//协议 SIP,IAX2,等
     gateway: {
         type: String,
