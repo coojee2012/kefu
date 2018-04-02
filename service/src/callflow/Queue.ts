@@ -193,7 +193,7 @@ export class CCQueue {
                 this.fsPbx.addConnLisenter(`esl::event::PLAYBACK_START::${callId}`, 'once', this.startFindMemberJob.bind(this));
 
 
-                this.eventService.once(findQueueMemberEvent, this.onFindQueueMember.bind(this));
+                // this.eventService.once(findQueueMemberEvent, this.onFindQueueMember.bind(this));
 
                 this.queueMusicFile = this.queue.queue.mohSound || 'local_stream://moh/8000';
                 await this.playQueueMusic();
@@ -468,11 +468,11 @@ export class CCQueue {
             // An error occured.
             this.logger.error('in queue bullqueue error:', error);
         });
-        this.bullQueue.on('active', (job, jobPromise) => {
-            // A job has started. You can use `jobPromise.cancel()`` to abort it.
-            this.logger.debug('in queue bullqueue active', job.id);
-            // jobPromise.cancel();
-        })
+        // this.bullQueue.on('active', (job, jobPromise) => {
+        //     // A job has started. You can use `jobPromise.cancel()`` to abort it.
+        //     this.logger.debug('in queue bullqueue active', job.id);
+        //     // jobPromise.cancel();
+        // })
         // .on('stalled', function (job) {
         //     // A job has been marked as stalled. This is useful for debugging job
         //     // workers that crash or pause the event loop.
@@ -483,8 +483,8 @@ export class CCQueue {
         //     console.log('in queue bullqueue progress')
         // })
 
-        // this.bullQueue.on('completed', this.onFindQueueMember.bind(this)); 不知道为什么在其他机器上执行的在这里无法监听到
-        this.bullQueue.on('failed', this.onJobFail.bind(this));
+        this.bullQueue.on('global:completed', this.onFindQueueMember.bind(this)); // 不知道为什么在其他机器上执行的在这里无法监听到
+        this.bullQueue.on('global:failed', this.onJobFail.bind(this));
         // .on('global:failed', function(job, err) {
         //   console.log(`global:failed Job :`,job,err);
         // })
@@ -644,11 +644,11 @@ export class CCQueue {
      * @param job 
      * @param data 
      */
-    async onFindQueueMember(data) {
+    async onFindQueueMember(job,data) {
         const { tenantId, callId, caller, callee: called, routerLine } = this.runtimeData.getRunData();
         try {
-            //this.logger.debug(`On Find Queue Member ${job.id} ${this.queueJob.id}`)
-            // if (job.id === this.queueJob.id) {
+            this.logger.debug(`On Find Queue Member ${job.id} ${this.queueJob.id}`)
+            if (job.id === this.queueJob.id) {
             const agentInfo = data.success ? data.data : null;
             const agentType = this.config.getConfig().sipRegInFS ? 'user' : 'kamailio';
             const { queueName, queueNumber, queue: queueConf } = this.queue;
@@ -724,7 +724,7 @@ export class CCQueue {
                     await this.fsPbx.uuidTryKill(callId);
                 }
             }
-            //}
+            }
         }
         catch (ex) {
             this.logger.error('onFindQueueMember:', ex);
