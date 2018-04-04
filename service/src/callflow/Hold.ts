@@ -1,6 +1,7 @@
 import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
 import { ConfigService } from '../service/ConfigService';
 import { LoggerService } from '../service/LogService';
+import { EventService } from '../service/EventService';
 import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 
@@ -9,19 +10,27 @@ import { RuntimeData } from './RunTimeData';
 
 @Injectable()
 export class Hold {
-    constructor(private injector: Injector) {
+  private logger: LoggerService;
+  private config: ConfigService;
+  private eventService: EventService;
 
+  private fsPbx: FreeSwitchPBX;
+  private runtimeData: RuntimeData;
+    constructor(private injector: Injector) {
+      this.logger = this.injector.get(LoggerService);
+      this.config = this.injector.get(ConfigService);
+      this.eventService = this.injector.get(EventService);
+      this.fsPbx = this.injector.get(FreeSwitchPBX);
     }
 
     async holdOn(message) {
-        const _this = this;
-        const {tenantId, agentNumber, callId, agentId} = message;
+        
         try {
-          const loggerPrefix = _this.loggerPrefix.concat('holdOn');
-          const {caller, called, service, logger, pbxApi, EE3} = _this.R;
-          const agentLegId = _this.R.agentLeg[`${agentNumber}`];
-          const agentBridgedUuid = await pbxApi.uuidGetvar({uuid: agentLegId, varname: 'bridge_uuid'});
-          _this.R.logger.debug(loggerPrefix, `监听到坐席发起保持事件:${agentLegId} | ${agentBridgedUuid}`, message);
+          const {tenantId, agentNumber, callId, agentId} = message;
+          const { caller, callee: called, routerLine } = this.runtimeData.getRunData();
+          const agentLegId = this.runtimeData.getLegIdByNumber[`${agentNumber}`];
+          const agentBridgedUuid = await this.fsPbx.uuidGetvar({uuid: agentLegId, varname: 'bridge_uuid'});
+          this.logger.debug( `监听到坐席发起保持事件:${agentLegId} | ${agentBridgedUuid}`, message);
           _this.R.service.callProcess.create({
             caller,
             called,

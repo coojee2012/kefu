@@ -72,7 +72,7 @@ export class RuntimeData {
     private tenantInfo: TenantModel;
     private tenantController: TenantController;
     private blegIds: string[];
-    private blegUsers: string[]; // 可以使agentId,extension,外线号码
+    private blegUsers: string[]; //可以使用extension,外线号码
     private fsPbx: FreeSwitchPBX;
 
     constructor(private injector: Injector) {
@@ -196,6 +196,18 @@ export class RuntimeData {
     addBleg(uuid: string, user: string) {
         this.blegIds.push(uuid);
         this.blegUsers.push(user);
+    }
+
+    /**
+     * @description 根据分机号或者外线号码获取其legID
+     */
+    getLegIdByNumber(number:string){
+        const index  = this.blegUsers.indexOf(number);
+        if(index > -1){
+            return this.blegIds[index];
+        }else{
+            return '';
+        }
     }
 
     increaseIvrCurrentDeep(number: number = 1) {
