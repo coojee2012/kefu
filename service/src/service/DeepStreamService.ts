@@ -23,8 +23,13 @@ export class DeepStreamService {
     onConnectionStateChanged(state){
         this.logger.debug('DSClientStateChanged', state);
     }
-
-    eventPub(topic, data){
+    
+    /**
+     * @description 发布事件
+     * @param topic 
+     * @param data 一般说来是一个jsonStr
+     */
+    eventPub(topic:string, data:string){
         this.client.event.emit(topic,data);
     }
 }

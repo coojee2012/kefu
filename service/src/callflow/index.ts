@@ -6,11 +6,14 @@ import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 import { EventEmitter2 } from 'eventemitter2';
 
+import { MsgBus } from './MsgBus'
+
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 import { FlowBase } from './FlowBase';
 import { IVR } from './IVR';
 import { CCQueue } from './Queue';
+
 
 import { PBXRouterController } from '../controllers/pbx_router';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
@@ -73,6 +76,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 deps: [] //这里不能丢
             },
             RuntimeData,
+            MsgBus,
             // {
             //     provide: RuntimeData, useFactory: () => {
             //         return new RuntimeData(conn, this.injector);
@@ -83,6 +87,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             IVR,
             CCQueue,
             FlowBase,
+            
 
             // 数据库相关服务注入
             PBXRouterController,

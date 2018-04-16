@@ -859,4 +859,39 @@ export class FreeSwitchPBX {
     }
   }
 
+
+  async uuidTransfer(uuid: string, extension: string, leg?: string, ): Promise<any> {
+    try {
+      leg = leg || '-bleg';
+      const result = await new Promise((resolve, reject) => {
+        this.conn.api('uuid_transfer', [uuid, leg, extension, 'xml', 'default'], (evt) => {
+          this.logger.debug('uuid_transfer result:', evt);
+          resolve();
+        });
+      })
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
+
+  async uuidDualTransfer({
+    uuid,
+    aExten,
+    aDialplan = 'xml',
+    aContext = 'default',
+    bExten,
+    bDialplan = 'xml',
+    bContext = 'default'
+  }) {
+    try {
+      return new Promise((resolve, reject) => {
+        this.conn.api('uuid_dual_transfer', [uuid, `${aExten}/${aDialplan}/${aContext}`, `${bExten}/${bDialplan}/${bContext}`], (evt) => {
+          this.logger.debug(`uuid_dual_transfer ${aExten}/${aDialplan}/${aContext} ${bExten}/${bDialplan}/${bContext} result:`, evt);
+          resolve(evt);
+        });
+      })
+    } catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
 }
