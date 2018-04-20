@@ -13,6 +13,7 @@ import { PBXExtensionController } from '../controllers/pbx_extension';
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 
+
 @Injectable()
 export class Hold {
   private logger: LoggerService;
@@ -24,7 +25,8 @@ export class Hold {
 
   private pbxCallProcessController: PBXCallProcessController;
   private pbxExtensionController: PBXExtensionController;
-  private msgBus:MsgBus;
+  private msgBus: MsgBus;
+  private holdData: THoldData;
 
   constructor(private injector: Injector) {
     this.logger = this.injector.get(LoggerService);
@@ -33,6 +35,15 @@ export class Hold {
     this.fsPbx = this.injector.get(FreeSwitchPBX);
     this.pbxCallProcessController = this.injector.get(PBXCallProcessController);
     this.msgBus = this.injector.get(MsgBus);
+
+    this.holdData = {
+      agentLegId: '',
+      tenantId: '',
+      agentNumber: '',
+      callId: '',
+      holdTimes: 0,
+      holding:false,
+    }
   }
 
   async holdOn(message) {
@@ -51,37 +62,15 @@ export class Hold {
         passArgs: { agentNumber, agentId }
       })
 
-      _this.R.holdData = Object.assign({}, _this.R.holdData, {
+      this.holdData = Object.assign({}, this.holdData, {
         agentLegId, tenantId, agentNumber, callId,
         holdOff: false,
         beHoledHangup: false,
-        holdInitiatorHangup: false
+        holdInitiatorHangup: false,
       });
-      _this.R.holdData.holdTimes = _this.R.holdData.holdTimes ? _this.R.holdData.holdTimes + 1 : 1; //反复点保持
-      _this.R.lastLogic = 'hold';
-
-      const pubData = {
-        tenantId: tenantId,
-        agentId: _this.R.agentId,
-        agent: agentNumber,
-        state: '',
-        fsName: _this.R.fsName,
-        fsCoreId: _this.R.fsCoreId,
-        callType: _this.R.callType,
-        transferCall: _this.R.transferCall,
-        logicType: 'hold',
-        roomId: _this.R.roomId,
-        sipCallId: _this.R.pbxApi.getChannelData().sipCallId,
-        fromQueue: _this.R.isInQueue ? 'yes' : 'no',
-        isClickOut: _this.R.clickOut === 'yes' ? true : false,
-        options: {
-          callId: _this.R.callId,
-          callee: _this.R.called,
-          caller: _this.R.caller,
-          DND: _this.R.DND,
-          direction: _this.R.direction
-        }
-      }
+      this.holdData.holdTimes = this.holdData.holdTimes ? this.holdData.holdTimes + 1 : 1; //反复点保持
+     
+     // _this.R.lastLogic = 'hold';
 
       const setState = async (state, logicOptions = {}) => {
         try {
@@ -98,22 +87,24 @@ export class Hold {
        */
       const onBeHoldedHangup = async (evt) => {
         try {
-          if (_this.R.lastLogic !== 'hold') {
-            return Promise.resolve();
-          }
-          logger.debug(loggerPrefix, `保持业务监听到用户挂机!`);
-          pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentLegId}`, onHoldInitiatorHangup);
-          await _this.tools.wait(1000);
-          await pbxApi.uuidKill(agentLegId);
-          await _this.db.sendMsgToAgent({
+          // if (_this.R.lastLogic !== 'hold') {
+          //   return Promise.resolve();
+          // }
+          this.logger.debug(`保持业务监听到被保持方（客户）挂机!`);
+          // pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentLegId}`, onHoldInitiatorHangup);
+          await this.fsPbx.wait(1000);
+          await this.fsPbx.uuidKill(agentLegId);
+          await this.msgBus.sendMsgToAgent({
             tenantId,
             agentNumber,
             code: 1104,
             message: 'hold_on_caller_hangup',
             logicType: 'hold'
           })
+          this.holdData.holdOff = true;
+          this.holdData.beHoledHangup = true;
         } catch (ex) {
-          logger.error(loggerPrefix, ex);
+          this.logger.error(ex);
           return Promise.reject(ex);
         }
       }
@@ -146,68 +137,18 @@ export class Hold {
         }
       }
 
-      const holdOffEmitted = async (messageOff) => {
-        try {
-          const loggerPrefix = _this.loggerPrefix.concat('off');
-          logger.debug(loggerPrefix, `监听到坐席取消保持事件:`, messageOff);
-          pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentBridgedUuid}`, onBeHoldedHangup);
-          pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentLegId}`, onHoldInitiatorHangup);
-
-          const stillHold = messageOff.stillHold;
-          if (stillHold) {
-            logger.debug(loggerPrefix, `业务逻辑发生改版,蛋但需要继续保持:`, messageOff);
-            return Promise.resolve();
-          }
-          _this.R.service.callProcess.create({
-            caller,
-            called,
-            tenantId,
-            callId,
-            processName: 'holdOff',
-            passArgs: { agentNumber, agentId }
-          })
-
-          if (_this.R.lastLogic === 'appoint_transfer') {
-            logger.debug(loggerPrefix, `监听到指定转接取消保持事件:`, message);
-            return Promise.resolve();
-          }
-
-
-          _this.R.holdData.holdOff = true;
-          await _this.R.pbxApi.uuidBridge(agentLegId, agentBridgedUuid);
-
-          await setState(AGENTSTATE.inthecall);
-
-          await _this.db.sendMsgToAgent({
-            tenantId,
-            agentNumber,
-            code: 1102,
-            message: 'hold_off_success',
-            logicType: 'hold'
-          })
-        }
-        catch (ex) {
-          await _this.db.sendMsgToAgent({
-            tenantId,
-            agentNumber,
-            code: 1103,
-            message: 'hold_off_error',
-            logicType: 'hold'
-          })
-          _this.R.logger.error(loggerPrefix, `坐席通过web取消保持错误:`, ex);
-        }
-      }
 
 
       await this.fsPbx.uuidTransfer(callId, 'consulting', '-both');
 
-      this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${agentBridgedUuid}`,'once', onBeHoldedHangup);
-      this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${agentLegId}`,'once',  onHoldInitiatorHangup);
+      this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${agentBridgedUuid}`, 'once', onBeHoldedHangup);
+      this.fsPbx.addConnLisenter(`esl::event::CHANNEL_HANGUP::${agentLegId}`, 'once', onHoldInitiatorHangup);
 
 
       await setState('holding');
+      this.holdData.holding = true;
 
-      await _this.db.sendMsgToAgent({
+      await this.msgBus.sendMsgToAgent({
         tenantId,
         agentNumber,
         code: 1100,
@@ -241,4 +182,76 @@ export class Hold {
     }
   }
 
+
+  async holdOff(messageOff) {
+    try {
+      const loggerPrefix = _this.loggerPrefix.concat('off');
+      logger.debug(loggerPrefix, `监听到坐席取消保持事件:`, messageOff);
+      pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentBridgedUuid}`, onBeHoldedHangup);
+      pbxApi.conn.off(`esl::event::CHANNEL_HANGUP::${agentLegId}`, onHoldInitiatorHangup);
+
+      const stillHold = messageOff.stillHold;
+      if (stillHold) {
+        logger.debug(loggerPrefix, `业务逻辑发生改版,蛋但需要继续保持:`, messageOff);
+        return Promise.resolve();
+      }
+      _this.R.service.callProcess.create({
+        caller,
+        called,
+        tenantId,
+        callId,
+        processName: 'holdOff',
+        passArgs: { agentNumber, agentId }
+      })
+
+      if (_this.R.lastLogic === 'appoint_transfer') {
+        logger.debug(loggerPrefix, `监听到指定转接取消保持事件:`, message);
+        return Promise.resolve();
+      }
+
+
+      _this.R.holdData.holdOff = true;
+      await _this.R.pbxApi.uuidBridge(agentLegId, agentBridgedUuid);
+
+      await setState(AGENTSTATE.inthecall);
+
+      await _this.db.sendMsgToAgent({
+        tenantId,
+        agentNumber,
+        code: 1102,
+        message: 'hold_off_success',
+        logicType: 'hold'
+      })
+    }
+    catch (ex) {
+      await _this.db.sendMsgToAgent({
+        tenantId,
+        agentNumber,
+        code: 1103,
+        message: 'hold_off_error',
+        logicType: 'hold'
+      })
+      _this.R.logger.error(loggerPrefix, `坐席通过web取消保持错误:`, ex);
+    }
+  }
+
+
+  getHoldData(){
+    return this.holdData;
+  }
+
+
+}
+
+
+export type THoldData = {
+  agentLegId: string;
+  tenantId: string;
+  agentNumber: string;
+  callId: string;
+  holdTimes: number;
+  holding:boolean;
+  holdOff?: boolean;
+  beHoledHangup?: boolean;
+  holdInitiatorHangup?: boolean;
 }
