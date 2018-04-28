@@ -2,19 +2,60 @@ const http = require('http');
 const request = require('request');
 const moment = require('moment');
 const logger = console;
+const URL = require('url');
 
-var default_post_headers = {
+
+
+const shttp = require('socks5-http-client');
+const shttps = require('socks5-https-client');
+const default_post_headers = {
     'content-type': 'application/json;charset=utf-8',
 }
 
-var agentOptions = {
+const agentOptions = {
     keepAlive: true,
     maxSockets: 256,
 }
 
 export class HttpClient {
-    constructor() {
+    private proxy: string;
+    constructor(proxy: string = '') {
+        this.proxy = proxy;
+    }
 
+    async sget(url, options): Promise<string> {
+        try {
+            const httpOptions = Object.assign({}, URL.parse(url), {
+                socksHost: '127.0.0.1',
+                socksPort: '1080',
+                timeout: options.timeout || 3000,
+                headers: options.headers || default_post_headers,
+                agentOptions: agentOptions
+            });
+            console.log(httpOptions);
+            return await new Promise<string>((resolve, reject) => {
+                const req = shttps.get(httpOptions, (res) => {
+                    let result = '';
+                    res.setEncoding('utf8');
+                    res.on('readable', () => {
+                        const data = res.read();                     
+                        if (data === null) {
+                            console.log('data=null', data); // Log response to console.
+                            resolve(result);
+                        } else {
+                            result += data;
+                        }
+                        console.log('1111111');
+                    });
+                });
+                req.on('error', (error) => { reject(error) });
+                // GET request, so end without sending any data.
+               // req.end();
+            })
+
+        } catch (ex) {
+            console.error('sget error:', ex);
+        }
     }
 
     get(url, options) {
@@ -27,7 +68,7 @@ export class HttpClient {
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
                 proxy: options.proxy || '',
-                agentOptions: agentOptions
+               // agentOptions: agentOptions
             }
             request.get(httpOptions, function (err, res, body) {
                 if (err) {
@@ -53,7 +94,7 @@ export class HttpClient {
                 method: 'post',
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
-                proxy: options.proxy || '',
+                proxy: options.proxy || this.proxy,
                 agentOptions: agentOptions
             };
             request(httpOptions, function (err, res, body) {
@@ -80,7 +121,7 @@ export class HttpClient {
                 method: 'post',
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
-                proxy: options.proxy || '',
+                proxy: options.proxy || this.proxy,
                 agentOptions: agentOptions
             };
             request(httpOptions, function (err, res, body) {

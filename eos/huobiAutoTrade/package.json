@@ -17,6 +17,8 @@
     "pako": "^1.0.6",
     "redis": "^2.4.2",
     "request": "^2.72.0",
+    "socks5-http-client": "^1.0.3",
+    "socks5-https-client": "^1.2.1",
     "ws": "^3.2.0"
   },
   "execMap": {
