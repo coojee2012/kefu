@@ -1,4 +1,7 @@
+import { resolve } from "bluebird";
+
 const http = require('http');
+const https = require('https');
 const request = require('request');
 const moment = require('moment');
 const logger = console;
@@ -8,7 +11,9 @@ const URL = require('url');
 
 const shttp = require('socks5-http-client');
 const shttps = require('socks5-https-client');
+const SocksProxyAgent = require('socks-proxy-agent');
 const default_post_headers = {
+
     'content-type': 'application/json;charset=utf-8',
 }
 
@@ -30,33 +35,76 @@ export class HttpClient {
                 socksPort: '1080',
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
-                agentOptions: agentOptions
+                //agentOptions: agentOptions
             });
             console.log(httpOptions);
             return await new Promise<string>((resolve, reject) => {
                 const req = shttps.get(httpOptions, (res) => {
                     let result = '';
                     res.setEncoding('utf8');
-                    res.on('readable', () => {
-                        const data = res.read();                     
-                        if (data === null) {
-                            console.log('data=null', data); // Log response to console.
-                            resolve(result);
-                        } else {
-                            result += data;
-                        }
-                        console.log('1111111');
+                    // res.on('readable', () => {
+                    //     const data = res.read();                     
+                    //     if (data === null) {
+                    //         console.log('data=null', data); // Log response to console.
+                    //         resolve(result);
+                    //     } else {
+                    //         result += data;
+                    //     }
+                    //     console.log('readable 1111111');
+                    // });
+
+                    res.on('data', (d) => {
+                        console.log('data=null', d)
                     });
+
+                    res.on('end', (err) => {
+                        console.log('read error:', err);
+                    })
                 });
                 req.on('error', (error) => { reject(error) });
                 // GET request, so end without sending any data.
-               // req.end();
+                // req.end();
             })
 
         } catch (ex) {
             console.error('sget error:', ex);
         }
     }
+
+    async ssget(url, options): Promise<string>  {
+        try {
+            const agent = new SocksProxyAgent('socks://127.0.0.1:1080', true);
+            const opts = URL.parse(url);
+            opts.headers = {
+                "content-type": "application/json",
+                "accept": "application/json"
+            };
+            opts.agent = agent;
+            return await new Promise<string>((resolve, reject) => {
+                const req = https.request(opts, (res) => {
+                    // console.log('statusCode:', res.statusCode);
+                    // console.log('headers:', res.headers);
+                    let result = '';
+                    res.on('data', (d) => {
+                        //process.stdout.write(d);
+                        result+=d;
+                    });
+                    res.on('end', () => {
+                        //console.log('res:',result);
+                        resolve(result);
+                    })
+                });
+                req.on('error', (e) => {
+                    console.error('ddddddderrr', e);
+                    reject(e);
+                });
+                req.end();
+            });
+        } catch (ex) {
+            console.error(ex);
+        }
+    }
+
 
     get(url, options) {
         // console.log(`${moment().format()} HttpGet: ${url}`)
@@ -67,8 +115,9 @@ export class HttpClient {
                 method: 'get',
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
-                proxy: options.proxy || '',
-               // agentOptions: agentOptions
+                //rejectUnauthorized:false,
+                //proxy: this.proxy || '',
+                agentOptions: agentOptions
             }
             request.get(httpOptions, function (err, res, body) {
                 if (err) {

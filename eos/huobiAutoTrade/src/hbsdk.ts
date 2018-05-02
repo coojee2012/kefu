@@ -68,7 +68,7 @@ export class HuoBiSDK {
             const headers = DEFAULT_HEADERS;
             headers.AuthData = this.get_auth();
             if (method == 'GET') {
-                const data: string = await this.http.sget(url, {
+                const data: string = await this.http.ssget(url, {
                     timeout: 1000,
                     headers: headers
                 })
@@ -211,55 +211,129 @@ export class HuoBiSDK {
 
     }
 
-
-    async get_depth(coin, currency) {
+    /**
+     * @deprecated 
+     * GET /market/depth 获取 Market Depth 数据
+     * 用户选择“合并深度”时，一定报价精度内的市场挂单将予以合并显示。合并深度仅改变显示方式，不改变实际成交价格。
+     * 
+     * symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
+     * type	true	string	Depth 类型		step0, step1, step2, step3, step4, step5（合并深度0-5）；step0时，不合并深度
+     * 
+     * 返回数据：
+     * "tick": {
+     * "id": 消息id,
+     * "ts": 消息生成时间，单位：毫秒,
+     * "bids": 买盘,[price(成交价), amount(成交量)], 按price降序,
+     * "asks": 卖盘,[price(成交价), amount(成交量)], 按price升序
+     * }
+     */
+    async get_depth(coin, currency, step = 'step0') {
         try {
-            let url = `${BASE_URL}/market/depth?symbol=${coin}${currency}&type=step0`;
-            const data: string = await this.http.sget(url, {
+            let url = `${BASE_URL}/market/depth?symbol=${coin}${currency}&type=${step}`;
+            const data: string = await this.http.ssget(url, {
                 timeout: 1000,
                 gzip: true
             })
             let json = JSON.parse(data);
-            let t = json.ts;
-            let ch = json.ch;
-            let asks = json.tick.asks[0];
-            let bids = json.tick.bids[0];
-            console.log(asks,bids,ch);
+            if (json.status === 'ok') {
+                let t = json.ts;
+                let ch = json.ch;
+                let asks = json.tick.asks[0];
+                let bids = json.tick.bids[0];
+                return Promise.resolve({asks,bids})
+            } else {
+                console.log('调用get_depth发生错误：', json)
+                return Promise.reject(json);
+                
+            }
+
         } catch (ex) {
             console.error('get_account error:', ex);
         }
     }
 
-    async get_trade(coin,currency){
+
+    /**
+     * @description
+     * GET /market/trade 获取 Trade Detail 数据
+     * 
+     * symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
+     * 返回数据：
+     *  "tick": {
+     * "id": 消息id,
+     * "ts": 最新成交时间,
+     * "data": [
+     * {
+     * "id": 成交id,
+     * "price": 成交价钱,
+     * "amount": 成交量,
+     * "direction": 主动成交方向,
+     *  "ts": 成交时间
+     * }
+     * ]
+     * }
+     */
+    async get_trade(coin, currency) {
         try {
             let url = `${BASE_URL}/market/trade?symbol=${coin}${currency}`;
             console.log(url);
-            const data: string = await this.http.sget(url, {
+            const data: string = await this.http.ssget(url, {
                 timeout: 1000,
-                //gzip: true
+                gzip: true
             })
-            // let json = JSON.parse(data);
-            // console.log(json.data);
+            let json = JSON.parse(data);
+            if (json.status === 'ok') {
+                let t = json.ts;
+                let ch = json.ch;
+                let tradeData = json.tick.data;
+                console.log(tradeData);
+            } else {
+                console.log('调用get_trade发生错误：', json)
+            }
         } catch (ex) {
             console.error('get_account error:', ex);
         }
     }
 
-    async get_detail_merged(coin,currency){
+    /**
+     * @description
+     * GET /market/detail/merged 获取聚合行情(Ticker)
+     * K线数据
+     * "tick": {
+     * "id": K线id,
+     * "amount": 成交量,
+     * "count": 成交笔数,
+     * "open": 开盘价,
+     * "close": 收盘价,当K线为最晚的一根时，是最新成交价
+     * "low": 最低价,
+     * "high": 最高价,
+     * "vol": 成交额, 即 sum(每一笔成交价 * 该笔的成交量)
+     * "bid": [买1价,买1量],
+     * "ask": [卖1价,卖1量]
+     * }
+     * @param coin eos btc ....
+     * @param currency  usdt....
+     */
+    async get_detail_merged(coin, currency) {
         try {
             let url = `${BASE_URL}/market/detail/merged?symbol=${coin}${currency}`;
-            console.log(url);
-            const data: string = await this.http.get(url, {
+            const data: string = await this.http.ssget(url, {
                 timeout: 1000,
                 gzip: true
             })
-             let json = JSON.parse(data);
-             console.log(json.data);
+            let json = JSON.parse(data);
+            if (json.status === 'ok') {
+                const { amount, open, close, high } = json.tick;               
+                return Promise.resolve({ amount, open, close, high })
+            } else {
+                console.log('调用get_detail_merged发生错误：', json)
+                return Promise.reject(json);
+            }
         } catch (ex) {
             console.error('get_detail_merged error:', ex);
         }
     }
 
-   
+
 
 }
