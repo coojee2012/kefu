@@ -22,6 +22,18 @@ interface IChannelData {
     channelName?: string;
     useContext?: string;
     callType?: string;
+    originateCall?: string;
+    originateTenant?: string;
+    sipHReferredBy?: string;
+    sipReferTo?: string;
+
+    transferHistory?: string;
+    transferSource?: string;
+
+    maxForwards?: string;
+    ivrTransfer?: string;
+    clickOut?: string;
+    clickAgent?: string;
 }
 
 interface IRunData {
@@ -35,6 +47,9 @@ interface IRunData {
     routerLine?: string;
     answered?: boolean;
     hangupBy?: string;
+    transferCall?: boolean;
+
+
 }
 interface ISatisData {
     hangup?: any;
@@ -57,7 +72,7 @@ export class RuntimeData {
     private tenantInfo: TenantModel;
     private tenantController: TenantController;
     private blegIds: string[];
-    private blegUsers: string[]; // 可以使agentId,extension,外线号码
+    private blegUsers: string[]; //可以使用extension,外线号码
     private fsPbx: FreeSwitchPBX;
 
     constructor(private injector: Injector) {
@@ -90,16 +105,34 @@ export class RuntimeData {
         this.channelData.sipCallId = connEvent.getHeader('variable_sip_call_id');
         this.channelData.channelName = connEvent.getHeader('Caller-Channel-Name');
         this.channelData.useContext = connEvent.getHeader('Caller-Context');
-        this.channelData.callType = connEvent.getHeader('variable_call_direction')
-        //originateCall: chanData.get('variable_originate_call'),
-        //originateTenant: chanData.get('variable_originate_tenant'),
-        this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
+        this.channelData.callType = connEvent.getHeader('variable_call_direction'); // 呼叫类型，local,inboud,
+        this.channelData.originateCall = connEvent.getHeader('variable_originate_call'),
+            this.channelData.originateTenant = connEvent.getHeader('variable_originate_tenant'),
+            this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee'),
+
+            this.channelData.transferSource = connEvent.getHeader('variable_transfer_source'),
+            this.channelData.transferHistory = connEvent.getHeader('variable_transfer_history'),
+            this.channelData.sipHReferredBy = connEvent.getHeader('variable_sip_h_Referred-By'),
+            this.channelData.sipReferTo = connEvent.getHeader('variable_sip_refer_to'),
+            this.channelData.maxForwards = connEvent.getHeader('variable_max_forwards'),
+            this.channelData.clickOut = connEvent.getHeader('variable_click_dialout'),
+            this.channelData.clickAgent = connEvent.getHeader('variable_click_agent'),
+            this.channelData.ivrTransfer = connEvent.getHeader('variable_ivr_transfer'),
+
+            this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
 
         this.runData.tenantId = connEvent.getHeader('variable_sip_to_host');
         this.runData.callId = connEvent.getHeader('Unique-ID');
         this.runData.routerLine = this.getRouterLine(this.channelData.callType);
         this.runData.caller = this.setCaller();
         this.runData.callee = this.setCalled();
+
+
+        // 盲转
+        if (this.channelData.sipHReferredBy && this.channelData.sipReferTo) {
+            this.logger.debug('电话转盲转中......');
+            this.runData.transferCall = true;
+        }
 
 
 
@@ -163,6 +196,18 @@ export class RuntimeData {
     addBleg(uuid: string, user: string) {
         this.blegIds.push(uuid);
         this.blegUsers.push(user);
+    }
+
+    /**
+     * @description 根据分机号或者外线号码获取其legID
+     */
+    getLegIdByNumber(number:string){
+        const index  = this.blegUsers.indexOf(number);
+        if(index > -1){
+            return this.blegIds[index];
+        }else{
+            return '';
+        }
     }
 
     increaseIvrCurrentDeep(number: number = 1) {

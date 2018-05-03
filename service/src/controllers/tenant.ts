@@ -4,9 +4,29 @@ import { TenantModel } from '../models/tenants';
 import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
+
+import { RedisService } from '../service/RedisService';
+import { PBXTrunkController } from './pbx_trunk';
+import { PBXCDRController } from './pbx_cdr'
+
+
+import { RedisOptions, Redis } from 'ioredis';
+import Redlock = require('redlock');
+import { Lock } from 'redlock';
+
 @Injectable()
 export class TenantController {
+    private redlock: Redlock;
+    private redLockClient: Redis;
+    private redisService: RedisService;
+    private pbxTrunkController:PBXTrunkController;
+    private pbxCdrController:PBXCDRController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
+
+        this.redisService = this.injector.get(RedisService);
+        this.redLockClient = this.redisService.getClientByName('RedLock');
+        this.pbxTrunkController = this.injector.get(PBXTrunkController);
+        this.pbxCdrController = this.injector.get(PBXCDRController);
 
     }
     async create(data) {
@@ -49,9 +69,9 @@ export class TenantController {
   * @param dnd String - 指定的dnd号码
   * @param forceDND Boolean - 强制使用指定dnd的网关,默认false
   */
-    async getDialGateWay({ tenantId, callId, dnd = '', forceDND = false }) {
+    async getDialGateWay({ tenantId, callId, dnd = '', forceDND = false }):Promise<{dnd:string,gateway:string}> {
         try {
-            const tenant = await this.getTenanByDomain(tenantId);
+            const tenant = await this.getTenantByDomain(tenantId);
             const dnds = tenant.callCenterOpts.dnds;
             if (Array.isArray(dnds) && dnds.length) {
                 let findAppointDnd = false;
@@ -94,7 +114,8 @@ export class TenantController {
             }
         }
         catch (ex) {
-
+            this.logger.error('Get tenant DND and gateway error:',ex);
+            return Promise.reject(ex);
         }
 
     }
@@ -116,38 +137,90 @@ export class TenantController {
     }
 
     async checkDndConcureent(dnd, concurrentCall, tenantId, callId) {
-        const _this = this;
         try {
-            // // 从redis缓存中获取某个dnd对应的trunk信息
-            // const dndTrunkKey = `CallControl::DND::TRUNK::CACHE::${dnd}`;
-            // let dndTrunkInfo = await _this.redisQC.hgetall(dndTrunkKey);
-            // // 如果不存在从mongoDB中获取并写入到redis缓存
-            // if (!dndTrunkInfo) {
-            //     dndTrunkInfo = await _this.dbi.trunk.getTrunkInfoByDND(dnd);// 如果无法获取到,会reject
-            //     await _this.redisQC.multi([
-            //         ['hmset', dndTrunkKey, 'name', dndTrunkInfo.name, 'concurrentCall', dndTrunkInfo.concurrentCall || 0, 'transport', dndTrunkInfo.transport, 'gateway', dndTrunkInfo.gateway, 'protocol', dndTrunkInfo.protocol
-            //         ],
-            //         ['expire', dndTrunkKey, 8 * 60 * 60]
-            //     ]);
-            // }
-            // const step = concurrentCall > 999 ? 100 :
-            //     concurrentCall > 99 ? 50 :
-            //         concurrentCall > 60 ? 2 : 1
-            // const retry = concurrentCall > 999 ? 20 :
-            //     concurrentCall > 499 ? 15 :
-            //         concurrentCall > 60 ? 10 : 1;
-            // const { lock, resource } = await _this.getAResource({ dnd, max: concurrentCall, index: 0, retry, step });
-            // if (lock) {
-            //     const callResourceKey = `CallControl::DND::Resource::${callId}`;
-            //     await _this.redisQC.set(callResourceKey, resource);
-            //     _this.freeAResource(lock, tenantId, callId);
-            //     return `${dndTrunkInfo.gateway};transport=${dndTrunkInfo.transport}`;
-            // } else {
-            //     return '';
-            // }
+            // 从redis缓存中获取某个dnd对应的trunk信息
+            const dndTrunkKey = `CallControl::DND::TRUNK::CACHE::${dnd}`;
+            let dndTrunkInfo = await this.redLockClient.hgetall(dndTrunkKey);
+            // 如果不存在从mongoDB中获取并写入到redis缓存
+            if (!dndTrunkInfo) {
+                dndTrunkInfo = await this.pbxTrunkController.getTrunkInfoByDND(dnd);// 如果无法获取到,会reject
+                await this.redLockClient.multi([
+                    ['hmset', dndTrunkKey, 'name', dndTrunkInfo.name, 'concurrentCall', dndTrunkInfo.concurrentCall || 0, 'transport', dndTrunkInfo.transport, 'gateway', dndTrunkInfo.gateway, 'protocol', dndTrunkInfo.protocol
+                    ],
+                    ['expire', dndTrunkKey, 8 * 60 * 60]
+                ]);
+            }
+            const step = concurrentCall > 999 ? 100 :
+                concurrentCall > 99 ? 50 :
+                    concurrentCall > 60 ? 2 : 1
+            const retry = concurrentCall > 999 ? 20 :
+                concurrentCall > 499 ? 15 :
+                    concurrentCall > 60 ? 10 : 1;
+            const { lock, resource } = await this.getResource({ dnd, max: concurrentCall, index: 0, retry, step });
+            if (lock) {
+                const callResourceKey = `CallControl::DND::Resource::${callId}`;
+                await this.redLockClient.set(callResourceKey, resource);
+                this.freeResource(lock, tenantId, callId);
+                return `${dndTrunkInfo.gateway};transport=${dndTrunkInfo.transport}`;
+            } else {
+                return '';
+            }
         } catch (ex) {
             return Promise.reject(ex);
         }
     }
+
+
+    async getResource({dnd, max, step, index, retry}) {
+
+        try {
+          const resource = `CallControl::DND::${dnd}::${index}`;
+          const lock = await this.redlock.lock(resource, 60 * 1000);
+          return {lock, resource};
+        } catch (ex) {
+          const nextIndex = step === 1 ? index + 1 : index + this.getRandomInt(step, max);
+          if (max < 1 || max > nextIndex) {
+            return this.getResource({dnd, max, step, index: nextIndex, retry: retry});
+          }
+          else if (nextIndex >= max && retry > 0) {
+            return this.getResource({dnd, max, step, index: nextIndex - max, retry: retry - 1});
+          }
+          else {
+            this.logger.error(`${dnd}未获取到资源!`);
+            return {lock: null, resource: ''};
+          }
+        }
+      }
+
+      freeResource(lock, tenantId, callId) {
+        setTimeout(()=> {
+         this.pbxCdrController.getByCallid(tenantId, callId)
+              .then(doc=> {
+                if (doc && doc.alive === 'yes') {
+                  lock.extend(60 * 1000, (err, exLock) => {
+                    if (err) {
+                      this.logger.error('extend资源发生错误:', err);
+                    } else {
+                      this.logger.debug('继续锁定线路资源!');
+                      this.freeResource(exLock, tenantId, callId)
+                    }
+                  })
+                } else {
+                  this.logger.debug('CDR查询到通话已结束,解锁路资源!');
+                  lock.unlock((err)=> {
+                    if (err) {
+                      this.logger.error('1:unlock资源发生错误:', err);
+                    }
+                  });
+                }
+              })
+              .catch(err => {
+                this.logger.error('获取cdr数据发生异常:', err);
+                lock.unlock((e)=> {
+                  this.logger.error('2:unlock资源发生错误:', e);
+                });
+              })
+        }, 30 * 1000)
+      }
 
 }

@@ -1,0 +1,37 @@
+{
+  "name": "eos_test",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run build-ts",
+    "dev": "supervisor -w dist ./dist/app.js",
+    "build": "npm run build-ts && npm run tslint",
+    "serve": "node dist/app.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"nodemon dist/app.js\"",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
+  },
+  "private": true,
+  "dependencies": {
+    "binaryen": "^46.0.0",
+    "eosjs": "^7.1.6"
+  },
+  "devDependencies": {
+    "@types/eventemitter2": "^4.1.0",
+    "@types/lodash": "^4.14.52",
+    "@types/node": "^7.0.5",
+    "concurrently": "^3.4.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.3",
+    "merge2": "^1.0.3",
+    "protractor": "~5.1.2",
+    "ts-node": "~3.2.0",
+    "tslint": "~5.3.2",
+    "typescript": "~2.3.3"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  }
+}
