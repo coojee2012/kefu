@@ -1,0 +1,17 @@
+{
+  "name": "CoojeeTest",
+  "version": "1.0",
+  "description": "Build an Extension!",
+  "manifest_version": 2,
+  "content_scripts": [{
+    "js": ["content_script.js"],
+    "matches": ["https://www.npmjs.com/*"],
+    "run_at": "document_start"
+  }],
+  "permissions": ["tabs","activeTab","notifications","storage"],
+  "browser_action": {
+      "default_title": "Set this page's color.",
+      "default_icon": "icon.png",
+      "default_popup": "popup.html"
+  }
+}

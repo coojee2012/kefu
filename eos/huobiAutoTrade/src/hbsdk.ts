@@ -34,6 +34,31 @@ export class HuoBiSDK {
         return ret;
     }
 
+    async check_outEth() {
+        try {
+            let url = `http://eos.icocha.com/eostransfer/0`;
+            const data: string = await this.http.get(url, {
+                timeout: 1000,
+                gzip: true
+            })
+            let json = JSON.parse(data);
+           
+            if (typeof json === 'object') {
+
+                if (json.TxOut && json.TxOut[0] && json.TxOut[0].Datetime) {
+                    return Promise.resolve({tbTime:json.TxOut[0].Datetime,tbValue:json.TxOut[0].TotalValue});
+                } else {
+                    return Promise.resolve({tbTime:-1,tbValue:0});
+                }
+
+            } else {
+                return Promise.resolve({tbTime:-1,tbValue:0});
+            }
+        } catch (ex) {
+            console.error('check_outEth error:', ex);
+        }
+    }
+
     sign_sha(method, baseurl, path, data) {
         var pars = [];
         for (let item in data) {
@@ -238,17 +263,16 @@ export class HuoBiSDK {
             if (json.status === 'ok') {
                 let t = json.ts;
                 let ch = json.ch;
-                let asks = json.tick.asks[0];
-                let bids = json.tick.bids[0];
-                return Promise.resolve({asks,bids})
+                let asks = json.tick.asks;
+                let bids = json.tick.bids;
+                return Promise.resolve({ asks, bids })
             } else {
                 console.log('调用get_depth发生错误：', json)
                 return Promise.reject(json);
-                
-            }
 
+            }
         } catch (ex) {
-            console.error('get_account error:', ex);
+            console.error('get_depth error:', ex);
         }
     }
 
@@ -276,7 +300,6 @@ export class HuoBiSDK {
     async get_trade(coin, currency) {
         try {
             let url = `${BASE_URL}/market/trade?symbol=${coin}${currency}`;
-            console.log(url);
             const data: string = await this.http.ssget(url, {
                 timeout: 1000,
                 gzip: true
@@ -286,12 +309,15 @@ export class HuoBiSDK {
                 let t = json.ts;
                 let ch = json.ch;
                 let tradeData = json.tick.data;
-                console.log(tradeData);
+                let tradeId = json.tick.id;
+                return Promise.resolve({tradeData,tradeId})
+               
             } else {
+                return Promise.reject(json)
                 console.log('调用get_trade发生错误：', json)
             }
         } catch (ex) {
-            console.error('get_account error:', ex);
+            console.error('get_trade error:', ex);
         }
     }
 
@@ -323,7 +349,7 @@ export class HuoBiSDK {
             })
             let json = JSON.parse(data);
             if (json.status === 'ok') {
-                const { amount, open, close, high } = json.tick;               
+                const { amount, open, close, high } = json.tick;
                 return Promise.resolve({ amount, open, close, high })
             } else {
                 console.log('调用get_detail_merged发生错误：', json)
