@@ -6,7 +6,7 @@ const Config = {
         port: '8008'
     },
     redis: {
-        host: '127.0.0.1',
+        host: '192.168.2.152',
         port: '6379',
         //password: '',
         parser: "javascript",
