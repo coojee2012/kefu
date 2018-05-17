@@ -44,3 +44,5 @@ Thumbs.db
 
 # service logs
 ./service/logs/**.log
+eos/huobiAutoTrade/file-error.log
+eos/huobiAutoTrade/file-info.log

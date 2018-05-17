@@ -1,17 +1,17 @@
 import { resolve } from "bluebird";
 
-const http = require('http');
-const https = require('https');
-const request = require('request');
-const moment = require('moment');
-const logger = console;
-const URL = require('url');
+import http = require('http');
+import https = require('https');
+import request = require('request');
+import moment = require('moment');
+import URL = require('url');
 
 
 
-const shttp = require('socks5-http-client');
-const shttps = require('socks5-https-client');
-const SocksProxyAgent = require('socks-proxy-agent');
+import shttp = require('socks5-http-client');
+import shttps = require('socks5-https-client');
+import SocksProxyAgent = require('socks-proxy-agent');
+
 const default_post_headers = {
 
     'content-type': 'application/json;charset=utf-8',
@@ -21,11 +21,13 @@ const agentOptions = {
     keepAlive: true,
     maxSockets: 256,
 }
-
+import { LoggerService } from './LogService';
 export class HttpClient {
     private proxy: string;
+    private logger: LoggerService;
     constructor(proxy: string = '') {
         this.proxy = proxy;
+        this.logger = new LoggerService();
     }
 
     async sget(url, options): Promise<string> {
@@ -37,57 +39,103 @@ export class HttpClient {
                 headers: options.headers || default_post_headers,
                 //agentOptions: agentOptions
             });
-            console.log(httpOptions);
+            //this.logger.debug(httpOptions);
             return await new Promise<string>((resolve, reject) => {
                 const req = shttps.get(httpOptions, (res) => {
                     let result = '';
                     res.setEncoding('utf8');
-                    // res.on('readable', () => {
-                    //     const data = res.read();                     
-                    //     if (data === null) {
-                    //         console.log('data=null', data); // Log response to console.
-                    //         resolve(result);
-                    //     } else {
-                    //         result += data;
-                    //     }
-                    //     console.log('readable 1111111');
-                    // });
-
-                    res.on('data', (d) => {
-                        console.log('data=null', d)
+                    res.on('readable', () => {
+                        const data = res.read();
+                        if (data === null) {
+                            //console.log('data=null', data); // Log response to console.
+                            resolve(result);
+                        } else {
+                            result += data;
+                        }
+                        //console.log('readable 1111111');
                     });
 
-                    res.on('end', (err) => {
-                        console.log('read error:', err);
-                    })
+                    // res.on('data', (d) => {
+                    //    this.logger.debug('data=null', d)
+                    // });
+
+                    // res.on('end', (err) => {
+                    //    this.logger.debug('read error:', err);
+                    // })
                 });
                 req.on('error', (error) => { reject(error) });
                 // GET request, so end without sending any data.
-                // req.end();
+                req.end();
             })
 
         } catch (ex) {
-            console.error('sget error:', ex);
+            this.logger.error('sget error:', ex);
         }
     }
 
-    async ssget(url, options): Promise<string>  {
+    async spost(url, postdata, options): Promise<string> {
+        try {
+            const httpOptions = Object.assign({}, URL.parse(url), {
+                socksHost: '127.0.0.1',
+                socksPort: '1080',
+                timeout: options.timeout || 3000,
+                method:'POST',
+                headers: options.headers || default_post_headers,
+                //agentOptions: agentOptions
+            });
+            //this.logger.debug(httpOptions);
+            return await new Promise<string>((resolve, reject) => {
+                const req = shttps.request(httpOptions, (res) => {
+                    let result = '';
+                    res.setEncoding('utf8');
+                    res.on('readable', () => {
+                        const data = res.read();
+                        if (data === null) {
+                            //console.log('data=null', data); // Log response to console.
+                            resolve(result);
+                        } else {
+                            result += data;
+                        }
+                        //console.log('readable 1111111');
+                    });
+
+                    // res.on('data', (d) => {
+                    //    this.logger.debug('data=null', d)
+                    // });
+
+                    // res.on('end', (err) => {
+                    //    this.logger.debug('read error:', err);
+                    // })
+                });
+                req.on('error', (error) => { reject(error) });
+                req.write(JSON.stringify(postdata));
+                req.end();
+            })
+        } catch (ex) {
+            this.logger.error('spost error:', ex);
+        }
+    }
+
+    async ssget(url, options): Promise<string> {
         try {
             const agent = new SocksProxyAgent('socks://127.0.0.1:1080', true);
             const opts = URL.parse(url);
             opts.headers = {
-                "content-type": "application/json",
+                "content-type": "application/json;charset=utf-8",
                 "accept": "application/json"
             };
             opts.agent = agent;
+
+
+           this.logger.debug('=====', opts)
             return await new Promise<string>((resolve, reject) => {
                 const req = https.request(opts, (res) => {
-                    // console.log('statusCode:', res.statusCode);
-                    // console.log('headers:', res.headers);
+                    //this.logger.debug('statusCode:', res.statusCode);
+                    //this.logger.debug('headers:', res.headers);
                     let result = '';
                     res.on('data', (d) => {
                         //process.stdout.write(d);
-                        result+=d;
+                        result += d;
                     });
                     res.on('end', () => {
                         //console.log('res:',result);
@@ -95,19 +143,19 @@ export class HttpClient {
                     })
                 });
                 req.on('error', (e) => {
-                    console.error('ddddddderrr', e);
+                    this.logger.error('ssget errr', e);
                     reject(e);
                 });
                 req.end();
             });
         } catch (ex) {
-            console.error(ex);
+            this.logger.error(ex);
         }
     }
 
 
     get(url, options) {
-        // console.log(`${moment().format()} HttpGet: ${url}`)
+        //this.logger.debug(`${moment().format()} HttpGet: ${url}`)
         return new Promise((resolve, reject) => {
             options = options || {};
             var httpOptions = {
@@ -116,7 +164,7 @@ export class HttpClient {
                 timeout: options.timeout || 3000,
                 headers: options.headers || default_post_headers,
                 //rejectUnauthorized:false,
-                //proxy: this.proxy || '',
+                proxy: this.proxy || '',
                 agentOptions: agentOptions
             }
             request.get(httpOptions, function (err, res, body) {
@@ -134,7 +182,7 @@ export class HttpClient {
     }
 
     post(url, postdata, options) {
-        // console.log(`${moment().format()} HttpPost: ${url}`)
+        //this.logger.debug(`${moment().format()} HttpPost: ${url}`)
         return new Promise((resolve, reject) => {
             options = options || {};
             var httpOptions = {
@@ -161,7 +209,7 @@ export class HttpClient {
     };
 
     form_post(url, postdata, options) {
-        // console.log(`${moment().format()} HttpFormPost: ${url}`)
+        //this.logger.debug(`${moment().format()} HttpFormPost: ${url}`)
         return new Promise((resolve, reject) => {
             options = options || {};
             var httpOptions = {

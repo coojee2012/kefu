@@ -3,7 +3,7 @@ import CryptoJS = require('crypto-js');
 import moment = require('moment');
 import HmacSHA256 = require('crypto-js/hmac-sha256')
 import { HttpClient } from './httpClient';
-
+import { LoggerService } from './LogService';
 import config from './config';
 
 const URL_HUOBI_PRO = 'api.huobipro.com';
@@ -20,9 +20,11 @@ const DEFAULT_HEADERS = {
 export class HuoBiSDK {
     private http: HttpClient;
     private privateKey: string;
+    private logger: LoggerService;
     constructor(privateKey) {
         this.privateKey = privateKey;
         this.http = new HttpClient('socks5://127.0.0.1:1080');
+        this.logger = new LoggerService();
     }
 
     get_auth() {
@@ -42,20 +44,20 @@ export class HuoBiSDK {
                 gzip: true
             })
             let json = JSON.parse(data);
-           
+
             if (typeof json === 'object') {
 
                 if (json.TxOut && json.TxOut[0] && json.TxOut[0].Datetime) {
-                    return Promise.resolve({tbTime:json.TxOut[0].Datetime,tbValue:json.TxOut[0].TotalValue});
+                    return Promise.resolve({ tbTime: json.TxOut[0].Datetime, tbValue: json.TxOut[0].TotalValue });
                 } else {
-                    return Promise.resolve({tbTime:-1,tbValue:0});
+                    return Promise.resolve({ tbTime: -1, tbValue: 0 });
                 }
 
             } else {
-                return Promise.resolve({tbTime:-1,tbValue:0});
+                return Promise.resolve({ tbTime: -1, tbValue: 0 });
             }
         } catch (ex) {
-            console.error('check_outEth error:', ex);
+            this.logger.error('check_outEth error:', ex);
         }
     }
 
@@ -66,12 +68,12 @@ export class HuoBiSDK {
         }
         var p = pars.sort().join("&");
         var meta = [method, baseurl, path, p].join('\n');
-        // console.log(meta);
+        // this.logger.debug(meta);
         var hash = HmacSHA256(meta, this.privateKey);
         var Signature = encodeURIComponent(CryptoJS.enc.Base64.stringify(hash));
-        // console.log(`Signature: ${Signature}`);
+        //this.logger.debug(`Signature: ${Signature}`);
         p += `&Signature=${Signature}`;
-        // console.log(p);
+        // this.logger.debug(p);
         return p;
     }
 
@@ -89,39 +91,39 @@ export class HuoBiSDK {
         try {
             const account_id = config.huobi.account_id_pro;
             const url = `https://${URL_HUOBI_PRO}${path}?${payload}`;
-            console.log(url);
+            this.logger.debug(url);
             const headers = DEFAULT_HEADERS;
             headers.AuthData = this.get_auth();
             if (method == 'GET') {
-                const data: string = await this.http.ssget(url, {
+                const data: string = await this.http.sget(url, {
                     timeout: 1000,
                     headers: headers
                 })
                 let json = JSON.parse(data);
                 if (json.status == 'ok') {
-                    //console.log(json.data);
+                    //this.logger.debug(json.data);
                     return Promise.resolve(json.data);
                 } else {
-                    console.log('调用错误', json);
+                    this.logger.warn('调用错误', json);
                     return Promise.reject(json);
                 }
             }
             else if (method == 'POST') {
-                const data = await http.post(url, body, {
+                const data = await this.http.spost(url, body, {
                     timeout: 1000,
                     headers: headers
                 })
                 let json = JSON.parse(data);
                 if (json.status == 'ok') {
-                    console.log(json.data);
+                    this.logger.debug(json.data);
                     return Promise.resolve(json.data);
                 } else {
-                    console.log('调用错误', json);
+                    this.logger.warn('调用错误', json);
                     return Promise.reject(json);
                 }
             }
         } catch (ex) {
-            console.error('call_api error:', ex);
+            this.logger.error('call_api error:', ex);
         }
     }
 
@@ -134,7 +136,7 @@ export class HuoBiSDK {
             const result = await this.call_api('GET', path, payload, body);
             return result;
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
 
     }
@@ -148,7 +150,7 @@ export class HuoBiSDK {
             const payload = this.sign_sha('GET', URL_HUOBI_PRO, path, body);
             return await this.call_api('GET', path, payload, body);
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
     }
 
@@ -160,10 +162,31 @@ export class HuoBiSDK {
             return await this.call_api('GET', path, payload, body);
 
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
 
     }
+    //获取某个订单详情
+    /**
+     * 
+     * @param order_id 
+     * @returns 
+     * 返回结果：
+     * account-id	true	long	账户 ID	
+     * amount	true	string	订单数量	
+     * canceled-at	false	long	订单撤销时间	
+     * created-at	true	long	订单创建时间	
+     * field-amount	true	string	已成交数量	
+     * field-cash-amount	true	string	已成交总金额	
+     * field-fees	true	string	已成交手续费（买入为币，卖出为钱）	
+     * finished-at	false	long	最后成交时间	
+     * id	true	long	订单ID	
+     * price	true	string	订单价格	
+     * source	true	string	订单来源	api
+     * state	true	string	订单状态	pre-submitted 准备提交, submitting , submitted 已提交, partial-filled 部分成交, partial-canceled 部分成交撤销, filled 完全成交, canceled 已撤销
+     * symbol	true	string	交易对	btcusdt, bchbtc, rcneth ...
+     * type	true	string	订单类型	buy-market：市价买, sell-market：市价卖, buy-limit：限价买, sell-limit：限价卖, buy-ioc：IOC买单, sell-ioc：IOC卖单
+     */
     async get_order(order_id) {
         try {
             const path = `/v1/order/orders/${order_id}`;
@@ -171,9 +194,36 @@ export class HuoBiSDK {
             const payload = this.sign_sha('GET', URL_HUOBI_PRO, path, body);
             return await this.call_api('GET', path, payload, body);
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
 
+    }
+
+    // 获取某个订单的成交明细
+    /**
+     * 
+     * @param order_id 
+     * @returns
+     * created-at	true	long	成交时间	
+     * filled-amount	true	string	成交数量	
+     * filled-fees	true	string	成交手续费	
+     * id	true	long	订单成交记录ID	
+     * match-id	true	long	撮合ID	
+     * order-id	true	long	订单 ID	
+     * price	true	string	成交价格	
+     * source	true	string	订单来源	api
+     * symbol	true	string	交易对	btcusdt, bchbtc, rcneth ...
+     * type	true	string	订单类型	buy-market：市价买, sell-market：市价卖, buy-limit：限价买, sell-limit：限价卖, buy-ioc：IOC买单, sell-ioc：IOC卖单
+     */
+    async matchresults(order_id){
+        try {
+            const path = `/v1/order/orders/${order_id}/matchresults`;
+            const body = Object.assign({}, this.get_body(), {});
+            const payload = this.sign_sha('GET', URL_HUOBI_PRO, path, body);
+            return await this.call_api('GET', path, payload, body);
+        } catch (ex) {
+            this.logger.error('get_account error:', ex);
+        }
     }
     async buy_limit(symbol, amount, price) {
         try {
@@ -182,6 +232,7 @@ export class HuoBiSDK {
                 "account-id": config.huobi.account_id_pro,
                 type: "buy-limit",
                 amount: amount,
+                source: 'margin-api',
                 symbol: symbol,
                 price: price
             }
@@ -190,17 +241,40 @@ export class HuoBiSDK {
             return await this.call_api('POST', path, payload, body);
 
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
 
     }
 
-    async sell_limit(symbol, amount, price) {
+
+    async buy_market(accountId, symbol, amount) {
         try {
             const path = '/v1/order/orders/place';
             const extData = {
-                "account-id": config.huobi.account_id_pro,
+                "account-id": accountId,
+                type: "buy-market",
+                amount: amount,
+                source: 'margin-api',
+                symbol: symbol,
+            }
+            const body = Object.assign({}, this.get_body(), extData);
+            const payload = this.sign_sha('POST', URL_HUOBI_PRO, path, body);
+            return await this.call_api('POST', path, payload, body);
+
+        } catch (ex) {
+            this.logger.error('get_account error:', ex);
+        }
+
+    }
+
+
+    async sell_limit(accountId, symbol, amount, price) {
+        try {
+            const path = '/v1/order/orders/place';
+            const extData = {
+                "account-id": accountId,
                 type: "sell-limit",
+                source: 'margin-api',
                 amount, symbol, price
             }
             const body = Object.assign({}, this.get_body(), extData);
@@ -208,10 +282,30 @@ export class HuoBiSDK {
             return await this.call_api('POST', path, payload, body);
 
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('sell_limit error:', ex);
         }
 
     }
+
+    async sell_market(accountId, symbol, amount) {
+        try {
+            const path = '/v1/order/orders/place';
+            const extData = {
+                "account-id": accountId,
+                type: "sell-market",
+                source: 'margin-api',
+                amount, symbol,
+            }
+            const body = Object.assign({}, this.get_body(), extData);
+            const payload = this.sign_sha('POST', URL_HUOBI_PRO, path, body);
+            return await this.call_api('POST', path, payload, body);
+
+        } catch (ex) {
+            this.logger.error('get_account error:', ex);
+        }
+    }
+
+
 
     async  withdrawal(address, coin, amount, payment_id) {
         try {
@@ -222,7 +316,7 @@ export class HuoBiSDK {
                 if (payment_id) {
                     extData['addr-tag'] = payment_id;
                 } else {
-                    console.log('huobi withdrawal', coin, 'no payment id provided, cancel withdrawal');
+                    this.logger.debug('huobi withdrawal', coin, 'no payment id provided, cancel withdrawal');
                     return Promise.resolve(null);
                 }
             }
@@ -231,7 +325,7 @@ export class HuoBiSDK {
             return await this.call_api('POST', path, payload, body);
 
         } catch (ex) {
-            console.error('get_account error:', ex);
+            this.logger.error('get_account error:', ex);
         }
 
     }
@@ -267,12 +361,12 @@ export class HuoBiSDK {
                 let bids = json.tick.bids;
                 return Promise.resolve({ asks, bids })
             } else {
-                console.log('调用get_depth发生错误：', json)
+                this.logger.debug('调用get_depth发生错误：', json)
                 return Promise.reject(json);
 
             }
         } catch (ex) {
-            console.error('get_depth error:', ex);
+            this.logger.error('get_depth error:', ex);
         }
     }
 
@@ -310,14 +404,15 @@ export class HuoBiSDK {
                 let ch = json.ch;
                 let tradeData = json.tick.data;
                 let tradeId = json.tick.id;
-                return Promise.resolve({tradeData,tradeId})
-               
+                return Promise.resolve({ tradeData, tradeId })
+
             } else {
+                this.logger.debug('调用get_trade发生错误：', json)
                 return Promise.reject(json)
-                console.log('调用get_trade发生错误：', json)
+
             }
         } catch (ex) {
-            console.error('get_trade error:', ex);
+            this.logger.error('get_trade error:', ex);
         }
     }
 
@@ -352,11 +447,11 @@ export class HuoBiSDK {
                 const { amount, open, close, high } = json.tick;
                 return Promise.resolve({ amount, open, close, high })
             } else {
-                console.log('调用get_detail_merged发生错误：', json)
+                this.logger.debug('调用get_detail_merged发生错误：', json)
                 return Promise.reject(json);
             }
         } catch (ex) {
-            console.error('get_detail_merged error:', ex);
+            this.logger.error('get_detail_merged error:', ex);
         }
     }
 

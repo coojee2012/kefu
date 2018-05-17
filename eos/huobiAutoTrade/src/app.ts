@@ -1,22 +1,21 @@
 import { AutoTrade } from './AutoTrade';
-
-
-
 const privateKey = process.argv[2];
-console.log('privateKey:',privateKey);
-const run = async ()=>{
+const max$ = process.argv[3];
+const run = async () => {
     try {
-        const autoTrade = new AutoTrade(privateKey);
+        const autoTrade = new AutoTrade(privateKey, max$);
         await autoTrade.run();
 
-    }catch(ex){
-        console.error('run error:',ex);
+    } catch (ex) {
+        console.error('run error:', ex);
     }
 }
 run()
-.then(
-    
-)
-.catch(err=>{
-
-})
+    .then(
+        () => {
+            console.log('END!')
+        }
+    )
+    .catch(err => {
+        console.error('run error:', ex);
+    })
