@@ -53,10 +53,14 @@ export class AutoTrade {
     private ws: WSClient;
     private logger: LoggerService;
 
-    private accountTradeUSDT:number; // 交易账户可用USDT
-    private accountTradeCoins:number; // 交易账户可用币
+    private accountTradeUSDT: number; // 交易账户可用USDT
+    private accountTradeCoins: number; // 交易账户可用币
 
-    constructor(privateKey,max) {
+    private priceDiffAvg10: number;
+    private priceDiffAvg20: number;
+    private readyData: boolean;
+
+    constructor(privateKey, max) {
         this.hbSDK = new HuoBiSDK(privateKey);
         this.logger = new LoggerService();
 
@@ -66,7 +70,7 @@ export class AutoTrade {
         this.tradeQS = 0;
         this.tradeFXQS = 0;
         this.lastTradeTotal = 0;
-        this.lastPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.lastPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.buyMounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.sellMounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -84,6 +88,9 @@ export class AutoTrade {
         this.totalCoins = 0;
         this.accountTradeCoins = 0;
         this.accountTradeUSDT = 0;
+        this.priceDiffAvg10 = 0;
+        this.priceDiffAvg20 = 0;
+        this.readyData = false;
     }
 
 
@@ -155,8 +162,35 @@ export class AutoTrade {
             const { amount, open, close, high } = data;
             this.openPrice = open;
             this.closePrice = close;
-            this.lastPrices.pop();
-            this.lastPrices.unshift(close);
+
+            if (close !== this.lastPrices[0]) {
+                const zj10s = this.lastPrices.slice(1, 11);
+                const avg10s = this.sumArray(zj10s) / 10;
+
+                const zj20s = this.lastPrices.slice(1);
+                const avg20s = this.sumArray(zj20s) / 20;
+                this.priceDiffAvg10 = +(close - avg10s).toFixed(4);
+                this.priceDiffAvg20 = +(close - avg20s).toFixed(4);
+                this.logger.debug(`close:${close},均10:[${avg10s.toFixed(4)} | ${this.priceDiffAvg10}],均20:[ ${avg20s.toFixed(4)} | ${this.priceDiffAvg20}]`);
+                this.lastPrices.pop();
+                this.lastPrices.unshift(close);
+                if (this.readyData && this.priceDiffAvg10 > 0.01) {
+                    this.buyCoins()
+                        .then(res => {
+                        })
+                        .catch(err => {
+                            this.logger.error('buyCoins error')
+                        })
+                }
+                else if (this.readyData && this.priceDiffAvg10 < -0.01) {
+                    this.checkSelling()
+                        .then(res => {
+                        })
+                        .catch(err => {
+                            this.logger.error('sellCoins error')
+                        })
+                }
+            }
         }
         catch (ex) {
             this.logger.error('observePrice error:', ex);
@@ -164,9 +198,13 @@ export class AutoTrade {
 
     }
 
+    sortNumber(a, b) {
+        return a - b
+    }
+
     async run() {
         try {
-      
+
             const accountInfo: any[] = await this.hbSDK.get_account();
             this.logger.debug('accountInfo:', accountInfo);
             for (let i = 0; i < accountInfo.length; i++) {
@@ -179,26 +217,26 @@ export class AutoTrade {
                 }
             }
             const blance = await this.hbSDK.get_balance(this.marginEosusdtID);
-            if(blance && blance.list.length){
-                for(let i=0;i<blance.list.length;i++){
+            if (blance && blance.list.length) {
+                for (let i = 0; i < blance.list.length; i++) {
                     const item = blance.list[i];
-                    if(item.currency === 'usdt' && item.type === 'trade'){
+                    if (item.currency === 'usdt' && item.type === 'trade') {
                         this.accountTradeUSDT = item.balance;
                     }
-                    else if(item.currency === 'eos' && item.type === 'trade'){
+                    else if (item.currency === 'eos' && item.type === 'trade') {
                         this.accountTradeCoins = item.balance;
                     }
                 }
             }
             this.logger.debug(`blance:USDT-${this.accountTradeUSDT},Coins-${this.accountTradeCoins}`);
 
-            if(this.accountTradeUSDT < this.useCapital){
+            if (this.accountTradeUSDT < this.useCapital) {
                 this.logger.warn(`账户可用余额不足:${this.useCapital}!!`);
                 // const orderId = await this.hbSDK.sell_limit(this.marginEosusdtID,'eosusdt',0.1,28.001);
                 // this.logger.debug('order',orderId)
                 // const orderDetail = await this.hbSDK.get_order(orderId);
                 // this.logger.debug('order detail:',orderDetail)
-               //  return;
+                //  return;
             }
 
             this.ws = new WSClient();
@@ -216,6 +254,8 @@ export class AutoTrade {
                         await this.wait(5 * 1000);
                         continue;
                     }
+
+                    this.readyData = true;
 
                     this.LLDPE = 0;
 
@@ -278,7 +318,7 @@ export class AutoTrade {
                     price5 = +(price5 / 5).toFixed(3);
                     price20 = +(price20 / 20).toFixed(3);
                     //console.log(this.lastPrices.join(','))
-                    const priceCha = Math.ceil(((( this.closePrice - price5) / this.openPrice) * 10000));
+                    const priceCha = Math.ceil((((this.closePrice - price5) / this.openPrice) * 10000));
                     this.LLDPE += priceCha;
 
 
@@ -332,20 +372,9 @@ export class AutoTrade {
 
                     this.LLDPE = Math.ceil(this.LLDPE);
 
-                    this.logger.debug(`最新:${this.closePrice},趋势:${this.LLDPE},买卖盘:[${buy5} - ${sell5}],买卖成:[${buyTrade5} - ${sellTrade5}],涨幅:${priceCha},财富:${this.totalCoins * this.closePrice + this.useCapital}`);
-                    // 200
-                    if (this.LLDPE > 200) {
-                        await this.buyCoins();
-                    }
-                    // -150
-                    else if (this.LLDPE < -150) {
-                        await this.sellCoins();
-                    }
+                    this.logger.debug(`最新:${this.closePrice},趋势:${this.LLDPE},买卖盘:[${buy5} - ${sell5}],买卖成:[${buyTrade5} - ${sellTrade5}],涨幅:${priceCha},财富:${this.totalCoins * this.closePrice + this.useCapital}$`);
+
                     await this.checkSelling();
-
-                   
-
-
                     // const lastTime = 1525679665;
                     // const { tbTime, tbValue } = await this.hbSDK.check_outEth();
                     // if (this.lastTBTime < 0) {
@@ -357,7 +386,6 @@ export class AutoTrade {
                     // } else {
                     //     // console.log({tbTime, tbValue});
                     // }
-
                     await this.wait(5000);
                 } catch (ex) {
                     this.logger.error('run trade error:', ex);
@@ -440,10 +468,10 @@ export class AutoTrade {
         try {
             const order0: Order = this.orders[0];
             const now = new Date();
-            const zrPrice = this.openPrice * 0.02; //止损价格
+            const zrPrice = this.openPrice * 0.01; //止损价格
             if (order0 && order0.state === 'buyed') {
                 if (order0.hightPrice - this.closePrice > zrPrice) {
-                    this.logger.warn('止损卖出订单:',this.orders[0]);
+                    this.logger.warn('止损卖出订单:', this.orders[0]);
                     await this.sellCoins();
                 }
                 else if (this.closePrice > order0.hightPrice) {
