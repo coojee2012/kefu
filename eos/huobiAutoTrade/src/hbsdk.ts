@@ -301,7 +301,7 @@ export class HuoBiSDK {
             return await this.call_api('POST', path, payload, body);
 
         } catch (ex) {
-            this.logger.error('get_account error:', ex);
+            this.logger.error('sell_market error:', ex);
         }
     }
 
