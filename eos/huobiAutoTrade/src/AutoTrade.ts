@@ -190,7 +190,7 @@ export class AutoTrade {
                 this.logger.debug(`open:${open},close:${close},均10:[${avg10s.toFixed(4)} | ${this.priceDiffAvg10}],均20:[ ${avg20s.toFixed(4)} | ${this.priceDiffAvg20}]`);
                 this.lastPrices.pop();
                 this.lastPrices.unshift(close);
-                if (this.readyData && this.priceDiffAvg10 > this.buyPriceWeight) {
+                if (this.readyData && this.priceDiffAvg10 > this.buyPriceWeight && this.closePrice > this.BCPrice) {
                     this.buyCoins()
                         .then(res => {
                         })
