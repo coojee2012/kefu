@@ -249,7 +249,7 @@ export class AutoTrade {
                         this.accountTradeUSDT = item.balance;
                     }
                     else if (item.currency === 'eos' && item.type === 'trade') {
-                        this.accountTradeCoins = item.balance;
+                        this.accountTradeCoins =  Math.floor(+item.balance * 10000)/10000;
                     }
                 }
             }
