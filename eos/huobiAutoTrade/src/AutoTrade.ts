@@ -194,7 +194,7 @@ export class AutoTrade {
                 this.lastPrices.pop();
                 this.lastPrices.unshift(close);
                 if (this.readyData && this.priceDiffAvg10 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
-                  // this.canBuying = true;
+                   this.canBuying = true;
                   //   this.buyCoins()
                   //       .then(res => {
                   //       })
