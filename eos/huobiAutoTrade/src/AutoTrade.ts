@@ -60,6 +60,7 @@ export class AutoTrade {
 
     private priceDiffAvg10: number;
     private priceDiffAvg20: number;
+    private priceDiffAvg60: number;
     private readyData: boolean;
     private buyPriceWeight: number; // 自动买入权重，初始为0.01$ 或 根据开盘价百分比计算，当发生一次卖单哦，权重在3分钟之内上升到0.3或3倍初始
     private sellPriceWeight: number;
@@ -69,7 +70,7 @@ export class AutoTrade {
     private allConinUsdt: number;
     private BCPrice: number;
 
-    private canBuying:boolean;
+    private canBuying: boolean;
 
     constructor(privateKey, max) {
         this.hbSDK = new HuoBiSDK(privateKey);
@@ -101,6 +102,7 @@ export class AutoTrade {
         this.accountTradeUSDT = 0;
         this.priceDiffAvg10 = 0;
         this.priceDiffAvg20 = 0;
+        this.priceDiffAvg60 = 0;
         this.readyData = false;
         this.buyPriceWeight = 0;
         this.lastSellTime = 0;
@@ -179,46 +181,40 @@ export class AutoTrade {
         try {
             // this.logger.debug('observePrice',data);
             const { amount, open, close, high } = data;
-            this.openPrice = open;
+            // this.openPrice = open;
             this.closePrice = close;
 
             if (close !== this.lastPrices[0]) {
-                const zj10s = this.lastPrices.slice(1, 11);
-                const avg10s = this.sumArray(zj10s) / 10;
-
-                const zj20s = this.lastPrices.slice(1);
-                const avg20s = this.sumArray(zj20s) / 20;
-                this.priceDiffAvg10 = +(close - avg10s).toFixed(4);
-                this.priceDiffAvg20 = +(close - avg20s).toFixed(4);
-                this.logger.debug(`open:${open},close:${close},均10:[${avg10s.toFixed(4)} | ${this.priceDiffAvg10}],均20:[ ${avg20s.toFixed(4)} | ${this.priceDiffAvg20}]`);
-                this.lastPrices.pop();
+                if(this.lastPrices.length > 600){
+                    this.lastPrices.pop();  
+                }
                 this.lastPrices.unshift(close);
-                if (this.readyData && this.priceDiffAvg10 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
-                   this.canBuying = true;
-                  //   this.buyCoins()
-                  //       .then(res => {
-                  //       })
-                  //       .catch(err => {
-                  //           this.logger.error('buyCoins error',err)
-                  //       })
 
-                  //   if (this.isSellAllConins && this.allConinUsdt > 0) {
-                  //       this.buyAllCoins()
-                  //           .then(res => {
-                  //           })
-                  //           .catch(err => {
-                  //               this.logger.error('buyAllCoins error')
-                  //           })
-                  //   }
+               
+                
+                if (this.lastPrices.length > 120 ) {
+
+                    const zj5s = this.lastPrices.slice(0, 5);
+                    const avg5s = this.sumArray(zj5s) / 5;
+
+                    const zj10s = this.lastPrices.slice(0, 10);
+                    const avg10s = this.sumArray(zj10s) / 10;
+
+                    const zj20s = this.lastPrices.slice(0,20);
+                    const avg20s = this.sumArray(zj20s) / 20;
+
+                    const zj60s = this.lastPrices.slice(0,60);
+                    const avg60s = this.sumArray(zj60s) / 60;
+                    this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
+                    this.priceDiffAvg20 = +(avg5s - avg20s).toFixed(4);
+                    this.priceDiffAvg60 = +(avg5s - avg60s).toFixed(4);
+                    this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
+                    if(this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying){
+                        this.canBuying = true;
+                    }
+                    
                 }
-                else if (this.readyData && this.priceDiffAvg10 < -this.buyPriceWeight) {
-                    // this.checkSelling()
-                    //     .then(res => {
-                    //     })
-                    //     .catch(err => {
-                    //         this.logger.error('sellCoins error')
-                    //     })
-                }
+               
             }
         }
         catch (ex) {
@@ -253,7 +249,7 @@ export class AutoTrade {
                         this.accountTradeUSDT = item.balance;
                     }
                     else if (item.currency === 'eos' && item.type === 'trade') {
-                        this.accountTradeCoins =  Math.floor(+item.balance * 10000)/10000;
+                        this.accountTradeCoins = Math.floor(+item.balance * 10000) / 10000;
                     }
                 }
             }
@@ -262,6 +258,11 @@ export class AutoTrade {
             if (this.accountTradeUSDT < this.useCapital) {
                 this.logger.warn(`账户可用余额不足:${this.useCapital}!!`);
                 return;
+            }
+
+            const klineToday = await  this.hbSDK.get_kline('eos','usdt','1day',1);
+            if(klineToday.length){
+                this.openPrice = klineToday[0].open;
             }
 
             this.ws = new WSClient();
@@ -281,8 +282,9 @@ export class AutoTrade {
                     }
 
                     this.readyData = true;
-                    if (this.lastSellTime === 0 || now - this.lastSellTime > 15 * 60 * 1000) {
-                        this.buyPriceWeight = +(this.openPrice * 0.0015).toFixed(3);
+
+                    if (this.lastSellTime === 0 || now - this.lastSellTime > 60 * 60 * 1000) {
+                        this.buyPriceWeight = +(this.openPrice * 0.002).toFixed(3);
                     }
 
                     this.LLDPE = 0;
@@ -290,28 +292,28 @@ export class AutoTrade {
                     let sell5 = this.sumArray(this.sellMounts.slice(0, 5));
                     let buyTrade5 = Math.ceil(this.sumArray(this.buyTradeMounts.slice(0, 5)));
                     let sellTrade5 = Math.ceil(this.sumArray(this.sellTradeMounts.slice(0, 5)));
-                    this.logger.debug(`盘口:[${buy5} - ${sell5}],成交量:[${buyTrade5} - ${sellTrade5}],买入权重:${this.buyPriceWeight}$,财富:${this.totalCoins * this.closePrice + this.useCapital}$`);
+                    this.logger.debug(`open:${this.openPrice},close:${this.closePrice},tape:[${buy5} - ${sell5}],trans:[${buyTrade5} - ${sellTrade5}],weight:${this.buyPriceWeight},money:${this.totalCoins * this.closePrice + this.useCapital}$`);
 
-                    if(this.canBuying){
-                      this.buyCoins()
-                        .then(res => {
-                          this.canBuying = false;
-                        })
-                        .catch(err => {
-                            this.logger.error('buyCoins error',err)
-                            this.canBuying = false;
-                        })
-
-                    if (this.isSellAllConins && this.allConinUsdt > 0) {
-                        this.buyAllCoins()
+                    if (this.canBuying) {
+                        this.buyCoins()
                             .then(res => {
-                              this.canBuying = false;
+                                this.canBuying = false;
                             })
                             .catch(err => {
-                              this.canBuying = false;
-                                this.logger.error('buyAllCoins error')
+                                this.logger.error('buyCoins error', err)
+                                this.canBuying = false;
                             })
-                    }
+
+                        if (this.isSellAllConins && this.allConinUsdt > 0) {
+                            this.buyAllCoins()
+                                .then(res => {
+                                    this.canBuying = false;
+                                })
+                                .catch(err => {
+                                    this.canBuying = false;
+                                    this.logger.error('buyAllCoins error')
+                                })
+                        }
                     }
                     await this.checkSelling();
                     await this.wait(3000);
@@ -329,10 +331,22 @@ export class AutoTrade {
     async buyCoins() {
         try {
             const now = new Date();
-            if (!this.order) {
+            if (!this.order) {              
+                const orderId = await this.hbSDK.buy_market(this.marginEosusdtID, 'eosusdt', this.useCapital);
+                if (!orderId) {
+                    this.logger.error('buy coins error:', orderId);
+                    this.order = null;
+                    return;
+                }
+               
+                const orderInfo = await this.orderFillCheck(orderId);
+
+                this.logger.info('buy oderInfo:', orderInfo);
+                const buyPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
+
                 this.order = {
                     orderId: new Date().getTime(),
-                    buyId: -1,
+                    buyId: orderId,
                     sellId: -1,
                     sellCoins: -1,
                     sellPrice: -1,
@@ -343,17 +357,6 @@ export class AutoTrade {
                     buyTime: -1,
                     sellTime: -1,
                 }
-                const orderId = await this.hbSDK.buy_market(this.marginEosusdtID, 'eosusdt', this.useCapital);
-                if(!orderId){
-                  this.logger.error('buy coins error:',orderId);
-                  this.order = null;
-                  return;
-                }
-                this.order.buyId = orderId;
-                const orderInfo = await this.orderFillCheck(orderId);
-
-                this.logger.info('buy oderInfo:', orderInfo);
-                const buyPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
 
                 this.order.buyPrice = Math.floor(buyPrice * 10000) / 10000;
 
@@ -363,20 +366,18 @@ export class AutoTrade {
 
                 this.order.state = 'buyed';
 
-
-
-
                 this.useCapital = 0;
                 this.totalCoins = this.order.buyCoins;
+
                 this.logger.info(`购买${this.priceDiffAvg10}订单:${this.order.buyPrice} - ${this.order.buyCoins}`);
             } else {
-                this.logger.info(`行情${this.priceDiffAvg10}BUY BUY  BUY,买入价：${this.order.buyPrice}`);
+                this.logger.info(`行情${this.priceDiffAvg10},BUY BUY  BUY,买入价：${this.order.buyPrice}`);
             }
 
         } catch (ex) {
             this.logger.error('买入时发生错误：', ex);
-            if(this.order && this.order.buyId === 1 ){
-              this.order = null;
+            if (this.order && this.order.buyId === 1) {
+                this.order = null;
             }
 
         }
@@ -384,10 +385,10 @@ export class AutoTrade {
 
     async orderFillCheck(orderId) {
         try {
-          if(!orderId){
-            this.logger.error('orderFillCheck error:',orderId);
-            return;
-          }
+            if (!orderId) {
+                this.logger.error('orderFillCheck error:', orderId);
+                return;
+            }
             const orderInfo = await this.hbSDK.get_order(orderId);
             if (orderInfo && orderInfo.state === 'filled') {
                 return orderInfo;
@@ -404,9 +405,9 @@ export class AutoTrade {
             const now = new Date();
             if (this.order && this.order.state === 'buyed') {
                 const orderId = await this.hbSDK.sell_market(this.marginEosusdtID, 'eosusdt', this.totalCoins);
-                if(!orderId){
-                  this.logger.error('sell coins error:',orderId);
-                  return;
+                if (!orderId) {
+                    this.logger.error('sell coins error:', orderId);
+                    return;
                 }
                 this.order.sellId = orderId;
                 const orderInfo = await this.orderFillCheck(orderId);
@@ -418,7 +419,7 @@ export class AutoTrade {
                 this.useCapital = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
                 this.totalCoins = 0;
                 this.lastSellTime = new Date().getTime();
-                this.buyPriceWeight = +(this.openPrice * 0.005).toFixed(3);
+                this.buyPriceWeight = +(this.openPrice * 0.004).toFixed(3);
                 this.logger.info(`卖出${this.priceDiffAvg10}订单,获利:${this.order.sellPrice - this.order.buyPrice}$`);
                 this.order = null;
             } else {
@@ -432,9 +433,13 @@ export class AutoTrade {
     async checkSelling() {
         try {
             const now = new Date();
-            const zrPrice = this.openPrice * 0.015; //止损价格 测试阶段为0.001 正式为0.01
+            const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01
             if (this.order && this.order.state === 'buyed') {
-                if (this.order.hightPrice - this.closePrice > zrPrice) {
+                if ( this.order.hightPrice - this.order.buyPrice > zrPrice * 3.4 && this.order.hightPrice - this.closePrice > 1.5 * zrPrice) {
+                    this.logger.warn(`保收卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
+                    await this.sellCoins();
+                }
+                else if(this.order.buyPrice - this.closePrice > 1.5 * zrPrice){
                     this.logger.warn(`止损卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
                     await this.sellCoins();
                 }
@@ -444,7 +449,7 @@ export class AutoTrade {
                 }
             }
 
-            if ((this.lastOrderHPrice - this.closePrice) > 2 * zrPrice && this.accountTradeCoins > 0) {
+            if ((this.lastOrderHPrice - this.closePrice) > 4 * zrPrice && this.accountTradeCoins > 0) {
                 this.logger.warn(`止损卖出所有币:${this.accountTradeCoins}`);
                 await this.sellAllCoins();
             }
@@ -453,9 +458,12 @@ export class AutoTrade {
                 this.logger.warn(`要爆仓卖出所有币:${this.accountTradeCoins}`);
                 await this.sellAllCoins();
             }
+            else if(this.lastOrderHPrice === 0 ){
+                this.lastOrderHPrice = this.closePrice;
+            }
 
         } catch (ex) {
-            this.logger.error('检查买入时发生错误：', ex);
+            this.logger.error('检查卖出时发生错误：', ex);
         }
     }
 
@@ -464,10 +472,10 @@ export class AutoTrade {
     async sellAllCoins() {
         try {
 
-            const orderId = await this.hbSDK.sell_market(this.marginEosusdtID, 'eosusdt', Math.floor((this.accountTradeCoins/2)*1000/10000));
-            if(!orderId){
-              this.logger.error('sell all coins error:',orderId);
-              return;
+            const orderId = await this.hbSDK.sell_market(this.marginEosusdtID, 'eosusdt', Math.floor((this.accountTradeCoins / 2) * 1000 / 10000));
+            if (!orderId) {
+                this.logger.error('sell all coins error:', orderId);
+                return;
             }
             this.order.sellId = orderId;
             const orderInfo = await this.orderFillCheck(orderId);
@@ -479,7 +487,7 @@ export class AutoTrade {
             this.allConinUsdt = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
 
             this.lastSellTime = new Date().getTime();
-            this.buyPriceWeight = +(this.openPrice * 0.008).toFixed(3);
+            this.buyPriceWeight = +(this.openPrice * 0.006).toFixed(3);
             orderId
         } catch (ex) {
             this.logger.error('卖出时发生错误：', ex);
@@ -489,9 +497,9 @@ export class AutoTrade {
     async buyAllCoins() {
         try {
             const orderId = await this.hbSDK.buy_market(this.marginEosusdtID, 'eosusdt', this.allConinUsdt);
-            if(!orderId){
-              this.logger.error('buy all coins error:',orderId);
-              return;
+            if (!orderId) {
+                this.logger.error('buy all coins error:', orderId);
+                return;
             }
             const orderInfo = await this.orderFillCheck(orderId);
             const buyPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);

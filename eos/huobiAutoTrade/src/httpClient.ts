@@ -127,7 +127,7 @@ export class HttpClient {
             opts.agent = agent;
 
 
-           this.logger.debug('=====', opts)
+             //this.logger.debug('=====', opts)
             return await new Promise<string>((resolve, reject) => {
                 const req = https.request(opts, (res) => {
                     //this.logger.debug('statusCode:', res.statusCode);

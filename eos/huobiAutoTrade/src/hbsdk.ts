@@ -454,6 +454,33 @@ export class HuoBiSDK {
             this.logger.error('get_detail_merged error:', ex);
         }
     }
+    /**
+     * 获取k线图
+     * @param coin eos
+     * @param currency  usdt
+     * @param period 1min, 5min, 15min, 30min, 60min, 1day, 1mon, 1week, 1year
+     * @param size [1,1000]
+     */
+
+    async get_kline(coin, currency,period='1day',size=150) {
+        try {
+            let url = `${BASE_URL}/market/history/kline?symbol=${coin}${currency}&period=${period}&size=${size}&AccessKeyId=${config.huobi.access_key}`;
+            const data: string = await this.http.ssget(url, {
+                timeout: 1000,
+                gzip: true
+            })
+            let json = JSON.parse(data);
+            if (json.status === 'ok') {
+                //this.logger.debug('get_kline',json)
+                return Promise.resolve(json.data)
+            } else {
+                this.logger.debug('调用get_kline发生错误：', json)
+                return Promise.reject(json);
+            }
+        } catch (ex) {
+            this.logger.error('get_detail_merged error:', ex);
+        }
+    }
 
 
 
