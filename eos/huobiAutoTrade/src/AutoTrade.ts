@@ -1,6 +1,8 @@
 import { HuoBiSDK } from './hbsdk';
 import { LoggerService } from './LogService';
 import { WSClient } from './wsClient';
+import fs = require('fs');
+import { resolve } from 'bluebird';
 export type Order = {
     orderId: number;
     buyPrice: number;
@@ -260,10 +262,13 @@ export class AutoTrade {
             if (klineToday.length) {
                 this.openPrice = klineToday[0].open;
             }
-            else{
+            else {
                 this.logger.warn(`Can't Get Today's KLine!!`);
-                return; 
+                return;
             }
+
+            // 载入之前程序买入的最后一个订单
+            await this.checkHasLastBuyOrder();
 
             this.ws = new WSClient();
             this.ws.init();
@@ -314,6 +319,66 @@ export class AutoTrade {
         }
     }
 
+
+    async writeLastBuyId(orderId) {
+        try {
+            await new Promise((resolve, reject) => {
+                fs.writeFile('order.id', orderId, (err) => {
+                    if (err) { reject(err); }
+                    else {
+                        resolve();
+                    }
+                })
+            })
+        } catch (ex) {
+            this.logger.error('write last buy id error:', ex);
+        }
+    }
+
+    async checkHasLastBuyOrder() {
+        try {
+            const orderId:number = await new Promise<number>((resolve, reject) => {
+                fs.readFile('order.id', (err,data) => {
+                    if (err) { reject(err); }
+                    else {
+                        resolve(+data);
+                    }
+                })
+            });
+
+            if(orderId && orderId!==-1){
+                const orderInfo = await this.hbSDK.get_order(orderId);
+                if (orderInfo && orderInfo.state === 'filled' && orderInfo.type === 'buy-market') {
+                    const buyPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
+                    this.order = {
+                        orderId: new Date().getTime(),
+                        buyId: orderId,
+                        sellId: -1,
+                        sellCoins: -1,
+                        sellPrice: -1,
+                        state: 'buyed',
+                        buyPrice: 0,
+                        hightPrice: 0,
+                        buyCoins: 0,
+                        buyTime: -1,
+                        sellTime: -1,
+                    }   
+                    this.order.buyPrice = Math.floor(buyPrice * 10000) / 10000;
+                    this.order.hightPrice = this.order.buyPrice;
+                    this.order.buyCoins = Math.floor(((+orderInfo['field-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
+    
+                    this.useCapital = 0;
+                    this.totalCoins = this.order.buyCoins;
+                    this.logger.debug('last order',this.order);
+                }
+            }          
+        } catch (ex) {
+            this.logger.error('write last buy id error:', ex);
+        }
+    }
+
+
+
     async buyCoins() {
         try {
             const now = new Date();
@@ -353,9 +418,9 @@ export class AutoTrade {
                 this.order.state = 'buyed';
 
                 this.useCapital = 0;
-                this.totalCoins = this.order.buyCoins;
-
+                this.totalCoins = this.order.buyCoins;                
                 this.logger.info(`Order:${this.order.buyPrice} - ${this.order.buyCoins}`);
+                await this.writeLastBuyId(orderId);
             } else {
                 this.logger.debug(`BUY BUY  BUY Price：${this.order.buyPrice}`);
             }
@@ -402,12 +467,13 @@ export class AutoTrade {
                 const sellPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
                 this.order.sellPrice = Math.floor(sellPrice * 10000) / 10000;
                 this.order.sellCoins = +(+orderInfo['field-amount']).toFixed(4);
-                this.useCapital = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000 ;
+                this.useCapital = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
                 this.totalCoins = 0;
                 this.lastSellTime = new Date().getTime();
                 this.buyPriceWeight = +(this.openPrice * 0.004).toFixed(3);
                 this.logger.info(`Sell Order:${this.order.sellPrice - this.order.buyPrice}$`);
                 this.order = null;
+                await this.writeLastBuyId('-1');
             } else {
                 this.logger.info(`SELL SELL SELL,BUT NO ORDERS(^_^）`);
             }
@@ -462,7 +528,7 @@ export class AutoTrade {
             if (!orderId) {
                 this.logger.error('sell all coins error:', orderId);
                 return;
-            }     
+            }
             const orderInfo = await this.orderFillCheck(orderId);
             this.logger.info('sell all oderInfo:', orderInfo);
 
