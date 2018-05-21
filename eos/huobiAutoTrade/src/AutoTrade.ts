@@ -185,14 +185,14 @@ export class AutoTrade {
             this.closePrice = close;
 
             if (close !== this.lastPrices[0]) {
-                if(this.lastPrices.length > 600){
-                    this.lastPrices.pop();  
+                if (this.lastPrices.length > 600) {
+                    this.lastPrices.pop();
                 }
                 this.lastPrices.unshift(close);
 
-               
-                
-                if (this.lastPrices.length > 120 ) {
+
+
+                if (this.lastPrices.length > 120) {
 
                     const zj5s = this.lastPrices.slice(0, 5);
                     const avg5s = this.sumArray(zj5s) / 5;
@@ -200,21 +200,21 @@ export class AutoTrade {
                     const zj10s = this.lastPrices.slice(0, 10);
                     const avg10s = this.sumArray(zj10s) / 10;
 
-                    const zj20s = this.lastPrices.slice(0,20);
+                    const zj20s = this.lastPrices.slice(0, 20);
                     const avg20s = this.sumArray(zj20s) / 20;
 
-                    const zj60s = this.lastPrices.slice(0,60);
+                    const zj60s = this.lastPrices.slice(0, 60);
                     const avg60s = this.sumArray(zj60s) / 60;
                     this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
                     this.priceDiffAvg20 = +(avg5s - avg20s).toFixed(4);
                     this.priceDiffAvg60 = +(avg5s - avg60s).toFixed(4);
                     this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
-                    if(this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying){
+                    if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
                         this.canBuying = true;
                     }
-                    
+
                 }
-               
+
             }
         }
         catch (ex) {
@@ -260,8 +260,8 @@ export class AutoTrade {
                 return;
             }
 
-            const klineToday = await  this.hbSDK.get_kline('eos','usdt','1day',1);
-            if(klineToday.length){
+            const klineToday = await this.hbSDK.get_kline('eos', 'usdt', '1day', 1);
+            if (klineToday.length) {
                 this.openPrice = klineToday[0].open;
             }
 
@@ -295,24 +295,10 @@ export class AutoTrade {
                     this.logger.debug(`open:${this.openPrice},close:${this.closePrice},tape:[${buy5} - ${sell5}],trans:[${buyTrade5} - ${sellTrade5}],weight:${this.buyPriceWeight},money:${this.totalCoins * this.closePrice + this.useCapital}$`);
 
                     if (this.canBuying) {
-                        this.buyCoins()
-                            .then(res => {
-                                this.canBuying = false;
-                            })
-                            .catch(err => {
-                                this.logger.error('buyCoins error', err)
-                                this.canBuying = false;
-                            })
-
+                        this.canBuying = false;
+                        await this.buyCoins();
                         if (this.isSellAllConins && this.allConinUsdt > 0) {
-                            this.buyAllCoins()
-                                .then(res => {
-                                    this.canBuying = false;
-                                })
-                                .catch(err => {
-                                    this.canBuying = false;
-                                    this.logger.error('buyAllCoins error')
-                                })
+                            await this.buyAllCoins();
                         }
                     }
                     await this.checkSelling();
@@ -331,14 +317,14 @@ export class AutoTrade {
     async buyCoins() {
         try {
             const now = new Date();
-            if (!this.order) {              
+            if (!this.order) {
                 const orderId = await this.hbSDK.buy_market(this.marginEosusdtID, 'eosusdt', this.useCapital);
                 if (!orderId) {
                     this.logger.error('buy coins error:', orderId);
                     this.order = null;
                     return;
                 }
-               
+
                 const orderInfo = await this.orderFillCheck(orderId);
 
                 this.logger.info('buy oderInfo:', orderInfo);
@@ -435,11 +421,11 @@ export class AutoTrade {
             const now = new Date();
             const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01
             if (this.order && this.order.state === 'buyed') {
-                if ( this.order.hightPrice - this.order.buyPrice > zrPrice * 3.4 && this.order.hightPrice - this.closePrice > 1.5 * zrPrice) {
+                if (this.order.hightPrice - this.order.buyPrice > zrPrice * 3.4 && this.order.hightPrice - this.closePrice > 1.5 * zrPrice) {
                     this.logger.warn(`保收卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
                     await this.sellCoins();
                 }
-                else if(this.order.buyPrice - this.closePrice > 1.5 * zrPrice){
+                else if (this.order.buyPrice - this.closePrice > 1.5 * zrPrice) {
                     this.logger.warn(`止损卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
                     await this.sellCoins();
                 }
@@ -458,7 +444,7 @@ export class AutoTrade {
                 this.logger.warn(`要爆仓卖出所有币:${this.accountTradeCoins}`);
                 await this.sellAllCoins();
             }
-            else if(this.lastOrderHPrice === 0 ){
+            else if (this.lastOrderHPrice === 0) {
                 this.lastOrderHPrice = this.closePrice;
             }
 
