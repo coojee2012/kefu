@@ -210,6 +210,7 @@ export class AutoTrade {
                     this.priceDiffAvg60 = +(avg5s - avg60s).toFixed(4);
                     this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
                     if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
+                        this.logger.info(`Market  chance come on:${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
                         this.canBuying = true;
                     }
 
@@ -355,13 +356,13 @@ export class AutoTrade {
                 this.useCapital = 0;
                 this.totalCoins = this.order.buyCoins;
 
-                this.logger.info(`购买${this.priceDiffAvg10}订单:${this.order.buyPrice} - ${this.order.buyCoins}`);
+                this.logger.info(`Order:${this.order.buyPrice} - ${this.order.buyCoins}`);
             } else {
-                this.logger.info(`行情${this.priceDiffAvg10},BUY BUY  BUY,买入价：${this.order.buyPrice}`);
+                this.logger.debug(`BUY BUY  BUY Price：${this.order.buyPrice}`);
             }
 
         } catch (ex) {
-            this.logger.error('买入时发生错误：', ex);
+            this.logger.error('buyCoins error:', ex);
             if (this.order && this.order.buyId === 1) {
                 this.order = null;
             }
@@ -382,7 +383,7 @@ export class AutoTrade {
                 return await this.orderFillCheck(orderId);
             }
         } catch (ex) {
-            this.logger.error('检查买入时发生错误：', ex);
+            this.logger.error('orderFillCheck error:', ex);
         }
     }
 
@@ -406,13 +407,13 @@ export class AutoTrade {
                 this.totalCoins = 0;
                 this.lastSellTime = new Date().getTime();
                 this.buyPriceWeight = +(this.openPrice * 0.004).toFixed(3);
-                this.logger.info(`卖出${this.priceDiffAvg10}订单,获利:${this.order.sellPrice - this.order.buyPrice}$`);
+                this.logger.info(`Sell Order:${this.order.sellPrice - this.order.buyPrice}$`);
                 this.order = null;
             } else {
-                this.logger.info(`行情${this.priceDiffAvg10}SELL SELL SELL,BUT NO ORDERS(^_^）`);
+                this.logger.info(`SELL SELL SELL,BUT NO ORDERS(^_^）`);
             }
         } catch (ex) {
-            this.logger.error('卖出时发生错误：', ex);
+            this.logger.error('sellCoins error:', ex);
         }
     }
 
