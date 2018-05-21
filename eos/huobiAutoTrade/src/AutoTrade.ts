@@ -242,7 +242,7 @@ export class AutoTrade {
                 for (let i = 0; i < blance.list.length; i++) {
                     const item = blance.list[i];
                     if (item.currency === 'usdt' && item.type === 'trade') {
-                        this.accountTradeUSDT = item.balance;
+                        this.accountTradeUSDT = Math.floor(+item.balance * 10000) / 10000;
                     }
                     else if (item.currency === 'eos' && item.type === 'trade') {
                         this.accountTradeCoins = Math.floor(+item.balance * 10000) / 10000;
@@ -402,7 +402,7 @@ export class AutoTrade {
                 const sellPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
                 this.order.sellPrice = Math.floor(sellPrice * 10000) / 10000;
                 this.order.sellCoins = +(+orderInfo['field-amount']).toFixed(4);
-                this.useCapital = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
+                this.useCapital = Math.floor(((+orderInfo['field-cash-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000 ;
                 this.totalCoins = 0;
                 this.lastSellTime = new Date().getTime();
                 this.buyPriceWeight = +(this.openPrice * 0.004).toFixed(3);
@@ -457,13 +457,12 @@ export class AutoTrade {
 
     async sellAllCoins() {
         try {
-
-            const orderId = await this.hbSDK.sell_market(this.marginEosusdtID, 'eosusdt', Math.floor((this.accountTradeCoins / 2) * 1000 / 10000));
+            const toSellCoins = Math.floor(this.accountTradeCoins * 10000) / 10000;
+            const orderId = await this.hbSDK.sell_market(this.marginEosusdtID, 'eosusdt', toSellCoins);
             if (!orderId) {
                 this.logger.error('sell all coins error:', orderId);
                 return;
-            }
-            this.order.sellId = orderId;
+            }     
             const orderInfo = await this.orderFillCheck(orderId);
             this.logger.info('sell all oderInfo:', orderInfo);
 
@@ -474,7 +473,6 @@ export class AutoTrade {
 
             this.lastSellTime = new Date().getTime();
             this.buyPriceWeight = +(this.openPrice * 0.006).toFixed(3);
-            orderId
         } catch (ex) {
             this.logger.error('卖出时发生错误：', ex);
         }
