@@ -17,13 +17,21 @@ export class LoggerService {
         new (winston.transports.File)({
           name: 'info-file',
           filename: 'file-info.log',
-          options:{flag:'a', maxsize: 50 * 1000 * 1024},
+          maxFiles: 20,
+          maxsize: 50 * 1024 * 1024,
+          options: {
+            flags: 'a',
+          },
           level: 'info'
         }),
         new (winston.transports.File)({
           name: 'error-file',
           filename: 'file-error.log',
-          options:{flag:'a',maxsize: 50 * 1000 * 1024},
+          maxFiles: 20,
+          maxsize: 50 * 1024 * 1024,
+          options: {
+            flags: 'a',
+          },
           level: 'error'
         })
       ]

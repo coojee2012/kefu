@@ -189,11 +189,7 @@ export class AutoTrade {
                     this.lastPrices.pop();
                 }
                 this.lastPrices.unshift(close);
-
-
-
-                if (this.lastPrices.length > 120) {
-
+                if (this.lastPrices.length > 80) {
                     const zj5s = this.lastPrices.slice(0, 5);
                     const avg5s = this.sumArray(zj5s) / 5;
 
@@ -221,7 +217,6 @@ export class AutoTrade {
         catch (ex) {
             this.logger.error('observePrice error:', ex);
         }
-
     }
 
     sortNumber(a, b) {
@@ -254,7 +249,7 @@ export class AutoTrade {
                     }
                 }
             }
-            this.logger.debug(`blance:USDT-${this.accountTradeUSDT},Coins-${this.accountTradeCoins}`);
+            this.logger.info(`blance:USDT-${this.accountTradeUSDT},Coins-${this.accountTradeCoins}`);
 
             if (this.accountTradeUSDT < this.useCapital) {
                 this.logger.warn(`账户可用余额不足:${this.useCapital}!!`);
@@ -264,6 +259,10 @@ export class AutoTrade {
             const klineToday = await this.hbSDK.get_kline('eos', 'usdt', '1day', 1);
             if (klineToday.length) {
                 this.openPrice = klineToday[0].open;
+            }
+            else{
+                this.logger.warn(`Can't Get Today's KLine!!`);
+                return; 
             }
 
             this.ws = new WSClient();
@@ -277,7 +276,7 @@ export class AutoTrade {
                 try {
                     let now = new Date().getTime();
                     if (now - this.startTime < 60 * 1000) {
-                        this.logger.debug(`业务数据准备中....请稍后....${60 - Math.ceil((now - this.startTime) / 1000)} (^_^)`);
+                        this.logger.debug(`Init Data....Please Wait....${60 - Math.ceil((now - this.startTime) / 1000)} (^_^)`);
                         await this.wait(5 * 1000);
                         continue;
                     }
@@ -450,7 +449,7 @@ export class AutoTrade {
             }
 
         } catch (ex) {
-            this.logger.error('检查卖出时发生错误：', ex);
+            this.logger.error('Check Selling Error:', ex);
         }
     }
 
