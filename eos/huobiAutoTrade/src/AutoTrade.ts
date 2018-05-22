@@ -230,12 +230,12 @@ export class AutoTrade {
             if (!this.canSelling) {
                 // 位于60分钟均线一下直接卖
                 if (avg5min < avg10min && avg10min < avg30min && avg30min < avg60min) {
-                    this.logger.info('You Mast Sell Sell Sell!  0');
+                    this.logger.info('You Mast Sell Sell Sell! ');
                     this.canSelling = !!this.order && true;
                 }
                 // 高于60分钟均线 只要不亏就卖
                 else if (avg10s < avg5min && avg5min < avg10min && avg5min > avg60min) {
-                    this.logger.info(`You Mast Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
+                    this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
                         const suiPrice = this.order.buyPrice * 0.004;
                         if (close - this.order.buyPrice > suiPrice) {
@@ -246,7 +246,7 @@ export class AutoTrade {
             }
             else if (!this.canBuying) {
                 if (avg10s > avg60min && avg5min > avg10min && avg10min > avg30min) {
-                    this.logger.info('You Could Buy Buy Buy!  0');
+                    this.logger.info('You Could Buy Buy Buy!');
                     this.canBuying = !this.order && true;
                 }
                 else if (avg10s > avg60min &&  avg10s > avg5min && avg5min > avg10min) {
