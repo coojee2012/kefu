@@ -73,6 +73,7 @@ export class AutoTrade {
     private BCPrice: number;
 
     private canBuying: boolean;
+    private canSelling: boolean;
 
     constructor(privateKey, max) {
         this.hbSDK = new HuoBiSDK(privateKey);
@@ -84,7 +85,7 @@ export class AutoTrade {
         this.tradeQS = 0;
         this.tradeFXQS = 0;
         this.lastTradeTotal = 0;
-        this.lastPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.lastPrices = [];
         this.buyMounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.sellMounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -113,6 +114,7 @@ export class AutoTrade {
         this.allConinUsdt = 0;
         this.BCPrice = 11.3;
         this.canBuying = false;
+        this.canSelling = false;
 
     }
 
@@ -185,36 +187,78 @@ export class AutoTrade {
             const { amount, open, close, high } = data;
             // this.openPrice = open;
             this.closePrice = close;
+            this.lastPrices.pop();
+            this.lastPrices.unshift(close);
+            const zj5s = this.lastPrices.slice(0, 5);
+            const avg5s = Math.floor(this.sumArray(zj5s) / 5 * 10000) / 10000;
 
-            if (close !== this.lastPrices[0]) {
-                if (this.lastPrices.length > 600) {
-                    this.lastPrices.pop();
+            const zj10s = this.lastPrices.slice(0, 10);
+            const avg10s = Math.floor(this.sumArray(zj10s) / 10 * 10000) / 10000;
+
+            const zj20s = this.lastPrices.slice(0, 20);
+            const avg20s = Math.floor(this.sumArray(zj20s) / 20 * 10000) / 10000;
+
+            const zj60s = this.lastPrices.slice(0, 60);
+            const avg60s = Math.floor(this.sumArray(zj60s) / 60 * 10000) / 10000;
+
+            const zj5min = this.lastPrices.slice(0, 300);
+            const avg5min = Math.floor(this.sumArray(zj5min) / 300 * 10000) / 10000;
+
+            const zj10min = this.lastPrices.slice(0, 600);
+            const avg10min = Math.floor(this.sumArray(zj10min) / 600 * 10000) / 10000;
+
+            const zj30min = this.lastPrices.slice(0, 1800);
+            const avg30min = Math.floor(this.sumArray(zj30min) / 1800 * 10000) / 10000;
+
+            const zj60min = this.lastPrices.slice(0, 3600);
+            const avg60min = Math.floor(this.sumArray(zj60min) / 3600 * 10000) / 10000;
+
+            this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
+            this.priceDiffAvg20 = +(avg5s - avg20s).toFixed(4);
+            this.priceDiffAvg60 = +(avg5s - avg60s).toFixed(4);
+
+
+
+            this.logger.debug(`${avg5s},${avg10s},${avg20s}    ${avg5min},${avg10min},${avg30min},${avg60min}`);
+
+            // this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
+            // if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
+            //     this.logger.info(`Market  chance come on:${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
+            //     //this.canBuying = true;
+            // }
+            this.logger.debug(`has order?${!!this.order},${this.canSelling},${this.canBuying}`);
+            if (!this.canSelling) {
+                // 位于60分钟均线一下直接卖
+                if (avg5min < avg10min && avg10min < avg30min && avg30min < avg60min) {
+                    this.logger.info('You Mast Sell Sell Sell!  0');
+                    this.canSelling = !!this.order && true;
                 }
-                this.lastPrices.unshift(close);
-                if (this.lastPrices.length > 80) {
-                    const zj5s = this.lastPrices.slice(0, 5);
-                    const avg5s = this.sumArray(zj5s) / 5;
-
-                    const zj10s = this.lastPrices.slice(0, 10);
-                    const avg10s = this.sumArray(zj10s) / 10;
-
-                    const zj20s = this.lastPrices.slice(0, 20);
-                    const avg20s = this.sumArray(zj20s) / 20;
-
-                    const zj60s = this.lastPrices.slice(0, 60);
-                    const avg60s = this.sumArray(zj60s) / 60;
-                    this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
-                    this.priceDiffAvg20 = +(avg5s - avg20s).toFixed(4);
-                    this.priceDiffAvg60 = +(avg5s - avg60s).toFixed(4);
-                    this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
-                    if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
-                        this.logger.info(`Market  chance come on:${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
-                        this.canBuying = true;
+                // 高于60分钟均线 只要不亏就卖
+                else if (avg10s < avg5min && avg5min < avg10min && avg5min > avg60min) {
+                    this.logger.info(`You Mast Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
+                    if (!!this.order) {
+                        const suiPrice = this.order.buyPrice * 0.004;
+                        if (close - this.order.buyPrice > suiPrice) {
+                            this.canSelling = !!this.order && true;
+                        }
                     }
-
                 }
-
             }
+            else if (!this.canBuying) {
+                if (avg10s > avg60min && avg5min > avg10min && avg10min > avg30min) {
+                    this.logger.info('You Could Buy Buy Buy!  0');
+                    this.canBuying = !this.order && true;
+                }
+                else if (avg10s > avg60min &&  avg10s > avg5min && avg5min > avg10min) {
+                    this.logger.info(`You Could Buy Buy Buy!  ${avg5min - avg30min} ${avg5min - avg60min} `);
+                    this.canBuying = !this.order && true;
+                }
+            }
+
+
+
+
+
         }
         catch (ex) {
             this.logger.error('observePrice error:', ex);
@@ -258,14 +302,24 @@ export class AutoTrade {
                 return;
             }
 
-            const klineToday = await this.hbSDK.get_kline('eos', 'usdt', '1day', 1);
-            if (klineToday.length) {
-                this.openPrice = klineToday[0].open;
+            const kline60Min = await this.hbSDK.get_kline('eos', 'usdt', '1min', 60);
+
+            if (kline60Min.length) {
+                for (let i = 0; i < kline60Min.length; i++) {
+                    const { high, low } = kline60Min[i];
+                    const pushedPrice = Math.floor(((+high) + (+low)) / 2 * 10000) / 10000;
+                    for (let j = 0; j < 60; j++) {
+                        this.lastPrices.push(pushedPrice);
+                    }
+                }
+                this.openPrice = kline60Min[0].open;
             }
             else {
                 this.logger.warn(`Can't Get Today's KLine!!`);
                 return;
             }
+
+
 
             // 载入之前程序买入的最后一个订单
             await this.checkHasLastBuyOrder();
@@ -303,10 +357,14 @@ export class AutoTrade {
                         this.canBuying = false;
                         await this.buyCoins();
                         if (this.isSellAllConins && this.allConinUsdt > 0) {
-                            await this.buyAllCoins();
+                            //  await this.buyAllCoins();
                         }
                     }
-                    await this.checkSelling();
+                    if (this.canSelling) {
+                        this.canSelling = false;
+                        await this.sellCoins();
+                    }
+
                     await this.wait(3000);
                 } catch (ex) {
                     this.logger.error('run trade error:', ex);
@@ -337,8 +395,8 @@ export class AutoTrade {
 
     async checkHasLastBuyOrder() {
         try {
-            const orderId:number = await new Promise<number>((resolve, reject) => {
-                fs.readFile('order.id', (err,data) => {
+            const orderId: number = await new Promise<number>((resolve, reject) => {
+                fs.readFile('order.id', (err, data) => {
                     if (err) { reject(err); }
                     else {
                         resolve(+data);
@@ -346,7 +404,7 @@ export class AutoTrade {
                 })
             });
 
-            if(orderId && orderId!==-1){
+            if (orderId && orderId !== -1) {
                 const orderInfo = await this.hbSDK.get_order(orderId);
                 if (orderInfo && orderInfo.state === 'filled' && orderInfo.type === 'buy-market') {
                     const buyPrice = (+ orderInfo['field-cash-amount']) / (+orderInfo['field-amount']);
@@ -362,16 +420,16 @@ export class AutoTrade {
                         buyCoins: 0,
                         buyTime: -1,
                         sellTime: -1,
-                    }   
+                    }
                     this.order.buyPrice = Math.floor(buyPrice * 10000) / 10000;
                     this.order.hightPrice = this.order.buyPrice;
                     this.order.buyCoins = Math.floor(((+orderInfo['field-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
-    
+
                     this.useCapital = 0;
                     this.totalCoins = this.order.buyCoins;
-                    this.logger.debug('last order',this.order);
+                    this.logger.debug('last order', this.order);
                 }
-            }          
+            }
         } catch (ex) {
             this.logger.error('write last buy id error:', ex);
         }
@@ -401,7 +459,7 @@ export class AutoTrade {
                     sellId: -1,
                     sellCoins: -1,
                     sellPrice: -1,
-                    state: 'buying',
+                    state: 'buyed',
                     buyPrice: 0,
                     hightPrice: 0,
                     buyCoins: 0,
@@ -410,15 +468,10 @@ export class AutoTrade {
                 }
 
                 this.order.buyPrice = Math.floor(buyPrice * 10000) / 10000;
-
                 this.order.hightPrice = this.order.buyPrice;
-
                 this.order.buyCoins = Math.floor(((+orderInfo['field-amount']) - (+orderInfo['field-fees'])) * 10000) / 10000;
-
-                this.order.state = 'buyed';
-
                 this.useCapital = 0;
-                this.totalCoins = this.order.buyCoins;                
+                this.totalCoins = this.order.buyCoins;
                 this.logger.info(`Order:${this.order.buyPrice} - ${this.order.buyCoins}`);
                 await this.writeLastBuyId(orderId);
             } else {
@@ -485,14 +538,15 @@ export class AutoTrade {
     async checkSelling() {
         try {
             const now = new Date();
-            const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01
+            const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01           
             if (this.order && this.order.state === 'buyed') {
-                if (this.order.hightPrice - this.order.buyPrice > zrPrice * 3.4 && this.order.hightPrice - this.closePrice > 1.5 * zrPrice) {
-                    this.logger.warn(`保收卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
+                const suiPrice = this.order.buyPrice * 0.004;
+                if (this.closePrice - this.order.buyPrice > 1.2 * suiPrice) {
+                    this.logger.warn(`保收卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`);
                     await this.sellCoins();
                 }
-                else if (this.order.buyPrice - this.closePrice > 1.5 * zrPrice) {
-                    this.logger.warn(`止损卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`, );
+                else if (this.order.buyPrice - this.closePrice > 5 * suiPrice) {
+                    this.logger.warn(`止损卖出订单:${this.order.orderId},${this.order.buyPrice},${this.order.hightPrice},${this.order.buyCoins}`);
                     await this.sellCoins();
                 }
                 else if (this.closePrice > this.order.hightPrice) {
@@ -503,12 +557,12 @@ export class AutoTrade {
 
             if ((this.lastOrderHPrice - this.closePrice) > 4 * zrPrice && this.accountTradeCoins > 0) {
                 this.logger.warn(`止损卖出所有币:${this.accountTradeCoins}`);
-                await this.sellAllCoins();
+                //await this.sellAllCoins();
             }
 
             else if (this.closePrice < this.BCPrice && this.accountTradeCoins > 0) {
                 this.logger.warn(`要爆仓卖出所有币:${this.accountTradeCoins}`);
-                await this.sellAllCoins();
+                //await this.sellAllCoins();
             }
             else if (this.lastOrderHPrice === 0) {
                 this.lastOrderHPrice = this.closePrice;
