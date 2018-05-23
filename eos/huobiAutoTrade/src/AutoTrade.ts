@@ -244,7 +244,8 @@ export class AutoTrade {
                     }
                 }
             }
-            else if (!this.canBuying) {
+            
+            if (!this.canBuying) {
                 if (avg10s > avg60min && avg5min > avg10min && avg10min > avg30min) {
                     this.logger.info('You Could Buy Buy Buy!');
                     this.canBuying = !this.order && true;

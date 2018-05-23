@@ -46,29 +46,29 @@ export class WSClient extends EventEmitter2 {
                 this.logger.info('open ws......');
                 // 订阅深度
                 // 谨慎选择合并的深度，ws每次推送全量的深度数据，若未能及时处理容易引起消息堆积并且引发行情延时
-                for (let symbol of this.symbols) {
-                    this.ws.send(JSON.stringify({
-                        "sub": `market.${symbol}.depth.step0`,
-                        "id": `${symbol}`
-                    }));
-                }
-    
-                // 订阅K线
-                // for (let symbol of symbols) {
+                // for (let symbol of this.symbols) {
                 //     this.ws.send(JSON.stringify({
-                //         "sub": `market.${symbol}.kline.1min`,
+                //         "sub": `market.${symbol}.depth.step0`,
                 //         "id": `${symbol}`
                 //     }));
                 // }
     
-                // 订阅trade
-                // market.$symbol.trade.detail 
-                for (let symbol of this.symbols) {
+                // 订阅K线
+                for (let symbol of symbols) {
                     this.ws.send(JSON.stringify({
-                        "sub": `market.${symbol}.trade.detail`,
+                        "sub": `market.${symbol}.kline.1min`,
                         "id": `${symbol}`
                     }));
                 }
+    
+                // 订阅trade
+                // market.$symbol.trade.detail 
+                // for (let symbol of this.symbols) {
+                //     this.ws.send(JSON.stringify({
+                //         "sub": `market.${symbol}.trade.detail`,
+                //         "id": `${symbol}`
+                //     }));
+                // }
     
     
                 // 订阅detail
@@ -78,6 +78,8 @@ export class WSClient extends EventEmitter2 {
                         "id": `${symbol}`
                     }));
                 }
+
+           
     
             });
             this.ws.on('message', (data) => {
