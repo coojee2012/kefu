@@ -33,17 +33,20 @@ export class WSClient extends EventEmitter2 {
                 this.emit('detail', data.tick);
                 break;
             case 'kline':
-                this.logger.debug('kline', data.tick);
+                //this.logger.debug('kline', data.tick);
                 this.emit('kline', data.tick);
                 break;
         }
     }
 
-    init() {
+     init(cb?:any) {
         try{
             this.ws = new WebSocket(this.WS_URL, { agent: new SocksProxyAgent("socks://127.0.0.1:1080") });
             this.ws.on('open', () => {
                 this.logger.info('open ws......');
+                if(cb && typeof cb === 'function'){
+                    cb('open');
+                }
                 // 订阅深度
                 // 谨慎选择合并的深度，ws每次推送全量的深度数据，若未能及时处理容易引起消息堆积并且引发行情延时
                 // for (let symbol of this.symbols) {
@@ -54,7 +57,7 @@ export class WSClient extends EventEmitter2 {
                 // }
     
                 // 订阅K线
-                for (let symbol of symbols) {
+                for (let symbol of this.symbols) {
                     this.ws.send(JSON.stringify({
                         "sub": `market.${symbol}.kline.1min`,
                         "id": `${symbol}`
