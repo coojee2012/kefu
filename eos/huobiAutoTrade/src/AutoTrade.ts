@@ -266,12 +266,12 @@ export class AutoTrade {
                 // else if (avg5s < avg30min && avg5min < avg10min){
                 //     this.logger.info('You Mast Sell Sell Sell! 1');
                 //     this.canSelling = !!this.order && true;
-                // }       
+                // }
                 // 高于60分钟均线 只要不亏就卖
                 else if (avg5s < avg5min && avg5min < avg10min && avg5min > avg30min && avg30min > avg60min) {
                     this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
-                        const suiPrice = this.order.buyPrice * 0.008;
+                        const suiPrice = this.order.buyPrice * 0.006;
                         if (close - this.order.buyPrice > suiPrice) {
                             this.canSelling = !!this.order && true;
                         }
@@ -280,13 +280,13 @@ export class AutoTrade {
             }
 
             if (!this.canBuying) {
-                // && avg5min > avg10min && avg10min > avg30min && avg30min > avg60min 
-                if (Math.abs(bias5) < 0.0006 && Math.abs(bias10) < 0.0006 && Math.abs(bias30) < 0.0006) {
-                    
-                    if (avg10s > avg60min && avg5min > avg10min) {
+                 if ( avg5min > avg10min && avg10min > avg30min && avg30min > avg60min){
+                //if (Math.abs(bias5) < 0.0008 && Math.abs(bias10) < 0.0010 && Math.abs(bias30) < 0.0015) {
+
+
                         this.logger.info('You Mast Buy Buy Buy!');
                         this.canBuying = !this.order && true;
-                    }
+                    //}
                 }
                 // else if (avg5s > avg5min && avg5min > avg10min && avg60min > avg30min && avg30min > avg10min) {
                 //     this.logger.info(`You Could Think About Buy Buy Buy!  ${avg5min - avg30min} ${avg5min - avg60min} `);
@@ -656,7 +656,7 @@ export class AutoTrade {
     async checkSelling() {
         try {
             const now = new Date();
-            const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01           
+            const zrPrice = this.openPrice * 0.01; //止损价格 测试阶段为0.001 正式为0.01
             if (this.order && this.order.state === 'buyed') {
                 const suiPrice = this.order.buyPrice * 0.004;
                 if (this.closePrice - this.order.buyPrice > 1.2 * suiPrice) {
