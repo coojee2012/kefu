@@ -29,7 +29,7 @@ export class AutoTrade {
     private buy0Mount: number;
     private lastPrice: number;
     private LLDPE: number; //震荡趋势
-    private MMQS: number; //买手卖手强弱趋势 ，当买手多时+1 当卖手多时 -1
+    private MMQS: number; // 多头卖出1次 用于控制多头只买进一次
 
     private sellMounts: number[];
     private buyMounts: number[];
@@ -202,9 +202,9 @@ export class AutoTrade {
 
 
 
-           // this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
-            if ( !this.lastPrices[0] || Math.abs(this.lastPrices[0] - close) > 0) {
-                this.aT(close);
+            // this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
+            if (!this.lastPrices[0] || Math.abs(this.lastPrices[0] - close) > 0) {
+                //this.aT(close);
             }
             this.lastPrices.unshift(close);
             if (this.lastPrices.length < 100) {
@@ -263,10 +263,6 @@ export class AutoTrade {
                     this.logger.info('You Mast Sell Sell Sell! 0 ');
                     this.canSelling = !!this.order && true;
                 }
-                // else if (avg5s < avg30min && avg5min < avg10min){
-                //     this.logger.info('You Mast Sell Sell Sell! 1');
-                //     this.canSelling = !!this.order && true;
-                // }
                 // 高于60分钟均线 只要不亏就卖
                 else if (avg5s < avg5min && avg5min < avg10min && avg5min > avg30min && avg30min > avg60min) {
                     this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
@@ -280,26 +276,15 @@ export class AutoTrade {
             }
 
             if (!this.canBuying) {
-                 if ( avg5min > avg10min && avg10min > avg30min && avg30min > avg60min){
-                //if (Math.abs(bias5) < 0.0008 && Math.abs(bias10) < 0.0010 && Math.abs(bias30) < 0.0015) {
-
-
+                if (avg5min > avg10min && avg10min > avg30min) {                
                         this.logger.info('You Mast Buy Buy Buy!');
-                        this.canBuying = !this.order && true;
-                    //}
+                        this.canBuying = !this.MMQS &&  !this.order && true;
                 }
-                // else if (avg5s > avg5min && avg5min > avg10min && avg60min > avg30min && avg30min > avg10min) {
-                //     this.logger.info(`You Could Think About Buy Buy Buy!  ${avg5min - avg30min} ${avg5min - avg60min} `);
-                //     if(this.lastSellPrice > 0 && this.lastSellPrice - close > this.lastSellPrice * 0.015 ){
-                //         this.canBuying = !this.order && true;
-                //     }
-
-                // }
             }
 
-
-
-
+            if(this.MMQS === 1 && avg5min < avg60min){
+                this.MMQS = 0;
+            }
 
         }
         catch (ex) {
@@ -642,6 +627,7 @@ export class AutoTrade {
                 this.totalCoins = 0;
                 this.lastSellTime = new Date().getTime();
                 this.buyPriceWeight = +(this.openPrice * 0.004).toFixed(3);
+                this.MMQS = 1;
                 this.logger.info(`Sell Order:${this.order.sellPrice - this.order.buyPrice}$`);
                 this.order = null;
                 await this.writeLastBuyId('-1');
