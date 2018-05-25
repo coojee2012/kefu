@@ -276,7 +276,7 @@ export class AutoTrade {
             }
 
             if (!this.canBuying) {
-                if (avg5min > avg10min && avg10min > avg30min) {                
+                if (Math.abs(bias60) < 0.005 &&  avg5min > avg10min && avg10min > avg30min) {                
                         this.logger.info('You Mast Buy Buy Buy!');
                         this.canBuying = !this.MMQS &&  !this.order && true;
                 }
