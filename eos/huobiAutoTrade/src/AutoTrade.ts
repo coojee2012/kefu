@@ -78,6 +78,11 @@ export class AutoTrade {
     private lastKLineId: number;
     private lastSellPrice: number;
 
+    private BDUseCoins: number;
+    private BDUseUSDT: number;
+
+
+
     constructor(privateKey, max) {
         this.hbSDK = new HuoBiSDK(privateKey);
         this.logger = new LoggerService();
@@ -121,6 +126,9 @@ export class AutoTrade {
         this.kline1min = [];
         this.lastKLineId = -1;
         this.lastSellPrice = 0;
+
+        this.BDUseCoins = 20;
+        this.BDUseUSDT = 20 * 12.5;
 
     }
 
@@ -204,7 +212,7 @@ export class AutoTrade {
 
             // this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
             if (!this.lastPrices[0] || Math.abs(this.lastPrices[0] - close) > 0) {
-                //this.aT(close);
+                this.aT(close);
             }
             this.lastPrices.unshift(close);
             if (this.lastPrices.length < 100) {
@@ -268,21 +276,21 @@ export class AutoTrade {
                     this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
                         const suiPrice = this.order.buyPrice * 0.006;
-                       // if (close - this.order.buyPrice > suiPrice) {
-                            this.canSelling = !!this.order && true;
-                      // }
+                        // if (close - this.order.buyPrice > suiPrice) {
+                        //this.canSelling = !!this.order && true;
+                        // }
                     }
                 }
             }
 
             if (!this.canBuying) {
-                if (Math.abs(bias60) < 0.002 &&  avg5min > avg10min && avg10min > avg30min) {                
-                        this.logger.info('You Mast Buy Buy Buy!');
-                        this.canBuying = !this.MMQS &&  !this.order && true;
+                if (Math.abs(bias60) < 0.002 && avg5min > avg10min && avg10min > avg30min) {
+                    this.logger.info('You Mast Buy Buy Buy!');
+                    //this.canBuying = !this.MMQS && !this.order && true;
                 }
             }
 
-            if(this.MMQS === 1 && avg5min < avg60min){
+            if (this.MMQS === 1 && avg5min < avg60min) {
                 this.MMQS = 0;
             }
 
@@ -300,6 +308,7 @@ export class AutoTrade {
 
                     if (close > this.sellMounts[i]) {
                         this.sellTradeMounts.unshift(this.sellMounts[i]);
+                        this.BDUseUSDT += this.sellMounts[i] * (1 - 0.002);
                         this.sellMounts.splice(i, 1);
                     }
 
@@ -311,34 +320,93 @@ export class AutoTrade {
                 for (let i = 0; i < this.buyMounts.length; i++) {
                     if (close < this.buyMounts[i]) {
                         this.buyTradeMounts.unshift(this.buyMounts[i]);
+                        this.BDUseCoins += 1 * (1 - 0.002);
                         this.buyMounts.splice(i, 1);
                     }
                 }
             }
 
+
+            if(close - this.buyMounts[0] > close * 0.006){
+                this.buyMounts.forEach(item=>{
+                    this.BDUseUSDT += item;
+                });
+                this.buyMounts=[];
+            }
+
+
+            if( this.sellMounts[0] - close  > close * 0.006){
+                this.sellMounts.forEach(item=>{
+                    this.BDUseCoins += 1;
+                });
+                this.sellMounts=[];
+            }
+
+
             const buy0price = Math.floor((close - (close * 0.003)) * 10000) / 10000;
-            const buy1price = Math.floor((close - (close * 0.004)) * 10000) / 10000;
+            const buy1price = Math.floor((close - (close * 0.0035)) * 10000) / 10000;
+            const buy2price = Math.floor((close - (close * 0.004)) * 10000) / 10000;
+            const buy3price = Math.floor((close - (close * 0.0045)) * 10000) / 10000;
+            const buy4price = Math.floor((close - (close * 0.005)) * 10000) / 10000;
+
             const sell0price = Math.floor((close + (close * 0.003)) * 10000) / 10000;
-            const sell1price = Math.floor((close + (close * 0.004)) * 10000) / 10000;
-            if (this.buyMounts.length < 20) {
+            const sell1price = Math.floor((close + (close * 0.0035)) * 10000) / 10000;
+            const sell2price = Math.floor((close + (close * 0.004)) * 10000) / 10000;
+
+            const sell3price = Math.floor((close + (close * 0.0045)) * 10000) / 10000;
+            const sell4price = Math.floor((close + (close * 0.005)) * 10000) / 10000;
+
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy0price && this.BDUseCoins > 1) {
                 this.buyMounts.unshift(buy0price);
+                this.BDUseUSDT -= buy0price;
             }
-            if (this.buyMounts.length < 20) {
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy1price && this.BDUseCoins > 1) {
                 this.buyMounts.unshift(buy1price);
+                this.BDUseUSDT  -= buy1price;
+            }
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy2price && this.BDUseCoins > 1) {
+                this.buyMounts.unshift(buy2price);
+                this.BDUseUSDT  -= buy2price;
             }
 
-            if (this.sellMounts.length < 20) {
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy3price && this.BDUseCoins > 1) {
+                this.buyMounts.unshift(buy3price);
+                this.BDUseUSDT  -= buy3price;
+            }
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy4price && this.BDUseCoins > 1) {
+                this.buyMounts.unshift(buy4price);
+                this.BDUseUSDT  -= buy4price;
+            }
+
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 && this.BDUseUSDT > this.buyMounts[0]) {
                 this.sellMounts.unshift(sell0price);
+                this.BDUseCoins -= 1;
             }
-            if (this.sellMounts.length < 20) {
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 && this.BDUseUSDT > this.buyMounts[0] ) {
                 this.sellMounts.unshift(sell1price);
+                this.BDUseCoins -= 1;
+            }
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 && this.BDUseUSDT > this.buyMounts[0]) {
+                this.sellMounts.unshift(sell2price);
+                this.BDUseCoins -= 1;
             }
 
-            this.logger.debug('sellMounts:', this.sellMounts.length, 'sell usdts:', this.sumArray(this.sellMounts))
-            this.logger.debug('sellTradeMounts:', this.sellTradeMounts.length, 'sell trade usdt:', this.sumArray(this.sellTradeMounts))
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 && this.BDUseUSDT > this.buyMounts[0] ) {
+                this.sellMounts.unshift(sell3price);
+                this.BDUseCoins -= 1;
+            }
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 && this.BDUseUSDT > this.buyMounts[0]) {
+                this.sellMounts.unshift(sell4price);
+                this.BDUseCoins -= 1;
+            }
 
-            this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
-            this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
+           // this.logger.debug('sellMounts:', this.sellMounts.length, 'sell usdts:', this.sumArray(this.sellMounts))
+           // this.logger.debug('sellTradeMounts:', this.sellTradeMounts.length, 'sell trade usdt:', this.sumArray(this.sellTradeMounts))
+
+           // this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
+           // this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
+            
+           this.logger.info(`${this.sellMounts.join(',')}|${this.sellTradeMounts.length},${this.buyMounts.join(',')}|${this.buyTradeMounts.length}|${this.BDUseCoins}|${this.BDUseUSDT}`)
 
 
         } catch (ex) {
