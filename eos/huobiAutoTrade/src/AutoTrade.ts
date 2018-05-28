@@ -2,7 +2,7 @@ import { HuoBiSDK } from './hbsdk';
 import { LoggerService } from './LogService';
 import { WSClient } from './wsClient';
 import fs = require('fs');
-import { resolve } from 'bluebird';
+import macd = require('macd');
 export type Order = {
     orderId: number;
     buyPrice: number;
@@ -77,6 +77,7 @@ export class AutoTrade {
     private kline1min: number[];
     private lastKLineId: number;
     private lastSellPrice: number;
+    private MACDData:any;
 
     private BDUseCoins: number;
     private BDUseUSDT: number;
@@ -126,6 +127,7 @@ export class AutoTrade {
         this.kline1min = [];
         this.lastKLineId = -1;
         this.lastSellPrice = 0;
+        this.MACDData = null;
 
         this.BDUseCoins = 20;
         this.BDUseUSDT = 20 * 12.5;
@@ -210,13 +212,14 @@ export class AutoTrade {
 
 
 
-            // this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
+            //this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
             if (!this.lastPrices[0] || Math.abs(this.lastPrices[0] - close) > 0) {
                 this.aT(close);
             }
             this.lastPrices.unshift(close);
-            if (this.lastPrices.length < 100) {
-                //this.logger.debug('this.lastPrices.length:',this.lastPrices.length,close);
+
+            if (this.lastPrices.length < 61) {
+                this.logger.debug('this.lastPrices.length:',this.lastPrices.length,close);
                 return;
             }
 
@@ -236,16 +239,16 @@ export class AutoTrade {
             const zj60s = this.lastPrices.slice(0, 60);
             const avg60s = Math.floor(this.sumArray(zj60s) / 60 * 10000) / 10000;
 
-            const zj5min = this.kline1min.slice(0, 5);
+            const zj5min = this.kline1min.slice(-5);
             const avg5min = Math.floor(this.sumArray(zj5min) / 5 * 10000) / 10000;
 
-            const zj10min = this.kline1min.slice(0, 10);
+            const zj10min = this.kline1min.slice(-10);
             const avg10min = Math.floor(this.sumArray(zj10min) / 10 * 10000) / 10000;
 
-            const zj30min = this.kline1min.slice(0, 30);
+            const zj30min = this.kline1min.slice(-30);
             const avg30min = Math.floor(this.sumArray(zj30min) / 30 * 10000) / 10000;
 
-            const zj60min = this.kline1min.slice(0, 60);
+            const zj60min = this.kline1min.slice(-60);
             const avg60min = Math.floor(this.sumArray(zj60min) / 60 * 10000) / 10000;
 
             this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
@@ -268,12 +271,12 @@ export class AutoTrade {
             if (!this.canSelling) {
                 // 位于60分钟均线一下直接卖
                 if (avg5min < avg10min && avg10min < avg30min) {
-                    this.logger.info('You Mast Sell Sell Sell! 0 ');
+                   // this.logger.info('You Mast Sell Sell Sell! 0 ');
                     this.canSelling = !!this.order && true;
                 }
                 // 高于60分钟均线 只要不亏就卖
                 else if (avg5s < avg5min && avg5min < avg10min && avg5min > avg30min && avg30min > avg60min) {
-                    this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
+                   // this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
                         const suiPrice = this.order.buyPrice * 0.006;
                         // if (close - this.order.buyPrice > suiPrice) {
@@ -425,9 +428,27 @@ export class AutoTrade {
                     this.kline1min[0] = close;
                 } else {
                     this.lastKLineId = id;
-                    this.kline1min.pop();
-                    this.kline1min.unshift(close);
+                    //this.kline1min.pop();
+                    //this.kline1min.unshift(close);
+                    this.kline1min.shift();
+                    this.kline1min.push(close);
+                    this.MACDData =  macd(this.kline1min);
+                    this.logger.debug('MACD:', this.MACDData.MACD.slice(144), this.MACDData.MACD.length);
+                    this.logger.debug('signal:', this.MACDData.signal.slice(144), this.MACDData.signal.length);
+                    this.logger.debug('histogram:', this.MACDData.histogram.slice(144), this.MACDData.histogram.length);
+
+                    const diff = this.MACDData.MACD.slice(144);
+                    const dema = this.MACDData.signal.slice(144);
+                    const MAcd = this.MACDData.histogram.slice(144);
+
+                    if(diff[2] < dema [2] && diff[4] > dema[4]){
+                      this.logger.info('UP MACD');
+                    }else if(diff[2] > dema [2] && diff[4] < dema[4]){
+                      this.logger.info('Down MACD');
+                    }
+
                 }
+
             }
 
         } catch (ex) {
@@ -441,6 +462,8 @@ export class AutoTrade {
 
     async run() {
         try {
+
+
 
             const accountInfo: any[] = await this.hbSDK.get_account();
             // this.logger.debug('accountInfo:', accountInfo);
@@ -472,12 +495,12 @@ export class AutoTrade {
                 return;
             }
 
-            const kline60Min = await this.hbSDK.get_kline('eos', 'usdt', '1min', 60);
+            const kline60Min = await this.hbSDK.get_kline('eos', 'usdt', '1min', 150);
 
             if (kline60Min.length) {
                 for (let i = 0; i < kline60Min.length; i++) {
                     const { high, low, close } = kline60Min[i];
-                    this.kline1min.push(close);
+                    this.kline1min.unshift(close);
                 }
                 this.openPrice = kline60Min[0].open;
             }
@@ -485,6 +508,7 @@ export class AutoTrade {
                 this.logger.warn(`Can't Get Today's KLine!!`);
                 return;
             }
+
 
 
 
