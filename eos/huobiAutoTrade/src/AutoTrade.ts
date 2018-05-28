@@ -268,15 +268,15 @@ export class AutoTrade {
                     this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
                         const suiPrice = this.order.buyPrice * 0.006;
-                        if (close - this.order.buyPrice > suiPrice) {
+                       // if (close - this.order.buyPrice > suiPrice) {
                             this.canSelling = !!this.order && true;
-                        }
+                      // }
                     }
                 }
             }
 
             if (!this.canBuying) {
-                if (Math.abs(bias60) < 0.005 &&  avg5min > avg10min && avg10min > avg30min) {                
+                if (Math.abs(bias60) < 0.002 &&  avg5min > avg10min && avg10min > avg30min) {                
                         this.logger.info('You Mast Buy Buy Buy!');
                         this.canBuying = !this.MMQS &&  !this.order && true;
                 }
