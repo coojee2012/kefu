@@ -1,8 +1,12 @@
+
+import fs = require('fs');
+import mongoose = require('mongoose');
+import macd = require('macd');
 import { HuoBiSDK } from './hbsdk';
 import { LoggerService } from './LogService';
+import { OrderModel,default as orderSchema }  from './models/orders';
 import { WSClient } from './wsClient';
-import fs = require('fs');
-import macd = require('macd');
+import config from './config';
 export type Order = {
     orderId: number;
     buyPrice: number;
@@ -15,6 +19,10 @@ export type Order = {
     buyId: number;
     sellId: number;
     state: string; // buying,buyed,selling,selled,canncel
+}
+
+interface IModels {
+    tradeOrder?: mongoose.Model<OrderModel>;
 }
 export class AutoTrade {
     private hbSDK: HuoBiSDK;
@@ -84,6 +92,14 @@ export class AutoTrade {
     private BDPrice: number;
 
 
+    public models: IModels;
+    private conn: mongoose.Connection;
+
+
+    private TestCoins:number;
+    private TestUSDTs:number;
+
+
 
     constructor(privateKey, max) {
         this.hbSDK = new HuoBiSDK(privateKey);
@@ -133,6 +149,14 @@ export class AutoTrade {
         this.BDUseCoins = 20;
         this.BDUseUSDT = 20 * 12;
         this.BDPrice = 0;
+
+
+        this.TestCoins = 20;
+        this.TestUSDTs = 300;
+
+        this.models = {};
+
+
 
     }
 
@@ -273,6 +297,18 @@ export class AutoTrade {
 
             this.logger.debug(`${avg5s},${avg10s},${avg20s}    ${avg5min},${avg10min},${avg30min},${avg60min} ${bias5},${bias10},${bias30},${bias60}`);
 
+
+            if(bias60 > 0.01 && this.TestCoins > 1){
+                this.TestUSDTs += this.TestCoins * close * (1 - 0.002);
+                this.TestCoins  = 0;
+                this.logger.info(`TEST BIAS TRADE Sell:${this.TestCoins} - ${this.TestUSDTs},${bias30} ${bias60}`);
+            }else if(bias60 < -0.01  && this.TestUSDTs > close){
+                this.TestCoins += this.TestUSDTs /close * (1 - 0.002);
+                this.TestUSDTs = 0;
+                this.logger.info(`TEST BIAS TRADE Buy:${this.TestCoins} - ${this.TestUSDTs},${bias30} ${bias60}`);
+            }
+           
+            this.logger.debug(`TEST BIAS TRADE:${this.TestCoins} - ${this.TestUSDTs}`);
             // this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
             // if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
             //     this.logger.info(`Market  chance come on:${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
@@ -313,6 +349,8 @@ export class AutoTrade {
             this.logger.error('observePrice error:', ex);
         }
     }
+
+
 
     aT(close,avg30min) {
         try {
@@ -375,17 +413,17 @@ export class AutoTrade {
             }
 
 
-            const buy0price = Math.floor((this.BDPrice - (this.BDPrice  * 0.003)) * 10000) / 10000;
-            const buy1price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0035)) * 10000) / 10000;
-            const buy2price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.004)) * 10000) / 10000;
-            const buy3price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0045)) * 10000) / 10000;
-            const buy4price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const buy0price = Math.floor((this.BDPrice - (this.BDPrice  * 0.004)) * 10000) / 10000;
+            const buy1price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0045)) * 10000) / 10000;
+            const buy2price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const buy3price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0055)) * 10000) / 10000;
+            const buy4price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.006)) * 10000) / 10000;
 
-            const sell0price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.003)) * 10000) / 10000;
-            const sell1price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0035)) * 10000) / 10000;
-            const sell2price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.004)) * 10000) / 10000;
-            const sell3price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0045)) * 10000) / 10000;
-            const sell4price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const sell0price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.004)) * 10000) / 10000;
+            const sell1price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0045)) * 10000) / 10000;
+            const sell2price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const sell3price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0055)) * 10000) / 10000;
+            const sell4price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.006)) * 10000) / 10000;
 
             if (this.buyMounts[0] === 0 && this.BDUseUSDT > buy0price && this.sellMounts[0] === 0 && this.BDUseCoins > 1) {
                 this.buyMounts[0] = buy0price;
@@ -480,9 +518,7 @@ export class AutoTrade {
 
     async run() {
         try {
-
-
-
+            await this.connectDB();
             const accountInfo: any[] = await this.hbSDK.get_account();
             // this.logger.debug('accountInfo:', accountInfo);
             for (let i = 0; i < accountInfo.length; i++) {
@@ -836,6 +872,45 @@ export class AutoTrade {
             cnt += arr[i];
         }
         return cnt;
+    }
+
+    onConnectionError(err) {
+        this.logger.error('MongoError', err)
+    }
+
+    async connectDB() {
+        try {
+            const mongoConfig = config.mongo;
+            mongoose.Promise = Promise;
+            this.logger.debug('数据库[MongoDB]连接信息：', mongoConfig.uris, mongoConfig.opts);
+            // await new Promise((resolve,reject)=>{
+            //     this.conn = mongoose.createConnection(mongoConfig.uris, mongoConfig.opts)
+            //     this.conn.on('error',(err)=>{
+            //         reject(err);
+            //     });
+            //     this.conn.once('connected', () => {
+            //         this.logger.info('数据库[MongoDB]启动了');
+            //         resolve();
+            //     });
+            // })
+
+
+
+
+            // await 写法不用去监听事件
+            this.conn = await mongoose.createConnection(mongoConfig.uris, mongoConfig.opts);
+            this.conn.on('error', (err) => {
+                this.onConnectionError.bind(this);
+            });
+            this.logger.info('数据库[MongoDB]启动了');
+
+            // 另一种连法 this.conn = await mongoose.connect(mongoConfig.uris, mongoConfig.opts);        
+            this.models.tradeOrder = this.conn.model('tradeOrder', orderSchema);
+       
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
 
     async wait(millisecond) {
