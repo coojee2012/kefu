@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+import { Observable ,  from as fromPromise } from 'rxjs';
+
+
 
 /**
  * 深拷

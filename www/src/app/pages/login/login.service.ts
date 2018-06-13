@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AuthorizationService} from '../../core/authorization';
 import {HttpClient} from '@angular/common/http';

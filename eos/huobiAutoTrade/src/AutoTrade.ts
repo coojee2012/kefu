@@ -235,12 +235,6 @@ export class AutoTrade {
             // if (close === this.lastPrices[0]) {
             //     return;
             // }
-
-
-
-          
-
-
             const zj5min = this.kline1min.slice(-5);
             const avg5min = Math.floor(this.sumArray(zj5min) / 5 * 10000) / 10000;
 
@@ -306,8 +300,7 @@ export class AutoTrade {
                 this.TestCoins += this.TestUSDTs /close * (1 - 0.002);
                 this.TestUSDTs = 0;
                 this.logger.info(`TEST BIAS TRADE Buy:${this.TestCoins} - ${this.TestUSDTs},${bias30} ${bias60}`);
-            }
-           
+            }         
             this.logger.debug(`TEST BIAS TRADE:${this.TestCoins} - ${this.TestUSDTs}`);
             // this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
             // if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {

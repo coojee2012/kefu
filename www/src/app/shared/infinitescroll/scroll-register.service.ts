@@ -1,14 +1,13 @@
 import { ContainerRef, IPositionStats, IScrollStats } from './interface';
 
 import { Injectable, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import { Observable ,  Subscription } from 'rxjs';
 
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/sampleTime';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/mergeMap';
+
+
+
+
+
 
 export interface IScrollRegisterConfig {
   container: ContainerRef;

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
-import {Observable, Subscribable} from 'rxjs/Observable';
-import 'rxjs/add/operator/first';
+import {Observable, Subscribable} from 'rxjs';
+
 import {HttpClient, HttpParams} from '@angular/common/http';
 /**
  * 定义user 接口

@@ -1,13 +1,14 @@
+
+import {throwError as observableThrowError, Observable} from 'rxjs';
 /**
  * Created by LinYong on 2017/8/1.
  */
 import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
 import {AuthorizationService} from './core/authorization/authorization.service';
 import {Router} from '@angular/router';
 import { environment } from './../environments/environment';
-import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
 /**
  * 是否是对象
  * @param value
@@ -81,7 +82,7 @@ export class APPResponseInterceptor implements HttpInterceptor {
       if (err instanceof HttpErrorResponse) {
         switch (err.status) {
           case 401:
-            return Observable.throw(err);
+            return observableThrowError(err);
           case 403:
             break;
           case 404:

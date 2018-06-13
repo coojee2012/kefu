@@ -9,11 +9,10 @@ import {
   ViewChild,
   AfterViewInit
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/operator/do';
+import {Observable,  Subscription } from 'rxjs';
+
+
+
 
 @Component({
   selector: 'app-verify-sliderbar',

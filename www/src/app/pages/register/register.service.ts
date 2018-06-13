@@ -1,8 +1,9 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable }              from '@angular/core';
 import { Http, Response }          from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+
+
 @Injectable()
 export class RegisterService {
   private registerUrl = 'http://localhost:3000/api/v1/register';  // URL to web API
@@ -26,6 +27,6 @@ export class RegisterService {
       errMsg = error.message ? error.message : error.toString();
     }
     console.error(errMsg);
-    return Observable.throw(errMsg);
+    return observableThrowError(errMsg);
   }
 }
