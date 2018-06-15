@@ -10,7 +10,9 @@ import {
     RequestOptions,
     RequestOptionsArgs
 } from '@angular/http';
-import { Observable } from 'rxjs';
+
+import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
+import { map, filter, switchMap, catchError } from 'rxjs/operators';
 
 
 
@@ -85,9 +87,11 @@ export class AppHttpProvider {
     addResponseInterceptor(interceptor: (res: any) => any): AppHttpProvider {
         return this.addInterceptor({
             response: (response: Observable<any>): Observable<any> => {
-                return response.map(res => {
-                    return interceptor(res) || res;
-                });
+                return response.pipe(
+                    map(res => {
+                        return interceptor(res) || res;
+                    })
+                );
             }
         });
     }
@@ -97,9 +101,14 @@ export class AppHttpProvider {
     addResponseErrorInterceptor(interceptor: (res: any) => any): AppHttpProvider {
         return this.addInterceptor({
             response: (response: Observable<any>): Observable<any> => {
-                return response.catch(res => {
-                    return interceptor(res) || res;
-                });
+                return response.pipe(
+                    catchError(res => {
+                        return interceptor(res) || res;
+                    })
+                );
+                // .catch(res => {
+                //     return interceptor(res) || res;
+                // });
             }
         });
     }
@@ -184,12 +193,15 @@ export class AppHttpProvider {
                 }
             },
             response: (response: Observable<any>): Observable<any> => {
-                return response.map(res => {
-                    const type = res.headers.get('Content-Type') || res.headers.get('content-type');
-                    if (type && type.indexOf('json') !== -1) {
-                        return res.json && res.json();
-                    }
-                });
+                return response.pipe(
+                    map(res => {
+                        const type = res.headers.get('Content-Type') || res.headers.get('content-type');
+                        if (type && type.indexOf('json') !== -1) {
+                            return res.json && res.json();
+                        }
+                    })
+                )
+               ;
             }
         });
         return this;
@@ -316,7 +328,7 @@ export class AppHttpService {
         requestOptions = this.requestInterceptor(requestOptions) || requestOptions;
         let observable = this.http.request(new Request(requestOptions));
         if (this.enableJson) {
-            observable = observable.map(res => res.json());
+            observable = observable.pipe(map(res => res.json()));
         }
         return this.responseInterceptor(observable, requestOptions) || observable;
     }
@@ -474,7 +486,7 @@ function methodBuilder(method: number, isJsonp = false) {
                 let observable: Observable<Response> = httpRequest.request(new Request(options));
                 // @Produces
                 if (descriptor.enableJson) {
-                    observable = observable.map(res => res.json());
+                    observable = observable.pipe(map(res => res.json()));
                 }
                 return this.responseInterceptor(observable, options) || observable;
             };

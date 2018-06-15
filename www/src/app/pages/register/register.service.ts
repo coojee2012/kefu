@@ -1,8 +1,9 @@
 
 import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable }              from '@angular/core';
-import { Http, Response }          from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
 
+import { map, filter, switchMap, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class RegisterService {
@@ -10,8 +11,10 @@ export class RegisterService {
   constructor (private http: Http) {}
   register(data: any): Observable<any> {
     return this.http.post(this.registerUrl, data)
-                    .map(this.extractData)
-                    .catch(this.handleError);
+                    .pipe(
+                      map(this.extractData),
+                      catchError(this.handleError)
+                    );
   }
   private extractData(res: Response) {
     return res.json() || {};
