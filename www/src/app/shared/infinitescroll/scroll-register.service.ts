@@ -1,9 +1,9 @@
 import { ContainerRef, IPositionStats, IScrollStats } from './interface';
 
 import { Injectable, ElementRef } from '@angular/core';
-import { Observable ,  Subscription } from 'rxjs';
+import { Observable, Subscription, fromEvent, of } from 'rxjs';
 
-
+import { map, filter, switchMap, catchError, tap, sampleTime, mergeMap } from 'rxjs/operators';
 
 
 
@@ -22,11 +22,13 @@ export interface IScrollRegisterConfig {
 @Injectable()
 export class ScrollRegisterService {
 
-  attachEvent (options: IScrollRegisterConfig): Subscription {
-    const scroller$: Subscription = Observable.fromEvent(options.container, 'scroll')
-      .sampleTime(options.throttleDuration)
-      .filter(options.filterBefore)
-      .mergeMap((ev: any) => Observable.of(options.mergeMap(ev)))
+  attachEvent(options: IScrollRegisterConfig): Subscription {
+    const scroller$: Subscription = fromEvent(options.container, 'scroll')
+      .pipe(
+        sampleTime(options.throttleDuration),
+        filter(options.filterBefore),
+        mergeMap((ev: any) => of(options.mergeMap(ev)))
+      )
       .subscribe(options.scrollHandler);
     return scroller$;
   }

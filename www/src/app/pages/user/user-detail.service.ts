@@ -3,6 +3,8 @@ import {Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot} from '@ang
 import {Observable, Subscribable} from 'rxjs';
 
 import {HttpClient, HttpParams} from '@angular/common/http';
+import { map, filter, switchMap, catchError } from 'rxjs/operators';
+import { pipe } from '@angular/core/src/render3/pipe';
 /**
  * 定义user 接口
  */
@@ -44,14 +46,17 @@ export class UserDetailResolver implements Resolve<User> {
     const params = new HttpParams()
           .set('orderBy', '你好')
           .set('limitToFirst', '1');
-    return this.http.get(`/user/${route.params['id']}/home`, {params}).map((data: any) => {
+    return this.http.get(`/user/${route.params['id']}/home`, {params})
+    .pipe(map((data: any) => {
       if (data.meta && data.meta.code === 200) {
         return data.data;
       } else {
         this.router.navigate(['/404']);
         return false;
       }
-    }).first();
+    }))
+   // .first()
+    ;
     /*.subscribe((data: any) => {
       if (data.meta && data.meta.code === 200) {
         return data.data;
