@@ -1,8 +1,11 @@
 const { compile } = require('nexe');
 
 compile({
-  input: './app.js',
-  name:'app.linux1.8.9.4',
+  input: './dist/app.js',
+  //name:'fcTrade',
+  output:'./deploy/fctrade',
+  ico:'./ooo.ico',
+  //resources:['./config.ini','./ooo.ico'],
   //build: true, //required to use patches
   target:'windows-x64.8.9.4',
 //   patches: [

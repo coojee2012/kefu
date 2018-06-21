@@ -46,3 +46,6 @@ Thumbs.db
 ./service/logs/**.log
 eos/huobiAutoTrade/file-error.log
 eos/huobiAutoTrade/file-info.log
+
+deploy
+./exe/config.ini
