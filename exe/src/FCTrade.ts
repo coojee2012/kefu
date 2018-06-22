@@ -1,7 +1,7 @@
 import Fcoin = require('fcoin-api');
 import { readFile, readFileSync } from 'fs';
 import { LoggerService } from './LogService';
-
+import { Endecrypt } from './Endecrypt';
 const ignore = {
     ';': true,
     '#': true
@@ -20,42 +20,51 @@ export class FCTrade {
     private logger: LoggerService;
     private configs: any;
     private timeoutTimes: number;
+    private endecrypt: Endecrypt;
+    private authPass: boolean;
+    private authAmount: number;
     constructor() {
         this.logger = new LoggerService();
+        this.endecrypt = new Endecrypt();
+
         this.fcoin = new Fcoin({
             key: '20f76983945545a28421c620ce6dc9e3',
             secret: 'e5deb5ff3415438eb02e82e943fdcb44'
         });
+        this.authPass = false;
+        this.authAmount = 100;
         this.timeoutTimes = 100;
         this.configs = this.parse(readFileSync(`config.ini`, 'utf8'));
-        this.logger.debug('configs:', this.configs);
+        // this.logger.debug('configs:', this.configs);
     }
 
-    //     var crypto = require('crypto');
-    // //加密
-    // function encrypt(str,secret){
-    // 	var cipher = crypto.createCipher('aes192',secret);
-    // 	var enc = cipher.update(str,'utf8','hex');
-    // 	enc += cipher.final('hex');
-    // 	return enc;
-    // }
-    // //解密
-    // function decrypt(str,secret){
-    // 	var decipher = crypto.createDecipher('aes192',secret);
-    // 	var dec = decipher.update(str,'hex','utf8');
-    // 	dec += decipher.final('utf8');
-    // 	return dec;
-    // }
+    auth(key) {
+        try {
+            const destr = this.endecrypt.decrypt(this.configs.Main.authorization, 'fcoin is good');
+            const { base_currency, quote_currency } = this.configs.Main;
+            const [dekey, amount] = destr.split('++');
+            if (key && key === dekey) {
+                this.authPass = true;
+                this.authAmount = +amount;
+                this.logger.debug(`授权认证通过，授权账户余额不得超过${this.authAmount}${quote_currency.toUpperCase()}`);
+            }
+        }
+        catch (ex) {
+            this.logger.warn('未授权！');
+        }
+    }
 
     async initAccount() {
         try {
             const { useAccount, authorization, keyA, secretA, keyB, secretB } = this.configs.Main;
             if (useAccount === 1) {
+                this.auth(keyA);
                 this.fcoinA = new Fcoin({
                     key: keyA,
                     secret: secretA
                 });
             } else if (useAccount === 2) {
+                this.auth(keyA);
                 this.fcoinA = new Fcoin({
                     key: keyA,
                     secret: secretA
@@ -283,51 +292,57 @@ export class FCTrade {
 
 
     async run2() {
-
         try {
+            this.logger.debug('欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ');
             await this.initAccount();
-            const ab = await this.readAccount(this.fcoinA);
-            const bb = await this.readAccount(this.fcoinB);
-            if (ab.eth && ab.eth > 0.5) {
-                throw new Error('A账户ETH大于0.5')
-            }
-            else if (ab.usdt && ab.usdt > 500) {
-                throw new Error('A账户USDT大于500')
-            }
-            else if (bb.eth && bb.eth > 0.5) {
-                throw new Error('B账户ETH大于0.5')
-            }
-            else if (bb.usdt && bb.usdt > 500) {
-                throw new Error('B账户USDT大于500')
-            }
-
-            var lastOrderIds = null;
-            var timeoutTimes = 100;
+            let tradeTimes = 0;
             while (true) {
-                const ab = await this.readAccount(this.fcoinA);
-                const bb = await this.readAccount(this.fcoinB);
-                this.logger.debug("读取账户", ab, bb);
+                if(!this.authPass && tradeTimes > 10){
+                    this.logger.debug(`未授权用户只能自动交易10次,账户最大限额${this.authAmount}USDT,请购买授权！ `);
+                    await this.wait(3 * 1000);
+                    continue;
+                }
+                const { ab, bb } = await this.checkAccount();
                 try {
                     if (ab.eth && bb.usdt) {
                         var aOrderId = (await this.makeOrder(this.fcoinA, 'ethusdt', 'sell', 'market', ab.eth)).data;
                         var bOrderId = (await this.makeOrder(this.fcoinB, 'ethusdt', 'buy', 'market', bb.usdt)).data;
                         var aOrder = await this.readOrder(this.fcoinA, aOrderId);
                         var bOrder = await this.readOrder(this.fcoinB, bOrderId);
-                        this.logger.debug("订单", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
-                        this.logger.debug("订单", bOrderId, bOrder.data.side, bOrder.data.amount, bOrder.data.state);
+                        this.logger.info("订单A卖出:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                        this.logger.info("订单B买入:", bOrderId, bOrder.data.side, bOrder.data.amount, bOrder.data.state);
                     } else if (ab.usdt && bb.eth) {
                         var aOrderId = (await this.makeOrder(this.fcoinA, 'ethusdt', 'buy', 'market', ab.usdt)).data;
                         var bOrderId = (await this.makeOrder(this.fcoinB, 'ethusdt', 'sell', 'market', bb.eth)).data;
                         var aOrder = await this.readOrder(this.fcoinA, aOrderId);
                         var bOrder = await this.readOrder(this.fcoinB, bOrderId);
-                        this.logger.debug("订单", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
-                        this.logger.debug("订单", bOrderId, bOrder.data.side, bOrder.data.amount, bOrder.data.state);
-                    } else {
-                        this.logger.debug("不ready，waiting");
+                        this.logger.info("订单A买入:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                        this.logger.info("订单B卖出:", bOrderId, bOrder.data.side, bOrder.data.amount, bOrder.data.state);
                     }
-                    await this.wait(3 * 1000);
+                    else if (ab.eth && bb.eth) {
+                        var aOrderId = (await this.makeOrder(this.fcoinA, 'ethusdt', 'sell', 'market', ab.eth)).data;
+                      
+                        var aOrder = await this.readOrder(this.fcoinA, aOrderId);
+                      
+                        this.logger.info("订单A卖出:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                       
+                    }
+                    else if (ab.usdt && bb.usdt) {
+                        var aOrderId = (await this.makeOrder(this.fcoinA, 'ethusdt', 'buy', 'market', ab.usdt)).data;
+                      
+                        var aOrder = await this.readOrder(this.fcoinA, aOrderId);
+                      
+                        this.logger.info("订单A买入:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                        
+                    }
+                    else {
+                        this.logger.warn("可用账户资金不允许，请充钱！");
+                    }
+                    tradeTimes++;
+                    await this.wait(1 * 1000);
                 } catch (e) {
-
+                    this.logger.error('run2 error:', e);
+                    await this.wait(30 * 1000);
                 }
 
                 /*if(ab.eth && bb.usdt){
@@ -367,24 +382,48 @@ export class FCTrade {
              })*/
         }
         catch (ex) {
-
+            this.logger.error('Error:',ex);
         }
     }
 
 
 
+    async checkAccount() {
+        try {
+            const ab = await this.readAccount(this.fcoinA);
+            const bb = await this.readAccount(this.fcoinB);
+            if (ab.eth && ab.eth > 0.5) {
+                throw new Error('A账户ETH大于0.5');
+            }
+            else if (ab.usdt && ab.usdt > this.authAmount) {
+                throw new Error(`A账户USDT大于授权可用最大金额:${this.authAmount}`);
+            }
+            else if (bb.eth && bb.eth > 0.5) {
+                throw new Error('B账户ETH大于0.5');
+            }
+            else if (bb.usdt && bb.usdt > this.authAmount) {
+                throw new Error(`B账户USDT大于授权可用最大金额:${this.authAmount}`);
+            }
+            this.logger.debug(`可用资金情况, 账户A ETH:${ab.eth} USDT:${ab.usdt}, 账户B ETH:${bb.eth} USDT:${bb.usdt}`);
+            return { ab, bb };
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
     async  makeOrder(client, symbol, direction, type, amount) {
         var i = 0;
         while (true) {
             try {
-                var rest = await client.createMarketOrder(symbol, direction, type, amount);
+                var rest = await client.createOrder(symbol, direction, type, 0, amount);
                 if (rest) {
                     return rest;
                 } else {
                     await this.wait(1000);
                 }
             } catch (e) {
-                console.log("下单异常",e);
+                console.log("下单异常", e);
                 await this.wait(1000);
             }
 
@@ -424,7 +463,7 @@ export class FCTrade {
                 res.usdt = Math.floor(+record.available * 100) / 100;
             }
         })
-        this.logger.debug(`账户资金情况,ETH:${res.eth},USDT:${res.usdt}`);
+        // this.logger.debug(`账户资金情况,ETH:${res.eth},USDT:${res.usdt}`);
         return res;
     }
 
@@ -447,6 +486,7 @@ export class FCTrade {
         balance = Math.floor(+available * 10000) / 10000;
         return { currency, available, frozen, balance };
     }
+
     async wait(millisecond) {
         try {
             if (millisecond <= 0) {
