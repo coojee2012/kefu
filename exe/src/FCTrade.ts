@@ -325,7 +325,7 @@ export class FCTrade {
                       
                         var aOrder = await this.readOrder(this.fcoinA, aOrderId);
                       
-                        this.logger.info("订单A卖出:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                        this.logger.info("ALL ETH 订单A卖出:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
                        
                     }
                     else if (ab.usdt && bb.usdt) {
@@ -333,7 +333,7 @@ export class FCTrade {
                       
                         var aOrder = await this.readOrder(this.fcoinA, aOrderId);
                       
-                        this.logger.info("订单A买入:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
+                        this.logger.info("ALL USDT 订单A买入:", aOrderId, aOrder.data.side, aOrder.data.amount, aOrder.data.state);
                         
                     }
                     else {
@@ -418,9 +418,14 @@ export class FCTrade {
         while (true) {
             try {
                 var rest = await client.createOrder(symbol, direction, type, 0, amount);
-                if (rest) {
+                if (rest && rest.data) {
                     return rest;
-                } else {
+                }
+                else if(rest && !rest.data){
+                    this.logger.warn('下订单返回结果数据异常：',rest);
+                    await this.wait(1000);
+                }
+                else {
                     await this.wait(1000);
                 }
             } catch (e) {
