@@ -302,8 +302,9 @@ export class FCTrade {
                     await this.wait(3 * 1000);
                     continue;
                 }
-                const { ab, bb } = await this.checkAccount();
+               
                 try {
+                    const { ab, bb } = await this.checkAccount();
                     if (ab.eth && bb.usdt) {
                         var aOrderId = (await this.makeOrder(this.fcoinA, 'ethusdt', 'sell', 'market', ab.eth)).data;
                         var bOrderId = (await this.makeOrder(this.fcoinB, 'ethusdt', 'buy', 'market', bb.usdt)).data;
@@ -342,7 +343,7 @@ export class FCTrade {
                     await this.wait(1 * 1000);
                 } catch (e) {
                     this.logger.error('run2 error:', e);
-                    await this.wait(30 * 1000);
+                    await this.wait(10 * 1000);
                 }
 
                 /*if(ab.eth && bb.usdt){
@@ -392,16 +393,16 @@ export class FCTrade {
         try {
             const ab = await this.readAccount(this.fcoinA);
             const bb = await this.readAccount(this.fcoinB);
-            if (ab.eth && ab.eth > 0.5) {
+            if (ab && ab.eth && ab.eth > 0.5) {
                 throw new Error('A账户ETH大于0.5');
             }
-            else if (ab.usdt && ab.usdt > this.authAmount) {
+            else if (ab && ab.usdt && ab.usdt > this.authAmount) {
                 throw new Error(`A账户USDT大于授权可用最大金额:${this.authAmount}`);
             }
-            else if (bb.eth && bb.eth > 0.5) {
+            else if (bb && bb.eth && bb.eth > 0.5) {
                 throw new Error('B账户ETH大于0.5');
             }
-            else if (bb.usdt && bb.usdt > this.authAmount) {
+            else if (bb && bb.usdt && bb.usdt > this.authAmount) {
                 throw new Error(`B账户USDT大于授权可用最大金额:${this.authAmount}`);
             }
             this.logger.debug(`可用资金情况, 账户A ETH:${ab.eth} USDT:${ab.usdt}, 账户B ETH:${bb.eth} USDT:${bb.usdt}`);
@@ -423,15 +424,16 @@ export class FCTrade {
                     await this.wait(1000);
                 }
             } catch (e) {
-                console.log("下单异常", e);
-                await this.wait(1000);
-            }
-
-            if (i > 30) {
-                return null;;
-            }
+                this.logger.warn("下单异常:", e);
+                if (i > this.timeoutTimes) {
+                    this.logger.warn("下单异常超过限定次数！");
+                   // return null;
+                }else{
+                    await this.wait(1000);
+                    i++;
+                }              
+            }           
         }
-
     }
 
     async  readOrder(client, id) {
@@ -445,12 +447,15 @@ export class FCTrade {
                     await this.wait(1000);
                 }
             } catch (e) {
-                console.log("访问异常", id);
-                await this.wait(1000);
-            }
-            if (i > this.timeoutTimes) {
-                process.exit();
-            }
+                this.logger.warn(`读取订单[${id}]异常:`, e);
+                if (i > this.timeoutTimes) {
+                    this.logger.warn("读取订单异常超过限定次数！");   
+                    // return null;              
+                }else{
+                    i++;
+                    await this.wait(1000);                  
+                }        
+            }       
         }
     }
 
@@ -475,7 +480,8 @@ export class FCTrade {
                 return this.readEthusdt(balance.data);
             }
         } catch (e) {
-            this.logger.error("访问异常", 'read account', e)
+            this.logger.error("访问异常[Read Account]:", e);
+            return Promise.reject(e);
         }
     }
 
