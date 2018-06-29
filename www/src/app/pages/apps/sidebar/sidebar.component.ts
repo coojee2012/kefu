@@ -13,9 +13,9 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dsClient.eventSub('room/username', data => {
-      this.logger.debug('======', data);
-    });
+    // this.dsClient.eventSub('room/username', data => {
+    //   this.logger.debug('======', data);
+    // });
   }
   onTreeClick(index: number) {
     for (let i = 0; i < this.isActive.length; i++) {

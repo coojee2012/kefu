@@ -29,7 +29,8 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "src/assets/js/adminlte.min.js"
+              "src/assets/js/adminlte.min.js",
+              "node_modules/sip.js/dist/sip-0.11.0.js"
             ]
           },
           "configurations": {

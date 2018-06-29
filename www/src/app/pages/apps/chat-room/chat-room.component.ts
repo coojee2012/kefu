@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoggerService } from '../../../services/LogService';
 
+import { SIPService } from '../../../services/SIPService';
 interface Message {
 
 }
@@ -11,7 +14,7 @@ interface Message {
 })
 export class ChatRoomComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router, private logger: LoggerService,  private sipClient: SIPService) { }
 
   ngOnInit() {
   }
