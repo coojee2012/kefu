@@ -14,9 +14,10 @@ interface Message {
 })
 export class ChatRoomComponent implements OnInit {
 
-  constructor(private router: Router, private logger: LoggerService,  private sipClient: SIPService) { }
+  constructor(private router: Router, private logger: LoggerService, private sipClient: SIPService) { }
 
   ngOnInit() {
+   
   }
 
 }

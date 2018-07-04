@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LoggerService } from '../../../services/LogService';
 import { DeepStreamService } from '../../../services/DeepStreamService';
 @Component({
@@ -8,6 +8,7 @@ import { DeepStreamService } from '../../../services/DeepStreamService';
 })
 export class SidebarComponent implements OnInit {
   private isActive: boolean[];
+  @Input() rooms: string[];
   constructor(private logger: LoggerService, private dsClient: DeepStreamService) {
     this.isActive = [false, false, false];
   }

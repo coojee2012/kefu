@@ -52,9 +52,9 @@ export class SIPService {
                 this.client.on('registered', onRegistered);
                 this.client.on('registrationFailed', onRegistionFailed);
                 this.client.on('invite', this.acceptACall.bind(this));
-                this.client.on('message', (message) => {
-                    this.logger.info('接收消息:', message.body);
-                });
+                // this.client.on('message', (message) => {
+                //     this.logger.info('接收消息:', message.body);
+                // });
                 this.client.start();
             });
         } catch (ex) {
