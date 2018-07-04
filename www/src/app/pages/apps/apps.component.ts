@@ -5,6 +5,8 @@ import { LoggerService } from '../../services/LogService';
 import { DeepStreamService } from '../../services/DeepStreamService';
 import { SIPService } from '../../services/SIPService';
 import { ChatRoom } from './ChatRoom';
+
+import { Subscriber, Subscription } from 'rxjs';
 @Component({
   selector: 'app-apps',
   templateUrl: './apps.component.html',
@@ -14,6 +16,7 @@ export class AppsComponent implements OnInit {
 
   private chatRooms: ChatRoom[];
   private chatRoomIds: string[];
+  private chatMessageSub: Subscription;
   constructor(private router: Router, private logger: LoggerService, private dsClient: DeepStreamService, private sipClient: SIPService) {
     this.chatRoomIds = [];
     this.chatRooms = [];
@@ -26,7 +29,8 @@ export class AppsComponent implements OnInit {
     }, 500);
     // this.dsClient.login(null, this.loginHandler.bind(this));
     this.sipClient.init();
-    this.sipClient.client.on('message', this.handleChatMsg.bind(this));
+    this.chatMessageSub = this.sipClient.getChatMessage().subscribe(this.handleChatMsg.bind(this));
+    // this.sipClient.client.on('message', this.handleChatMsg.bind(this));
   }
 
   handleChatMsg(msg) {

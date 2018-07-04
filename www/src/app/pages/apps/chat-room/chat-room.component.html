@@ -3,7 +3,7 @@
 <section class="content">
   <!-- Small boxes (Stat box) -->
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-5">
       <!-- DIRECT CHAT -->
       <div class="box box-warning direct-chat direct-chat-warning">
         <div class="box-header with-border">
@@ -25,71 +25,22 @@
         <!-- /.box-header -->
         <div class="box-body">
           <!-- Conversations are loaded here -->
-          <div class="direct-chat-messages">
+          <div class="direct-chat-messages" >
             <!-- Message. Default to the left -->
-            <div class="direct-chat-msg">
+            <div *ngFor="let message of messages" class="direct-chat-msg {{ message.from === 'me'? 'right':'left'}}" >
               <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-left">Alexander Pierce</span>
-                <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
+                <span class="direct-chat-name {{ message.from === 'me'? 'pull-right':'pull-left'}}">Alexander Pierce</span>
+                <span class="direct-chat-timestamp {{ message.from === 'me'? 'pull-left':'pull-right'}}">23 Jan 2:00 pm</span>
               </div>
               <!-- /.direct-chat-info -->
               <img class="direct-chat-img" src="../assets/img/user1-128x128.jpg" alt="message user image">
               <!-- /.direct-chat-img -->
               <div class="direct-chat-text">
-                Is this template really for free? That's unbelievable!
+                {{ message.content }}
               </div>
               <!-- /.direct-chat-text -->
             </div>
             <!-- /.direct-chat-msg -->
-
-            <!-- Message to the right -->
-            <div class="direct-chat-msg right">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-right">Sarah Bullock</span>
-                <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user3-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                You better believe it!
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
-            <!-- Message. Default to the left -->
-            <div class="direct-chat-msg">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-left">Alexander Pierce</span>
-                <span class="direct-chat-timestamp pull-right">23 Jan 5:37 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user1-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                Working with AdminLTE on a great new app! Wanna join?
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
-            <!-- Message to the right -->
-            <div class="direct-chat-msg right">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-right">Sarah Bullock</span>
-                <span class="direct-chat-timestamp pull-left">23 Jan 6:10 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user3-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                I would love to.
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
           </div>
           <!--/.direct-chat-messages-->
 
@@ -193,11 +144,11 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-          <form action="#" method="post">
+          <form #msgForm="ngForm">
             <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg">
               <span class="input-group-btn">
-                <button type="button" class="btn btn-warning btn-flat">Send</button>
+                <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">Send</button>
               </span>
             </div>
           </form>
@@ -208,7 +159,7 @@
     </div>
     <!-- /.col -->
 
-    <div class="col-md-5">
+    <div class="col-md-7">
       <!-- USERS LIST -->
       <div class="box box-danger">
         <div class="box-header with-border">

@@ -1,14 +1,18 @@
 import { Injectable, Injector } from '@angular/core';
 import { LoggerService } from './LogService';
 import { environment } from './../../environments/environment';
-
+import { Subject, Observable } from 'rxjs';
 @Injectable()
 export class SIPService {
     public client: any;
     private session: any;
+    private chatMessageSource: Subject<any>;
+    private chatMessage$: Observable<any>;
     constructor(private logger: LoggerService) {
         this.client = null;
         this.session = null;
+        this.chatMessageSource = new Subject<any>();
+        this.chatMessage$ = this.chatMessageSource.asObservable();
     }
 
     async init() {
@@ -52,9 +56,7 @@ export class SIPService {
                 this.client.on('registered', onRegistered);
                 this.client.on('registrationFailed', onRegistionFailed);
                 this.client.on('invite', this.acceptACall.bind(this));
-                // this.client.on('message', (message) => {
-                //     this.logger.info('接收消息:', message.body);
-                // });
+                this.client.on('message', this.handleChatMsg.bind(this));
                 this.client.start();
             });
         } catch (ex) {
@@ -139,5 +141,37 @@ export class SIPService {
         } catch (ex) {
             this.logger.error('Accept A Call Error:', ex);
         }
+    }
+
+
+    async sendMsg(msg: string) {
+        try {
+
+            this.session = this.client.message('1001', msg);
+            this.session.on('progress', (response, cause) => {
+                this.logger.debug('send msg progress', cause);
+            });
+            this.session.on('accepted', (response, cause) => {
+                this.logger.debug('send msg accepted', cause);
+            });
+            this.session.on('rejected', (response, cause) => {
+                this.logger.debug('send msg rejected', cause);
+            });
+            this.session.on('failed', (response, cause) => {
+                this.logger.debug('send msg failed', cause);
+            });
+
+        } catch (ex) {
+            this.logger.error('Send A Message Error:', ex);
+        }
+    }
+
+
+    handleChatMsg(msg: any) {
+        this.chatMessageSource.next(msg);
+    }
+
+    getChatMessage(): Observable<any> {
+        return this.chatMessage$;
     }
 }
