@@ -576,6 +576,7 @@ export class FlowBase {
                     let answered = false;
                     let doneHangup = false;
                     this.runtimeData.addBleg(bLegId, calledNumber);
+                    
                     await this.fsPbx.filter('Unique-ID', bLegId);
 
 
@@ -708,8 +709,12 @@ export class FlowBase {
     async dialIVR(number: string) {
         try {
             const { answered, tenantId, callId, caller } = this.runtimeData.getRunData();
+           
             if (!answered) {
+                this.logger.debug(`dialIVR1:`,answered, tenantId, callId, caller );
+                await this.fsPbx.unpark();
                 await this.fsPbx.answer();
+                this.logger.debug(`dialIVR2:`,answered, tenantId, callId, caller );
                 this.runtimeData.setAnswered();
                 await this.fsPbx.startDTMF();
             }
@@ -737,6 +742,7 @@ export class FlowBase {
                 this.logger.debug('拨打IVR结束:', result);
             }
         } catch (ex) {
+            console.log(ex);
             return Promise.reject(ex);
         }
     }

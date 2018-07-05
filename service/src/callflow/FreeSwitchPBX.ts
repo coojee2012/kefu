@@ -50,14 +50,20 @@ export type uuidBridgeReturn = {
 export class FreeSwitchPBX {
   private logger: LoggerService;
   private lastInputKey: string;
+  private initEvent: Event;
   constructor(private conn: Connection, private injector: Injector) {
     this.logger = this.injector.get(LoggerService);
     this.logger.debug('init freeswitch PBX!');
     this.lastInputKey = '';
   }
 
+  initData(event) {
+    this.initEvent = event;
+  }
   getConnInfo() {
-    return this.conn.getInfo();
+    const isInbound = this.conn.isInBound();
+    this.logger.info('isInbound', isInbound)
+    return isInbound ? this.initEvent : this.conn.getInfo();
   }
   /**
    * @description
@@ -123,13 +129,17 @@ export class FreeSwitchPBX {
    */
   async filter(header, value) {
     try {
-      const result = await new Promise((resolve, reject) => {
-        this.conn.filter(header, value, (evt: Event) => {
-          this.logger.debug('filter:', evt.getHeader('Reply-Text'));
-          resolve();
-        });
-      })
-      return result;
+      if (this.conn.isInBound()) {
+        return;
+      } else {
+        const result = await new Promise((resolve, reject) => {
+          this.conn.filter(header, value, (evt: Event) => {
+            this.logger.debug('filter:', evt.getHeader('Reply-Text'));
+            resolve();
+          });
+        })
+        return result;
+      }
     } catch (ex) {
       this.logger.error('filter', ex);
     }
@@ -160,7 +170,23 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.execute('answer', '', uuid, (evt: Event) => {
-          //  console.log('Answer -> ',evt);
+         console.log('Answer -> ',evt);
+          resolve();
+        })
+      });
+      return Promise.resolve(result);
+    }
+    catch (ex) {
+      return Promise.reject(ex);
+    }
+
+  }
+
+  async unpark(uuid?: string): Promise<any> {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this.conn.execute('unpark', '', uuid, (evt: Event) => {
+         console.log('unpark -> ',evt);
           resolve();
         })
       });

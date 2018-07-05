@@ -5,6 +5,7 @@ import { LoggerService } from '../service/LogService';
 import { DeepStreamService } from '../service/DeepStreamService';
 
 
+@Injectable()
 export class MsgBus {
     private dsService: DeepStreamService;
     private logger: LoggerService;

@@ -23,19 +23,24 @@ const DefaultESLCONF = {
     host: '0.0.0.0',
     port: 8085
 }
+
+const DefaultInboundESLCONF = {
+    host: '192.168.2.230',
+    port: 8021
+}
 @Injectable()
 export class ESLServer extends EventEmitter2 {
     eslServer: FreeSwitchServer;
     private queueWorker: QueueWorkerService;
-    private eventService:EventService;
+    private eventService: EventService;
     constructor(private injector: Injector, private logger: LoggerService,
         private eslEventNames: ESLEventNames,
         private config: ConfigService,
-        private redisService:RedisService,
+        private redisService: RedisService,
         private mongoDB: MongoService) {
         super();
-       
-        
+
+
     }
 
     /**
@@ -50,13 +55,13 @@ export class ESLServer extends EventEmitter2 {
         }
     }
 
-    async readyRedisClients(){
+    async readyRedisClients() {
         try {
             this.redisService.setNamePrefix('ESL');
-            await this.redisService.addClient(10,'BullQueue');
-            await this.redisService.addClient(11,'RedLock');
-            await this.redisService.addClient(12,'PUB');
-            await this.redisService.addClient(12,'SUB');
+            await this.redisService.addClient(10, 'BullQueue');
+            await this.redisService.addClient(11, 'RedLock');
+            await this.redisService.addClient(12, 'PUB');
+            await this.redisService.addClient(12, 'SUB');
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -78,7 +83,7 @@ export class ESLServer extends EventEmitter2 {
             this.eventService.addARedisSub('stopFindAgent');
             this.eventService.addARedisSub('esl::callcontrol::queue::finded::member');
 
-            this.queueWorker = this.injector.get(QueueWorkerService);            
+            this.queueWorker = this.injector.get(QueueWorkerService);
             await this.queueWorker.init();
             await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列
             const res = await this.eslServer.createOutboundServer();
@@ -95,6 +100,42 @@ export class ESLServer extends EventEmitter2 {
              * ESL连接断开
              */
             this.eslServer.on('connection::close', this.onEslConnClose.bind(this));
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+
+    async startInbound() {
+        try {
+            await this.readyMongoDB();
+            //await this.readyRedisClients();
+            this.eslServer = new FreeSwitchServer(DefaultInboundESLCONF);
+            const conn = await this.eslServer.createInboundServer();
+            conn.on('esl::event::MESSAGE::**', (evt) => {
+                const from_user = evt.getHeader('from_user');
+                const to_user = evt.getHeader('to_user');
+                const from_host = evt.getHeader('from_host');
+                const to_host = evt.getHeader('to_host');
+                const msg = evt.getBody();
+                conn.message({
+                    from: to_user+'@'+to_host,
+                    to: from_user+'@'+from_host,
+                    subject:'aaa',
+                    profile:'internal',//'external'
+                    body: 'dsdsdReply'
+                },(e)=>{console.log(e.headers)})
+                console.log(`${from_user} TO ${to_user}:${msg}`);
+            })
+
+            conn.on('esl::event::CHANNEL_PARK::**', (evt) => {
+                const callId = evt.getHeader('Unique-ID');
+                this.logger.debug('inboud handle call', callId);
+                this.inboundHandleCall(conn, evt)
+                    .then()
+                    .catch()
+            })
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -154,6 +195,18 @@ export class ESLServer extends EventEmitter2 {
             this.logger.info(`${id} handle result:`, result);
         } catch (ex) {
             this.logger.error('handleOutbound Error:', ex);
+            return Promise.reject(ex);
+        }
+    }
+
+    async inboundHandleCall(conn: Connection, initEvent: Event) {
+        try {
+            const fsCallFlow = new FreeSwitchCallFlow(this.injector, conn, initEvent);
+            this.handleAgentEvents(fsCallFlow);
+            const result = await fsCallFlow.start();
+            this.logger.info(`inbound handle call result:`, result);
+        } catch (ex) {
+            this.logger.error('inboud handle call error:', ex);
             return Promise.reject(ex);
         }
     }
