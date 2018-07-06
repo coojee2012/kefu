@@ -110,9 +110,22 @@ export class ESLServer extends EventEmitter2 {
     async startInbound() {
         try {
             await this.readyMongoDB();
-            //await this.readyRedisClients();
+            await this.readyRedisClients();
             this.eslServer = new FreeSwitchServer(DefaultInboundESLCONF);
+
+            this.eventService = this.injector.get(EventService);
+            this.eventService.initRedisSub();
+
+            this.eventService.addARedisSub('stopFindAgent');
+            this.eventService.addARedisSub('esl::callcontrol::queue::finded::member');
+
+            this.queueWorker = this.injector.get(QueueWorkerService);
+            await this.queueWorker.init();
+            await this.queueWorker.readyCacheBullQueue(); // 从缓存中恢复在使用的队列
+
+
             const conn = await this.eslServer.createInboundServer();
+            const calls: string[] = [];
             conn.on('esl::event::MESSAGE::**', (evt) => {
                 const from_user = evt.getHeader('from_user');
                 const to_user = evt.getHeader('to_user');
@@ -120,21 +133,30 @@ export class ESLServer extends EventEmitter2 {
                 const to_host = evt.getHeader('to_host');
                 const msg = evt.getBody();
                 conn.message({
-                    from: to_user+'@'+to_host,
-                    to: from_user+'@'+from_host,
-                    subject:'aaa',
-                    profile:'internal',//'external'
+                    from: to_user + '@' + to_host,
+                    to: from_user + '@' + from_host,
+                    subject: 'aaa',
+                    profile: 'internal',//'external'
                     body: 'dsdsdReply'
-                },(e)=>{console.log(e.headers)})
+                }, (e) => { console.log(e.headers) })
                 console.log(`${from_user} TO ${to_user}:${msg}`);
             })
 
             conn.on('esl::event::CHANNEL_PARK::**', (evt) => {
                 const callId = evt.getHeader('Unique-ID');
-                this.logger.debug('inboud handle call', callId);
-                this.inboundHandleCall(conn, evt)
-                    .then()
-                    .catch()
+                const isDialQueueMember = evt.getHeader('variable_dial_queuemember');
+                if (isDialQueueMember === 'yes') {
+                    this.logger.debug('拨打队列成员');
+                }
+                else if (calls.indexOf(callId) < 0) {
+                    calls.push(callId);
+                    this.inboundHandleCall(conn, evt)
+                        .then()
+                        .catch()
+                }
+                else {
+
+                }
             })
         }
         catch (ex) {
@@ -201,10 +223,11 @@ export class ESLServer extends EventEmitter2 {
 
     async inboundHandleCall(conn: Connection, initEvent: Event) {
         try {
+            this.logger.info('New Call In Comming......');
             const fsCallFlow = new FreeSwitchCallFlow(this.injector, conn, initEvent);
             this.handleAgentEvents(fsCallFlow);
             const result = await fsCallFlow.start();
-            this.logger.info(`inbound handle call result:`, result);
+            this.logger.info(`Inbound handle call result:`, result);
         } catch (ex) {
             this.logger.error('inboud handle call error:', ex);
             return Promise.reject(ex);
