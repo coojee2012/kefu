@@ -95,7 +95,6 @@ export class RuntimeData {
     initData() {
         const connEvent: Event = this.fsPbx.getConnInfo();
         this.logger.debug('Init Runtime Data!1');
-        console.log(connEvent);
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
         this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
@@ -137,7 +136,7 @@ export class RuntimeData {
         }
 
 
-        this.logger.debug('Runtime Data:', this.channelData);
+        // this.logger.debug('Runtime Data:', this.channelData);
 
     }
     getRouterLine(callType) {

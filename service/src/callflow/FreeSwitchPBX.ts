@@ -552,7 +552,7 @@ export class FreeSwitchPBX {
       }
       await new Promise((resolve, reject) => {
         this.conn.api('uuid_break', args, (evt) => {
-          this.logger.debug('uuid_break result:', evt, evt.headers);
+          // this.logger.debug('uuid_break result:', evt, evt.headers);
           const body = evt.getBody();
           if (/^\+OK/.test(body)) {
             resolve({
@@ -561,7 +561,7 @@ export class FreeSwitchPBX {
             });
           } else {
             //TODO 不知道是不是有BUG,效果成功了,BODY里面确实ERR
-            this.logger.warn('uuid_break:', body.split(/\s+/)[1]);
+            // this.logger.warn('uuid_break:', body.split(/\s+/)[1]);
             resolve({
               success: true,
               body
@@ -680,9 +680,9 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.api('uuid_broadcast', [uuid, pathOrAppStr, legs], (evt) => {
-          this.logger.debug('uuid_broadcast:', evt);
+          // this.logger.debug('uuid_broadcast:', evt);
           const body = evt.getBody();
-          this.logger.debug('uuid_broadcast result:', body);
+          // this.logger.debug('uuid_broadcast result:', body);
           if (/^\+OK/.test(body)) {
             resolve({
               success: true

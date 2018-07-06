@@ -83,8 +83,8 @@ export class SIPService {
         try {
             this.session = session;
             this.logger.debug('Accept a Aclling');
-            const remoteVideo = document.getElementById('remoteVideo');
-            const localVideo = document.getElementById('localVideo');
+            const remoteVideo: HTMLVideoElement = <HTMLVideoElement> document.getElementById('remoteVideo');
+            const localVideo: HTMLVideoElement = <HTMLVideoElement> document.getElementById('localVideo');
 
             this.session.once('trackAdded', () => {
                 // We need to check the peer connection to determine which track was added

@@ -146,7 +146,7 @@
         <div class="box-footer">
           <form #msgForm="ngForm">
             <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg">
+              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg" (keyup.enter)="onEnter()">
               <span class="input-group-btn">
                 <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">Send</button>
               </span>
