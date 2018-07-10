@@ -8,7 +8,7 @@ const isBlank = (obj: any) => {
 
 @Injectable()
 export class AuthorizationService {
-    private static STORAGE_POOL_KEY = 'jianshu-authorization';
+    private static STORAGE_POOL_KEY = 'AI-kefu-authorization';
     private static STORAGE_KEY = 'current-user';
     private storageType: StorageType;
     private currentUser: any;

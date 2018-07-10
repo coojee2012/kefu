@@ -34,4 +34,4 @@ export const ROUTER_CONFIG: Routes = [
   { path: '**', component: NotFoundComponent }
 ];
 
-export const ROUTING = RouterModule.forRoot(ROUTER_CONFIG, { enableTracing: true });
+export const ROUTING = RouterModule.forRoot(ROUTER_CONFIG, { enableTracing: false });
