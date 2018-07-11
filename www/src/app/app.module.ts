@@ -5,7 +5,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 /*
  * Platform and Environment providers/directives/pipes
  */
-import {ROUTING} from './app.routes';
+import { AppRoutingModule } from './app.routing.module';
 // App is our top level component
 import {AppComponent} from './app.component';
 
@@ -35,7 +35,7 @@ const APP_PROVIDERS = [
         NgbModule.forRoot(),
         CoreModule,
         SharedModule,
-        ROUTING
+        AppRoutingModule
       ],
     declarations: [
         AppComponent
