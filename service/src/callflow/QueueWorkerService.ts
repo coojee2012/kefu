@@ -119,12 +119,12 @@ export class QueueWorkerService {
                 })
                 .on('completed', function (job, result) {
                     // A job successfully completed with a `result`.
-                    console.log('in queueworker bullqueue completed', job.id, new Date())
+                    console.log('in queueworker bullqueue completed', job.id, result)
                 })
 
                 .on('failed', function (job, err) {
                     // A job failed with reason `err`!
-                    console.log('bullqueue failed', job.id, new Date())
+                    console.log('bullqueue failed', job.id)
                     // seneca.act({ role: 'pubsub', path: 'queue_job_fail', data: JSON.stringify({ id:job.id, data:job.data }) }, (err, rsp) => {
                     //                console.log('bullqueue failed pubsub',err,rsp)
                     //     })
@@ -147,9 +147,17 @@ export class QueueWorkerService {
                 });
 
             const queueIndex = this.queueTopics.length - 1;
-            queue.process((job) => {
+            queue.process((job,done) => {
                 const MaxDoneTime = 3 * 60 * 1000; // 最多执行30分钟   
-                return this.doneInComeCall(job, queueIndex, MaxDoneTime);
+                this.doneInComeCall(job, queueIndex, MaxDoneTime)
+                    .then(res => {
+                        this.logger.debug('doneInComeCall  res:', res);
+                        done(null,res);
+                    })
+                    .catch(err => {
+                        this.logger.error('doneInComeCall  error:', err);
+                        done(err);
+                    })
             });
             return queue;
         } else {
@@ -165,10 +173,9 @@ export class QueueWorkerService {
             } else {
                 return null;
             }
-
         }
         catch (ex) {
-
+            this.logger.error('getQueueByName  error:', ex);
         }
     }
 
@@ -348,135 +355,129 @@ export class QueueWorkerService {
 
     async doneInComeCall(args: Job, queueIndex, timeout2: number) {
         try {
-            try {
 
-                const argData = args.data;
-                const { queue, tenantId, callId, timeout } = argData;
-                this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
-                const { members, queueNumber } = queue;
-                const eventName = `stopFindAgent::${tenantId}::${callId}`;
-                this.logger.debug('doneInComeCall', eventName);
-                let eslSendStop = false;
-                let maxTimeOut = false;
-                this.eventService.once(eventName, (data) => {
-                    this.logger.info(`ESL Send Stop Job:${data.jobId} ,My Job Is: ${args.id}`);
-                    if (data.jobId === args.id) {
-                        eslSendStop = true;
-                    }
-                })
-                const startTime = new Date().getTime();
-                let isMyTurn = false;
-                let pubData = null;
-                if (Array.isArray(members) && members.length > 0) {
-                    while (!eslSendStop && !isMyTurn) {
-                        const activeJobs = await this.queues[queueIndex].getActive();
-                        this.logger.info(`activeJobs:${activeJobs.length}`);
-                        isMyTurn = true;
-                        for (let k = 0; k < activeJobs.length; k++) {
-                            const actJob = activeJobs[k];
-                            const actJobOpts = actJob.opts;
-                            const actJobId = actJob.id;
-                            const { priority, timestamp } = actJobOpts;
-                            console.log(`myJob:[${args.id},${args.opts.priority},${args.opts.timestamp}],compareJob:[${actJobId},${priority},${timestamp}]`);
-                            if (priority < args.opts.priority) {
-                                this.logger.info('=============存在优先级比我高的=============');
-                                isMyTurn = false;
-                                await this.wait(1 * 1000);
-                                break;
-                            }
-                            else if (priority === args.opts.priority && timestamp < args.opts.timestamp) {
-                                this.logger.info('=============和我优先级别一样，但是比我进的早！===========');
-                                isMyTurn = false;
-                                await this.wait(1 * 1000);
-                                break;
-                            }
-                            else {
-                                await this.wait(1 * 1000);
-                            }
-                        }
-                    }
 
-                    while (!eslSendStop && !maxTimeOut) {
-                        this.logger.info(`Job:[${tenantId} - ${args.id}] Finding A Queue Member IN [${members.join(',')}]！`);
-                        const now = new Date().getTime();
-                        if (now - startTime > timeout) {
-                            this.logger.info(`doneInComeCall Timeout ${timeout}`);
-                            maxTimeOut = true;
+            const argData = args.data;
+            const { queue, tenantId, callId, timeout } = argData;
+            this.logger.info(`doneInComeCall ${tenantId}[${callId}]`);
+            const { members, queueNumber } = queue;
+            const eventName = `stopFindAgent::${tenantId}::${callId}`;
+            this.logger.debug('doneInComeCall', eventName);
+            let eslSendStop = false;
+            let maxTimeOut = false;
+            this.eventService.once(eventName, (data) => {
+                this.logger.info(`ESL Send Stop Job:${data.jobId} ,My Job Is: ${args.id}`);
+                if (data.jobId === args.id) {
+                    eslSendStop = true;
+                }
+            })
+            const startTime = new Date().getTime();
+            let isMyTurn = false;
+            let pubData = null;
+            if (Array.isArray(members) && members.length > 0) {
+                while (!eslSendStop && !isMyTurn) {
+                    const activeJobs = await this.queues[queueIndex].getActive();
+                    this.logger.info(`activeJobs:${activeJobs.length}`);
+                    isMyTurn = true;
+                    for (let k = 0; k < activeJobs.length; k++) {
+                        const actJob = activeJobs[k];
+                        const actJobOpts = actJob.opts;
+                        const actJobId = actJob.id;
+                        const { priority, timestamp } = actJobOpts;
+                        console.log(`myJob:[${args.id},${args.opts.priority},${args.opts.timestamp}],compareJob:[${actJobId},${priority},${timestamp}]`);
+                        if (priority < args.opts.priority) {
+                            this.logger.info('=============存在优先级比我高的=============');
+                            isMyTurn = false;
+                            await this.wait(1 * 1000);
                             break;
                         }
-                        let data = null;
-                        switch (queue.queue.strategy) {
-                            case 'round-robin':
-                                {
-                                    data = await this.roundRobinStrategy({
-                                        members,
-                                        queueNumber,
-                                        tenantId
-                                    })
-                                    break;
-                                }
-                            case 'top-down':
-                                {
-                                    data = await this.topDownStrategy({
-                                        members,
-                                        tenantId
-                                    })
-                                    break;
-                                }
-                            default:
-                                {
-                                    data = await this.randomStrategy({
-                                        members,
-                                        tenantId
-                                    })
-                                    break;
-                                }
-                        }
-
-                        if (data && data.accountCode) {
-                            await this.lockMember({ tenantId, member: data.accountCode });
-                            this.logger.info(`${tenantId} Find A Waiting Agent : ${data.accountCode}`);
-                            pubData = {
-                                tenantId,
-                                callId,
-                                accountCode: data ? data.accountCode : '',
-                                agentId: data ? data.agentId : '',
-                                phoneLogin: data ? data.phoneLogin : '',
-                                phoneNumber: data ? data.phoneNumber : '',
-                                loginType: data ? data.loginType : ''
-                            }
-
-                            await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify({
-                                success: true,
-                                tenantId,
-                                callId,
-                                data: pubData
-                            }));
+                        else if (priority === args.opts.priority && timestamp < args.opts.timestamp) {
+                            this.logger.info('=============和我优先级别一样，但是比我进的早！===========');
+                            isMyTurn = false;
+                            await this.wait(1 * 1000);
                             break;
                         }
                         else {
-                            await this.wait(3 * 1000);
+                            await this.wait(1 * 1000);
                         }
                     }
                 }
 
+                while (!eslSendStop && !maxTimeOut) {
+                    this.logger.info(`Job:[${tenantId} - ${args.id}] Finding A Queue Member IN [${members.join(',')}]！`);
+                    const now = new Date().getTime();
+                    if (now - startTime > timeout) {
+                        this.logger.info(`doneInComeCall Timeout ${timeout}`);
+                        maxTimeOut = true;
+                        break;
+                    }
+                    let data = null;
+                    switch (queue.queue.strategy) {
+                        case 'round-robin':
+                            {
+                                data = await this.roundRobinStrategy({
+                                    members,
+                                    queueNumber,
+                                    tenantId
+                                })
+                                break;
+                            }
+                        case 'top-down':
+                            {
+                                data = await this.topDownStrategy({
+                                    members,
+                                    tenantId
+                                })
+                                break;
+                            }
+                        default:
+                            {
+                                data = await this.randomStrategy({
+                                    members,
+                                    tenantId
+                                })
+                                break;
+                            }
+                    }
 
-                if (eslSendStop || maxTimeOut) {
-                    return Promise.reject({ success: false, eslSendStop, maxTimeOut });
+                    if (data && data.accountCode) {
+                        await this.lockMember({ tenantId, member: data.accountCode });
+                        this.logger.info(`${tenantId} Find A Waiting Agent : ${data.accountCode}`);
+                        pubData = {
+                            tenantId,
+                            callId,
+                            accountCode: data ? data.accountCode : '',
+                            agentId: data ? data.agentId : '',
+                            phoneLogin: data ? data.phoneLogin : '',
+                            phoneNumber: data ? data.phoneNumber : '',
+                            loginType: data ? data.loginType : ''
+                        }
+
+                        await this.eventService.pubAReidsEvent('esl::callcontrol::queue::finded::member', JSON.stringify({
+                            success: true,
+                            tenantId,
+                            callId,
+                            data: pubData
+                        }));
+                        break;
+                    }
+                    else {
+                        await this.wait(3 * 1000);
+                    }
                 }
-                else {
-                    return Promise.resolve({ success: true, data: pubData });
-                }
-
-
-
             }
-            catch (ex) {
-                this.logger.error('doneInComeCall error:', ex);
-                return Promise.reject(ex);
+
+
+            if (eslSendStop || maxTimeOut) {
+                const errinfo = { success: false, eslSendStop, maxTimeOut };
+                return Promise.reject(JSON.stringify(errinfo)); //这里只能是字符串
+            }
+            else {
+                return Promise.resolve({ success: true, data: pubData });
             }
         } catch (ex) {
-
+            this.logger.error('doneInComeCall  Error:', ex);
+            return Promise.reject(ex);
         }
 
     }

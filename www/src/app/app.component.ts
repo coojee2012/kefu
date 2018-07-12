@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import 'rxjs/add/operator/toPromise';
+
+import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
+import { map, filter, switchMap } from 'rxjs/operators';
+
 interface ItemsResponse {
   results: string[];
 }
@@ -19,10 +22,10 @@ export class AppComponent   implements OnInit {
   }
   ngOnInit() {
     this.router.events
-      .filter(event => event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError)
+      .pipe(filter(event => event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError))
       .subscribe((result) => this.loadingComplete = true);
     this.router.events
-      .filter(event => event instanceof NavigationStart)
+      .pipe(filter(event => event instanceof NavigationStart))
       .subscribe((result) => this.loadingComplete = false);
 
       this.testApi()

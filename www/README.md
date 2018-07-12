@@ -1,4 +1,4 @@
-# WEB端(TypeScript or Angular4)
+# WEB端(TypeScript or Angular6)
 # 安装必备工具
 - Install [angular-cli](https://github.com/angular/angular-cli)
 - Install [VS Code](https://code.visualstudio.com/) or [WebStorm](https://www.jetbrains.com/webstorm/)
@@ -17,8 +17,8 @@ cd www
 // 使用淘宝镜像安装依赖
 npm install --registry=https://registry.npm.taobao.org
 ```
-# TypeScript + Angular4 
-这是一个Angular4项目（默认使用TypeScript）
+# TypeScript + Angular6
+这是一个Angular6项目（默认使用TypeScript）
 
 ## TypeScript准备
 ```

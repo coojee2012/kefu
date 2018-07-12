@@ -1,7 +1,7 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {LoginService} from './login.service';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { LoginService } from './login.service';
 
 @Component({
   selector: 'app-login',
@@ -34,16 +34,16 @@ export class LoginComponent implements OnInit {
   };
 
   constructor(private router: Router,
-              private fb: FormBuilder,
-              private loginService: LoginService) {
+    private fb: FormBuilder,
+    private loginService: LoginService) {
   }
 
   ngOnInit(): void {
     this.createForm();
-    /*if(this.loginService.isLogin()){
+    if (this.loginService.isLogin()) {
       this.router.navigate(['/']);
-    }*/
-    // this.onValueChanged();
+    }
+    this.onValueChanged();
   }
 
   createForm(): void {
@@ -83,11 +83,11 @@ export class LoginComponent implements OnInit {
     if (!this.loginForm) {
       return;
     }
-    console.log('onValueChanged', this.loginForm, data);
+    // console.log('onValueChanged', this.loginForm, data);
   }
 
   loginSubmit(loginForm: any): any {
-    console.log(loginForm);
+    console.log('loginSubmit', loginForm);
     this.loginService.login(loginForm.value)
       .subscribe(
         user => user.meta.code === 200 && this.router.navigate(['/']),

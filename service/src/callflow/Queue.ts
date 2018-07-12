@@ -286,14 +286,14 @@ export class CCQueue {
                                             ringTime: this.ringTime,
                                             queueName,
                                             queueNumber,
-            
+
                                         })
                                         // TODO 从配置文件中读取满意度IVR
                                         // _this.R.satisData.gotoIvrNumber = 166;
                                         // _this.R.satisData.gotoIvrActId = 1;
                                         result.gotoIvrNumber = '166';
                                         result.gotoIvrActId = 1;
-            
+
                                         //_this.R.transferData.afterTransfer = 'satisfaction';
                                     }
                                 }
@@ -413,8 +413,12 @@ export class CCQueue {
             }
         }
         catch (ex) {
-            this.logger.error('ESL DialQueue Error:', ex);
-            return Promise.reject(ex);
+
+     
+                this.logger.error('ESL DialQueue Error:', ex);
+                return Promise.reject(ex);
+            
+
         }
     }
 
@@ -484,8 +488,13 @@ export class CCQueue {
         //     console.log('in queue bullqueue progress')
         // })
 
-       // this.bullQueue.on('global:completed', this.onFindQueueMember.bind(this)); // 感觉多执行了几次
-        this.bullQueue.on('global:failed', this.onJobFail.bind(this));
+        // this.bullQueue.on('global:completed', this.onFindQueueMember.bind(this)); // 感觉多执行了几次
+        this.bullQueue.on('global:failed', (jobId, err) => {
+            this.onJobFail(jobId, err)
+                .then()
+                .catch(err => {
+                })
+        });
         // .on('global:failed', function(job, err) {
         //   console.log(`global:failed Job :`,job,err);
         // })
@@ -613,21 +622,23 @@ export class CCQueue {
 
     async onJobFail(jobId, err) {
         try {
-            this.logger.info('queue job fail:', err);
+            this.logger.info('queue job fail:', jobId, err);
             if (jobId === this.queueJob.id) {
                 // 主动发起的结束
+                err = typeof err === 'string' ? JSON.parse(err) : err;
                 if (err && err.eslSendStop) {
-
+                    this.logger.info('queue job fail222:', err);
                 }
                 // 超时的情况
                 else if (err && err.maxTimeOut) {
+                    this.logger.info('queue job 3333:', err.maxTimeOut);
                     const result = await this.dialQueueTimeOut();
                     if (result.wait) {
                         await this.playQueueMusic();
                         await this.startFindMemberJob();
                     }
                 } else {
-
+                    this.logger.info('queue job 444444:', err);
                 }
             }
             return Promise.resolve();
@@ -1088,6 +1099,7 @@ export class CCQueue {
             originateArgs.push(`origination_uuid=${this.originationUuid}`);
             originateArgs.push('inherit_codec=false');
             originateArgs.push('originate_call=yes');
+            originateArgs.push('dial_queuemember=yes');
             originateArgs.push(`originate_tenant=${tenantId}`);
             if (loginType === 'phone') {
                 // originateArgs.push(`origination_caller_id_name=${_this.DND}`);

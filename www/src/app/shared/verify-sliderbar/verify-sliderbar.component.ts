@@ -9,11 +9,12 @@ import {
   ViewChild,
   AfterViewInit
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/operator/do';
+
+
+import { Observable, Subscription, fromEvent, of  } from 'rxjs';
+
+import { map, filter, switchMap, catchError, tap, sampleTime, mergeMap , takeUntil } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-verify-sliderbar',
@@ -43,24 +44,26 @@ export class VerifySliderbarComponent implements OnInit, OnDestroy, AfterViewIni
     this.dragBg = this.element.nativeElement.querySelector('.drag_bg');
     this.dragText = this.element.nativeElement.querySelector('.drag_text');
     const $handler = this.element.nativeElement.querySelector('.handler');
-    const mouseDown$ = Observable.fromEvent($handler, 'mousedown');
-    const mouseMove$ = Observable.fromEvent(document, 'mousemove');
-    const mouseUp$ = Observable.fromEvent(document, 'mouseup');
-    this.dispose = mouseDown$.map((event) => {
-      return ({
-        pos: this.getTranslate($handler),
-        event,
-      });
-    })
-      .switchMap((initialState) => {
+    const mouseDown$ = fromEvent($handler, 'mousedown');
+    const mouseMove$ = fromEvent(document, 'mousemove');
+    const mouseUp$ = fromEvent(document, 'mouseup');
+    this.dispose = mouseDown$.pipe(
+      map((event) => {
+        return ({
+          pos: this.getTranslate($handler),
+          event,
+        });
+      }),
+      switchMap((initialState) => {
         const initialPos = initialState.pos;
         const clientX = (initialState.event as any).clientX;
         console.log(this.dragText);
-        return mouseMove$.map((moveEvent: any) => {
+        return mouseMove$.pipe(map((moveEvent: any) => {
           return {
             x: moveEvent.clientX - clientX + initialPos.x
           };
-        }).takeUntil(mouseUp$.do((moveEvent: any) => {
+        }),
+        takeUntil(mouseUp$.pipe(tap((moveEvent: any) => {
           console.log('moveEvent', moveEvent.x - this.elementLeft.x, 266);
           const that = this;
           if (moveEvent.x - this.elementLeft.x < 300) {
@@ -72,8 +75,11 @@ export class VerifySliderbarComponent implements OnInit, OnDestroy, AfterViewIni
               that.renderer2.removeClass($handler, 'animation');
             }, 300);
           }
-        }));
-      }).subscribe((pos) => {
+        })))
+      );
+      })
+    ).
+      subscribe((pos) => {
         this.setTranslate($handler, pos);
       });
   }

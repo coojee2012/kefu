@@ -49,7 +49,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private ivr: IVR;
     private queue: CCQueue;
 
-    constructor(private injector: Injector, private conn: Connection) {
+    constructor(private injector: Injector, private conn: Connection,initEvent?:Event) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
         this.eslEventNames = this.injector.get(ESLEventNames);
@@ -58,10 +58,14 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         this.callProcessControl = this.childInjector.get(PBXCallProcessController);
         this.cdrControl = this.childInjector.get(PBXCDRController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
+        this.fsPbx.initData(initEvent);
+  
         this.runtimeData = this.childInjector.get(RuntimeData);
+
+        this.runtimeData.initData();
         this.flowBase = this.childInjector.get(FlowBase);
         this.isEnd = false;
-        const connEvent: Event = this.conn.getInfo();
+        const connEvent: Event = this.fsPbx.getConnInfo();
         this.callId = connEvent.getHeader('Unique-ID');
     }
     createChildInjector(conn: Connection): void {
@@ -87,7 +91,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
             IVR,
             CCQueue,
             FlowBase,
-            
+
 
             // 数据库相关服务注入
             PBXRouterController,
@@ -117,29 +121,31 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     async start() {
         try {
             this.logger.debug('Begin Call Flow!')
-            this.conn.on('esl::event::disconnect::notice', (event: Event) => {
-                const disposition = event.getHeader('Content-Disposition');
-                if (disposition === 'linger') {
-                    const lingerTime = event.getHeader('Linger-Time');
-                    this.logger.warn(`ESL Conn will disconnect after:${lingerTime}s`);
-                } else {
-                    this.logger.debug(`ESL Conn is disconnecting!!!`);
-                }
-            })
+           
             // 没有租户的用户是非法的用户
             await this.runtimeData.setTenantInfo();
-
-            // 当A-leg结束之后，还允许esl socket驻留的最长时间s
-            await this.fsPbx.linger(30);
-            const subRes = await this.fsPbx.subscribe(['ALL']);
-            await this.fsPbx.filter('Unique-ID', this.callId);
-            await this.fsPbx.filter('Other-Leg-Unique-ID',this.callId)
+            if (!this.conn.isInBound()) {
+                this.conn.on('esl::event::disconnect::notice', (event: Event) => {
+                    const disposition = event.getHeader('Content-Disposition');
+                    if (disposition === 'linger') {
+                        const lingerTime = event.getHeader('Linger-Time');
+                        this.logger.warn(`ESL Conn will disconnect after:${lingerTime}s`);
+                    } else {
+                        this.logger.debug(`ESL Conn is disconnecting!!!`);
+                    }
+                })
+                // 当A-leg结束之后，还允许esl socket驻留的最长时间s
+                await this.fsPbx.linger(30);
+                const subRes = await this.fsPbx.subscribe(['ALL']);
+                await this.fsPbx.filter('Unique-ID', this.callId);
+                await this.fsPbx.filter('Other-Leg-Unique-ID', this.callId)
+            }
 
             await this.billing();
             this.listenAgentEvent();
             await this.route();
             await this.fsPbx.uuidTryKill(this.callId)
-            this.logger.debug('Call Flow Exec END!');          
+            this.logger.debug('Call Flow Exec END!');
         } catch (ex) {
             this.logger.error('In Call Flow Sart:', ex);
         }
@@ -208,7 +214,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         }
     }
 
-    removeAllAgentListener(){
+    removeAllAgentListener() {
         try {
             const agentEvents = this.eslEventNames.ESLUserEvents;
             this.removeAllListeners(`${agentEvents.hangup}::${this.callId}`);

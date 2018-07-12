@@ -5,7 +5,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 /*
  * Platform and Environment providers/directives/pipes
  */
-import {ROUTING} from './app.routes';
+import { AppRoutingModule } from './app.routing.module';
 // App is our top level component
 import {AppComponent} from './app.component';
 
@@ -16,13 +16,15 @@ import {APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor} from '
 
 import { LoggerService } from './services/LogService';
 import { DeepStreamService } from './services/DeepStreamService';
+import { SIPService } from './services/SIPService';
 // Application wide providers
 const APP_PROVIDERS = [
     {provide: HTTP_INTERCEPTORS, useClass: APPRequestInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: APPResponseInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: TimingInterceptor, multi: true},
     {provide: LoggerService, useClass: LoggerService},
-    {provide: DeepStreamService, useClass: DeepStreamService}
+    {provide: DeepStreamService, useClass: DeepStreamService},
+    {provide: SIPService, useClass: SIPService}
   ];
 
 @NgModule({
@@ -33,7 +35,7 @@ const APP_PROVIDERS = [
         NgbModule.forRoot(),
         CoreModule,
         SharedModule,
-        ROUTING
+        AppRoutingModule
       ],
     declarations: [
         AppComponent

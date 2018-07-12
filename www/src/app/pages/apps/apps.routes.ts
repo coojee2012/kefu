@@ -13,7 +13,7 @@ export const routes: Routes = [
     component: AppsComponent,
     children: [
       { path: 'dashbord', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
-      { path: 'chat', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' }
+      { path: 'chat/:id', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' }
     ]
   },
   // { path: '', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },

@@ -17,6 +17,7 @@ import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
 import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { TenantController } from '../controllers/tenant';
+import Transfer from './Transfer';
 
 type DialLocalResult = {
     localType: string;
@@ -576,6 +577,7 @@ export class FlowBase {
                     let answered = false;
                     let doneHangup = false;
                     this.runtimeData.addBleg(bLegId, calledNumber);
+
                     await this.fsPbx.filter('Unique-ID', bLegId);
 
 
@@ -708,10 +710,26 @@ export class FlowBase {
     async dialIVR(number: string) {
         try {
             const { answered, tenantId, callId, caller } = this.runtimeData.getRunData();
+
             if (!answered) {
-                await this.fsPbx.answer();
+                this.logger.debug(`dialIVR1:`, answered, tenantId, callId, caller);
+                await new Promise((resolve, reject) => {
+                    this.fsPbx.addConnLisenter(`esl::event::CHANNEL_ANSWER::${callId}`, 'once', (evt) => {
+                        resolve();
+                    });
+                    this.fsPbx.uuidTransfer(callId, 'ivr')
+                        .then(transferRes => {
+
+                        })
+                        .catch(err => {
+                            reject(err);
+                        })
+                })
+
+
+                this.logger.debug(`dialIVR2:`, answered, tenantId, callId, caller);
                 this.runtimeData.setAnswered();
-                await this.fsPbx.startDTMF();
+                // await this.fsPbx.startDTMF();
             }
             const ivrInfo = await this.pbxIvrMenuController.getIVRByNumber(tenantId, number);
             await this.pbxCallProcessController.create({
@@ -737,6 +755,7 @@ export class FlowBase {
                 this.logger.debug('拨打IVR结束:', result);
             }
         } catch (ex) {
+            console.log(ex);
             return Promise.reject(ex);
         }
     }

@@ -50,14 +50,20 @@ export type uuidBridgeReturn = {
 export class FreeSwitchPBX {
   private logger: LoggerService;
   private lastInputKey: string;
+  private initEvent: Event;
   constructor(private conn: Connection, private injector: Injector) {
     this.logger = this.injector.get(LoggerService);
     this.logger.debug('init freeswitch PBX!');
     this.lastInputKey = '';
   }
 
+  initData(event) {
+    this.initEvent = event;
+  }
   getConnInfo() {
-    return this.conn.getInfo();
+    const isInbound = this.conn.isInBound();
+    this.logger.info('isInbound', isInbound)
+    return isInbound ? this.initEvent : this.conn.getInfo();
   }
   /**
    * @description
@@ -123,13 +129,17 @@ export class FreeSwitchPBX {
    */
   async filter(header, value) {
     try {
-      const result = await new Promise((resolve, reject) => {
-        this.conn.filter(header, value, (evt: Event) => {
-          this.logger.debug('filter:', evt.getHeader('Reply-Text'));
-          resolve();
-        });
-      })
-      return result;
+      if (this.conn.isInBound()) {
+        return;
+      } else {
+        const result = await new Promise((resolve, reject) => {
+          this.conn.filter(header, value, (evt: Event) => {
+            this.logger.debug('filter:', evt.getHeader('Reply-Text'));
+            resolve();
+          });
+        })
+        return result;
+      }
     } catch (ex) {
       this.logger.error('filter', ex);
     }
@@ -160,7 +170,23 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.execute('answer', '', uuid, (evt: Event) => {
-          //  console.log('Answer -> ',evt);
+         console.log('Answer -> ',evt);
+          resolve();
+        })
+      });
+      return Promise.resolve(result);
+    }
+    catch (ex) {
+      return Promise.reject(ex);
+    }
+
+  }
+
+  async unpark(uuid?: string): Promise<any> {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this.conn.execute('unpark', '', uuid, (evt: Event) => {
+         console.log('unpark -> ',evt);
           resolve();
         })
       });
@@ -526,7 +552,7 @@ export class FreeSwitchPBX {
       }
       await new Promise((resolve, reject) => {
         this.conn.api('uuid_break', args, (evt) => {
-          this.logger.debug('uuid_break result:', evt, evt.headers);
+          // this.logger.debug('uuid_break result:', evt, evt.headers);
           const body = evt.getBody();
           if (/^\+OK/.test(body)) {
             resolve({
@@ -535,7 +561,7 @@ export class FreeSwitchPBX {
             });
           } else {
             //TODO 不知道是不是有BUG,效果成功了,BODY里面确实ERR
-            this.logger.warn('uuid_break:', body.split(/\s+/)[1]);
+            // this.logger.warn('uuid_break:', body.split(/\s+/)[1]);
             resolve({
               success: true,
               body
@@ -654,9 +680,9 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.api('uuid_broadcast', [uuid, pathOrAppStr, legs], (evt) => {
-          this.logger.debug('uuid_broadcast:', evt);
+          // this.logger.debug('uuid_broadcast:', evt);
           const body = evt.getBody();
-          this.logger.debug('uuid_broadcast result:', body);
+          // this.logger.debug('uuid_broadcast result:', body);
           if (/^\+OK/.test(body)) {
             resolve({
               success: true

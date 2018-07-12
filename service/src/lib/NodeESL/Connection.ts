@@ -723,7 +723,7 @@ export class Connection extends EventEmitter2 {
     event.addHeader('proto', 'sip');
     event.addHeader('dest_proto', 'sip');
 
-    event.addHeader('from', 'sip:' + options.from);
+    event.addHeader('from', options.from);
     event.addHeader('from_full', 'sip:' + options.from);
 
     event.addHeader('to', options.to);
@@ -848,7 +848,8 @@ export class Connection extends EventEmitter2 {
       case 'text/event-json':
       case 'text/event-plain':
       case 'text/event-xml':
-        emit += '::' + event.getHeader('Event-Name') + (!!uuid ? '::' + uuid : '');
+        const evtname = event.getHeader('Event-Name') 
+        emit += '::' + evtname + (!!uuid ? '::' + uuid : '');
         break;
 
       default:

@@ -1,4 +1,5 @@
-import {Observable} from 'rxjs/Observable';
+import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
+import { map, filter, switchMap, catchError } from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AuthorizationService} from '../../core/authorization';
 import {HttpClient} from '@angular/common/http';
@@ -23,13 +24,15 @@ export class LoginService {
     const authorizationService = this.authorizationService;
     console.log(loginInfo, authorizationService);
     return this.http.post('/login1', loginInfo)
-      .map((user: any) => {
+    .pipe(
+      map((user: any) => {
         console.log(user);
         if (user.meta.code === 200) {
           authorizationService.setCurrentUser(user.data);
         }
         return user;
-      });
+      })
+    );
   }
 
   /**

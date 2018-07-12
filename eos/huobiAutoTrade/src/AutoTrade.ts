@@ -1,8 +1,12 @@
+
+import fs = require('fs');
+import mongoose = require('mongoose');
+import macd = require('macd');
 import { HuoBiSDK } from './hbsdk';
 import { LoggerService } from './LogService';
+import { OrderModel,default as orderSchema }  from './models/orders';
 import { WSClient } from './wsClient';
-import fs = require('fs');
-import macd = require('macd');
+import config from './config';
 export type Order = {
     orderId: number;
     buyPrice: number;
@@ -15,6 +19,10 @@ export type Order = {
     buyId: number;
     sellId: number;
     state: string; // buying,buyed,selling,selled,canncel
+}
+
+interface IModels {
+    tradeOrder?: mongoose.Model<OrderModel>;
 }
 export class AutoTrade {
     private hbSDK: HuoBiSDK;
@@ -77,10 +85,19 @@ export class AutoTrade {
     private kline1min: number[];
     private lastKLineId: number;
     private lastSellPrice: number;
-    private MACDData:any;
+    private MACDData: any;
 
     private BDUseCoins: number;
     private BDUseUSDT: number;
+    private BDPrice: number;
+
+
+    public models: IModels;
+    private conn: mongoose.Connection;
+
+
+    private TestCoins:number;
+    private TestUSDTs:number;
 
 
 
@@ -95,8 +112,8 @@ export class AutoTrade {
         this.tradeFXQS = 0;
         this.lastTradeTotal = 0;
         this.lastPrices = [];
-        this.buyMounts = [];
-        this.sellMounts = [];
+        this.buyMounts = [0, 0, 0, 0, 0];
+        this.sellMounts = [0, 0, 0, 0, 0];
 
         this.buyTradeMounts = [];
         this.sellTradeMounts = [];
@@ -130,7 +147,16 @@ export class AutoTrade {
         this.MACDData = null;
 
         this.BDUseCoins = 20;
-        this.BDUseUSDT = 20 * 12.5;
+        this.BDUseUSDT = 20 * 12;
+        this.BDPrice = 0;
+
+
+        this.TestCoins = 20;
+        this.TestUSDTs = 300;
+
+        this.models = {};
+
+
 
     }
 
@@ -209,17 +235,26 @@ export class AutoTrade {
             // if (close === this.lastPrices[0]) {
             //     return;
             // }
+            const zj5min = this.kline1min.slice(-5);
+            const avg5min = Math.floor(this.sumArray(zj5min) / 5 * 10000) / 10000;
 
+            const zj10min = this.kline1min.slice(-10);
+            const avg10min = Math.floor(this.sumArray(zj10min) / 10 * 10000) / 10000;
 
+            const zj30min = this.kline1min.slice(-30);
+            const avg30min = Math.floor(this.sumArray(zj30min) / 30 * 10000) / 10000;
 
-            //this.logger.debug('Math.abs(this.lastPrices[0] - close)', Math.abs(this.lastPrices[0] - close))
-            if (!this.lastPrices[0] || Math.abs(this.lastPrices[0] - close) > 0) {
-                this.aT(close);
+            const zj60min = this.kline1min.slice(-60);
+            const avg60min = Math.floor(this.sumArray(zj60min) / 60 * 10000) / 10000;
+
+            if (Math.abs(this.lastPrices[0] - close) > 0) {
+                this.aT(close,avg30min);
             }
+
             this.lastPrices.unshift(close);
 
             if (this.lastPrices.length < 61) {
-                this.logger.debug('this.lastPrices.length:',this.lastPrices.length,close);
+                this.logger.debug('this.lastPrices.length:', this.lastPrices.length, close);
                 return;
             }
 
@@ -239,17 +274,7 @@ export class AutoTrade {
             const zj60s = this.lastPrices.slice(0, 60);
             const avg60s = Math.floor(this.sumArray(zj60s) / 60 * 10000) / 10000;
 
-            const zj5min = this.kline1min.slice(-5);
-            const avg5min = Math.floor(this.sumArray(zj5min) / 5 * 10000) / 10000;
-
-            const zj10min = this.kline1min.slice(-10);
-            const avg10min = Math.floor(this.sumArray(zj10min) / 10 * 10000) / 10000;
-
-            const zj30min = this.kline1min.slice(-30);
-            const avg30min = Math.floor(this.sumArray(zj30min) / 30 * 10000) / 10000;
-
-            const zj60min = this.kline1min.slice(-60);
-            const avg60min = Math.floor(this.sumArray(zj60min) / 60 * 10000) / 10000;
+           
 
             this.priceDiffAvg10 = +(avg5s - avg10s).toFixed(4);
             this.priceDiffAvg20 = +(avg5s - avg20s).toFixed(4);
@@ -260,8 +285,23 @@ export class AutoTrade {
             const bias30 = Math.floor((avg5s - avg30min) / avg30min * 10000) / 10000;
             const bias60 = Math.floor((avg5s - avg60min) / avg60min * 10000) / 10000;
 
+           
+
+          
+
             this.logger.debug(`${avg5s},${avg10s},${avg20s}    ${avg5min},${avg10min},${avg30min},${avg60min} ${bias5},${bias10},${bias30},${bias60}`);
 
+
+            if(bias60 > 0.01 && this.TestCoins > 1){
+                this.TestUSDTs += this.TestCoins * close * (1 - 0.002);
+                this.TestCoins  = 0;
+                this.logger.info(`TEST BIAS TRADE Sell:${this.TestCoins} - ${this.TestUSDTs},${bias30} ${bias60}`);
+            }else if(bias60 < -0.01  && this.TestUSDTs > close){
+                this.TestCoins += this.TestUSDTs /close * (1 - 0.002);
+                this.TestUSDTs = 0;
+                this.logger.info(`TEST BIAS TRADE Buy:${this.TestCoins} - ${this.TestUSDTs},${bias30} ${bias60}`);
+            }         
+            this.logger.debug(`TEST BIAS TRADE:${this.TestCoins} - ${this.TestUSDTs}`);
             // this.logger.debug(`${avg5s.toFixed(4)} ${avg10s.toFixed(4)} ${avg20s.toFixed(4)} ${avg60s.toFixed(4)}  |  ${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
             // if (this.priceDiffAvg60 > this.buyPriceWeight && this.closePrice > this.BCPrice && !this.canBuying) {
             //     this.logger.info(`Market  chance come on:${this.priceDiffAvg10} ${this.priceDiffAvg20} ${this.priceDiffAvg60}`);
@@ -271,12 +311,12 @@ export class AutoTrade {
             if (!this.canSelling) {
                 // 位于60分钟均线一下直接卖
                 if (avg5min < avg10min && avg10min < avg30min) {
-                   // this.logger.info('You Mast Sell Sell Sell! 0 ');
-                    this.canSelling = !!this.order && true;
+                    // this.logger.info('You Mast Sell Sell Sell! 0 ');
+                    // this.canSelling = !!this.order && true;
                 }
                 // 高于60分钟均线 只要不亏就卖
                 else if (avg5s < avg5min && avg5min < avg10min && avg5min > avg30min && avg30min > avg60min) {
-                   // this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
+                    // this.logger.info(`You Should Think About Sell Sell Sell!   ${avg5min - avg30min} ${avg5min - avg60min} `);
                     if (!!this.order) {
                         const suiPrice = this.order.buyPrice * 0.006;
                         // if (close - this.order.buyPrice > suiPrice) {
@@ -303,16 +343,18 @@ export class AutoTrade {
         }
     }
 
-    aT(close) {
+
+
+    aT(close,avg30min) {
         try {
 
             if (this.sellMounts.length) {
                 for (let i = 0; i < this.sellMounts.length; i++) {
 
-                    if (close > this.sellMounts[i]) {
+                    if (this.sellMounts[i] && close > this.sellMounts[i]) {
                         this.sellTradeMounts.unshift(this.sellMounts[i]);
                         this.BDUseUSDT += this.sellMounts[i] * (1 - 0.002);
-                        this.sellMounts.splice(i, 1);
+                        this.sellMounts[i] = 0;
                     }
 
                 }
@@ -321,10 +363,10 @@ export class AutoTrade {
 
             if (this.buyMounts.length) {
                 for (let i = 0; i < this.buyMounts.length; i++) {
-                    if (close < this.buyMounts[i]) {
+                    if (this.buyMounts[i] && close < this.buyMounts[i]) {
                         this.buyTradeMounts.unshift(this.buyMounts[i]);
                         this.BDUseCoins += 1 * (1 - 0.002);
-                        this.buyMounts.splice(i, 1);
+                        this.buyMounts[i] = 0;
                     }
                 }
             }
@@ -336,35 +378,38 @@ export class AutoTrade {
             }
 
 
-            if(close - this.buyMounts[0] > close * 0.006){
-                this.buyMounts.forEach(item=>{
+            // 卖完 或者 买完  暂停交易
+            if (this.BDUseCoins < 1 && this.BDUseUSDT < close) {
+                this.logger.info(`Buy Or Sell All:${this.sellMounts.join(',')} | ${this.sellTradeMounts.length}, ${this.buyMounts.join(',')} | ${this.buyTradeMounts.length} | ${this.BDUseCoins}| ${this.BDUseUSDT + this.sumArray(this.buyMounts)}`)
+                return;
+            }
+
+
+            const qz = Math.abs((avg30min - this.BDPrice));
+
+            if(  this.BDPrice > 0 && qz > this.BDPrice * 0.015 ){
+                this.logger.info(`有行情，暂定挂单！${qz}`);
+                return;
+            }
+            // 30分钟均线 变化0.8%改变挂单价格
+            else if ( qz > this.BDPrice * 0.008 ) {
+                this.logger.info(`均线价格变动较大，重新挂单！${qz}`);
+                this.BDPrice = avg30min;
+
+                this.buyMounts.forEach(item => {
                     this.BDUseUSDT += item;
                 });
-                this.buyMounts=[];
-            }
 
+                this.buyMounts = [0, 0, 0, 0, 0];
 
-            if( this.sellMounts[0] - close  > close * 0.006){
-                this.sellMounts.forEach(item=>{
-                    this.BDUseCoins += 1;
+                this.sellMounts.forEach(item => {
+                    if(item > 0 ){
+                        this.BDUseCoins += 1;
+                    }           
                 });
-                this.sellMounts=[];
-            }
+                this.sellMounts = [0, 0, 0, 0, 0];
 
-
-            const buy0price = Math.floor((close - (close * 0.003)) * 10000) / 10000;
-            const buy1price = Math.floor((close - (close * 0.0035)) * 10000) / 10000;
-            const buy2price = Math.floor((close - (close * 0.004)) * 10000) / 10000;
-            const buy3price = Math.floor((close - (close * 0.0045)) * 10000) / 10000;
-            const buy4price = Math.floor((close - (close * 0.005)) * 10000) / 10000;
-
-            const sell0price = Math.floor((close + (close * 0.003)) * 10000) / 10000;
-            const sell1price = Math.floor((close + (close * 0.0035)) * 10000) / 10000;
-            const sell2price = Math.floor((close + (close * 0.004)) * 10000) / 10000;
-
-            const sell3price = Math.floor((close + (close * 0.0045)) * 10000) / 10000;
-            const sell4price = Math.floor((close + (close * 0.005)) * 10000) / 10000;
-
+<<<<<<< HEAD
             if (this.buyMounts.length < 5 && this.BDUseUSDT > buy0price ) {
                 this.buyMounts.unshift(buy0price);
                 this.BDUseUSDT -= buy0price;
@@ -393,8 +438,38 @@ export class AutoTrade {
             }
             if (this.sellMounts.length < 5 && this.BDUseCoins > 1  ) {
                 this.sellMounts.unshift(sell1price);
+=======
+            }
+
+
+            const buy0price = Math.floor((this.BDPrice - (this.BDPrice  * 0.004)) * 10000) / 10000;
+            const buy1price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0045)) * 10000) / 10000;
+            const buy2price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const buy3price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.0055)) * 10000) / 10000;
+            const buy4price = Math.floor((this.BDPrice  - (this.BDPrice  * 0.006)) * 10000) / 10000;
+
+            const sell0price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.004)) * 10000) / 10000;
+            const sell1price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0045)) * 10000) / 10000;
+            const sell2price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.005)) * 10000) / 10000;
+            const sell3price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.0055)) * 10000) / 10000;
+            const sell4price = Math.floor((this.BDPrice  + (this.BDPrice  * 0.006)) * 10000) / 10000;
+
+            if (this.buyMounts[0] === 0 && this.BDUseUSDT > buy0price && this.sellMounts[0] === 0 && this.BDUseCoins > 1) {
+                this.buyMounts[0] = buy0price;
+                this.BDUseUSDT -= buy0price;
+                this.sellMounts[0] = sell0price;
                 this.BDUseCoins -= 1;
             }
+
+            if (this.buyMounts[1] === 0 && this.BDUseUSDT > buy1price && this.sellMounts[1] === 0 && this.BDUseCoins > 1) {
+                this.buyMounts[1] = buy1price;
+                this.BDUseUSDT -= buy1price;
+                this.sellMounts[1] = sell1price;
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
+                this.BDUseCoins -= 1;
+
+            }
+<<<<<<< HEAD
             if (this.sellMounts.length < 5 && this.BDUseCoins > 1 ) {
                 this.sellMounts.unshift(sell2price);
                 this.BDUseCoins -= 1;
@@ -407,16 +482,42 @@ export class AutoTrade {
 
             if (this.sellMounts.length < 5 && this.BDUseCoins > 1 ) {
                 this.sellMounts.unshift(sell4price);
+=======
+            if (this.buyMounts[2] === 0 && this.BDUseUSDT > buy2price && this.sellMounts[2] === 0 && this.BDUseCoins > 1) {
+                this.buyMounts[2] = buy2price;
+                this.BDUseUSDT -= buy2price;
+                this.sellMounts[2] = sell2price;
                 this.BDUseCoins -= 1;
             }
 
-           // this.logger.debug('sellMounts:', this.sellMounts.length, 'sell usdts:', this.sumArray(this.sellMounts))
-           // this.logger.debug('sellTradeMounts:', this.sellTradeMounts.length, 'sell trade usdt:', this.sumArray(this.sellTradeMounts))
+            if (this.buyMounts[3] === 0 && this.BDUseUSDT > buy3price && this.sellMounts[3] === 0 && this.BDUseCoins > 1) {
+                this.buyMounts[3] = buy3price;
+                this.BDUseUSDT -= buy3price;
+                this.sellMounts[3] = sell3price;
+                this.BDUseCoins -= 1;
+            }
+            if (this.buyMounts[4] === 0 && this.BDUseUSDT > buy4price && this.sellMounts[4] === 0 && this.BDUseCoins > 1) {
+                this.buyMounts[4] = buy4price;
+                this.BDUseUSDT -= buy4price;
+                this.sellMounts[4] = sell4price;
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
+                this.BDUseCoins -= 1;
+            }
 
+            // this.logger.debug('sellMounts:', this.sellMounts.length, 'sell usdts:', this.sumArray(this.sellMounts))
+            // this.logger.debug('sellTradeMounts:', this.sellTradeMounts.length, 'sell trade usdt:', this.sumArray(this.sellTradeMounts))
+
+            // this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
+            // this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
+
+<<<<<<< HEAD
            // this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
            // this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
 
            this.logger.info(`${this.sellMounts.join(',')}|${this.sellTradeMounts.length},${this.buyMounts.join(',')}|${this.buyTradeMounts.length}|${this.BDUseCoins}|${this.BDUseUSDT}`)
+=======
+            this.logger.info(`${this.sellMounts.join(',')} | ${this.sellTradeMounts.length}, ${this.buyMounts.join(',')} | ${this.buyTradeMounts.length} | ${this.BDUseCoins} | ${this.BDUseUSDT + this.sumArray(this.buyMounts)}`)
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
 
 
         } catch (ex) {
@@ -439,19 +540,19 @@ export class AutoTrade {
                     //this.kline1min.unshift(close);
                     this.kline1min.shift();
                     this.kline1min.push(close);
-                    this.MACDData =  macd(this.kline1min);
-                    this.logger.debug('MACD:', this.MACDData.MACD.slice(144), this.MACDData.MACD.length);
-                    this.logger.debug('signal:', this.MACDData.signal.slice(144), this.MACDData.signal.length);
-                    this.logger.debug('histogram:', this.MACDData.histogram.slice(144), this.MACDData.histogram.length);
+                    this.MACDData = macd(this.kline1min);
+                    this.logger.debug('MACD:', this.MACDData.MACD.slice(144).join(','), this.MACDData.MACD.length);
+                    this.logger.debug('signal:', this.MACDData.signal.slice(144).join(','), this.MACDData.signal.length);
+                    this.logger.debug('histogram:', this.MACDData.histogram.slice(144).join(','), this.MACDData.histogram.length);
 
                     const diff = this.MACDData.MACD.slice(144);
                     const dema = this.MACDData.signal.slice(144);
                     const MAcd = this.MACDData.histogram.slice(144);
 
-                    if(diff[2] < dema [2] && diff[4] > dema[4]){
-                      this.logger.info('UP MACD');
-                    }else if(diff[2] > dema [2] && diff[4] < dema[4]){
-                      this.logger.info('Down MACD');
+                    if (diff[2] < dema[2] && diff[4] > dema[4]) {
+                        this.logger.info('UP MACD');
+                    } else if (diff[2] > dema[2] && diff[4] < dema[4]) {
+                        this.logger.info('Down MACD');
                     }
 
                 }
@@ -469,9 +570,7 @@ export class AutoTrade {
 
     async run() {
         try {
-
-
-
+            await this.connectDB();
             const accountInfo: any[] = await this.hbSDK.get_account();
             // this.logger.debug('accountInfo:', accountInfo);
             for (let i = 0; i < accountInfo.length; i++) {
@@ -825,6 +924,45 @@ export class AutoTrade {
             cnt += arr[i];
         }
         return cnt;
+    }
+
+    onConnectionError(err) {
+        this.logger.error('MongoError', err)
+    }
+
+    async connectDB() {
+        try {
+            const mongoConfig = config.mongo;
+            mongoose.Promise = Promise;
+            this.logger.debug('数据库[MongoDB]连接信息：', mongoConfig.uris, mongoConfig.opts);
+            // await new Promise((resolve,reject)=>{
+            //     this.conn = mongoose.createConnection(mongoConfig.uris, mongoConfig.opts)
+            //     this.conn.on('error',(err)=>{
+            //         reject(err);
+            //     });
+            //     this.conn.once('connected', () => {
+            //         this.logger.info('数据库[MongoDB]启动了');
+            //         resolve();
+            //     });
+            // })
+
+
+
+
+            // await 写法不用去监听事件
+            this.conn = await mongoose.createConnection(mongoConfig.uris, mongoConfig.opts);
+            this.conn.on('error', (err) => {
+                this.onConnectionError.bind(this);
+            });
+            this.logger.info('数据库[MongoDB]启动了');
+
+            // 另一种连法 this.conn = await mongoose.connect(mongoConfig.uris, mongoConfig.opts);        
+            this.models.tradeOrder = this.conn.model('tradeOrder', orderSchema);
+       
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
     }
 
     async wait(millisecond) {

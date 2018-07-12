@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Route, Router, ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 /**
  * 定义user 接口

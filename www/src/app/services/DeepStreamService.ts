@@ -8,7 +8,7 @@ import { environment } from './../../environments/environment';
 export class DeepStreamService {
     public client: any;
     constructor(private logger: LoggerService) {
-        this.initClient();
+        // this.initClient();
     }
     initClient() {
         this.logger.debug('dsURI:', environment.dsUri);

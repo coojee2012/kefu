@@ -86,14 +86,15 @@ export class RuntimeData {
             ivrMaxDeep: 100,
             ivrCurrentDeep: 0
         };
-        this.initData();
-        this.logger.debug('Runtime Data:', this.channelData);
+
+
 
         this.blegIds = [];
         this.blegUsers = [];
     }
     initData() {
         const connEvent: Event = this.fsPbx.getConnInfo();
+        this.logger.debug('Init Runtime Data!1');
         this.channelData.FSName = connEvent.getHeader('FreeSWITCH-Switchname');
         this.channelData.CoreUuid = connEvent.getHeader('Core-UUID');
         this.channelData.CallDirection = connEvent.getHeader('Call-Direction');
@@ -101,25 +102,25 @@ export class RuntimeData {
         this.channelData.callerName = connEvent.getHeader('Caller-Caller-ID-Name');
         this.channelData.calleeId = connEvent.getHeader('Caller-Callee-ID-Number');
         this.channelData.calleeName = connEvent.getHeader('Caller-Callee-ID-Name');
-        this.channelData.DestinationNumber = connEvent.getHeader('Channel-Destination-Number');
+        this.channelData.DestinationNumber = connEvent.getHeader('Caller-Destination-Number');
         this.channelData.sipCallId = connEvent.getHeader('variable_sip_call_id');
         this.channelData.channelName = connEvent.getHeader('Caller-Channel-Name');
         this.channelData.useContext = connEvent.getHeader('Caller-Context');
         this.channelData.callType = connEvent.getHeader('variable_call_direction'); // 呼叫类型，local,inboud,
-        this.channelData.originateCall = connEvent.getHeader('variable_originate_call'),
-            this.channelData.originateTenant = connEvent.getHeader('variable_originate_tenant'),
-            this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee'),
+        this.channelData.originateCall = connEvent.getHeader('variable_originate_call');
+        this.channelData.originateTenant = connEvent.getHeader('variable_originate_tenant');
+        this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
 
-            this.channelData.transferSource = connEvent.getHeader('variable_transfer_source'),
-            this.channelData.transferHistory = connEvent.getHeader('variable_transfer_history'),
-            this.channelData.sipHReferredBy = connEvent.getHeader('variable_sip_h_Referred-By'),
-            this.channelData.sipReferTo = connEvent.getHeader('variable_sip_refer_to'),
-            this.channelData.maxForwards = connEvent.getHeader('variable_max_forwards'),
-            this.channelData.clickOut = connEvent.getHeader('variable_click_dialout'),
-            this.channelData.clickAgent = connEvent.getHeader('variable_click_agent'),
-            this.channelData.ivrTransfer = connEvent.getHeader('variable_ivr_transfer'),
+        this.channelData.transferSource = connEvent.getHeader('variable_transfer_source');
+        this.channelData.transferHistory = connEvent.getHeader('variable_transfer_history');
+        this.channelData.sipHReferredBy = connEvent.getHeader('variable_sip_h_Referred-By');
+        this.channelData.sipReferTo = connEvent.getHeader('variable_sip_refer_to');
+        this.channelData.maxForwards = connEvent.getHeader('variable_max_forwards');
+        this.channelData.clickOut = connEvent.getHeader('variable_click_dialout');
+        this.channelData.clickAgent = connEvent.getHeader('variable_click_agent');
+        this.channelData.ivrTransfer = connEvent.getHeader('variable_ivr_transfer');
 
-            this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
+        this.channelData.originateCallee = connEvent.getHeader('variable_originate_callee');
 
         this.runData.tenantId = connEvent.getHeader('variable_sip_to_host');
         this.runData.callId = connEvent.getHeader('Unique-ID');
@@ -135,7 +136,7 @@ export class RuntimeData {
         }
 
 
-
+        // this.logger.debug('Runtime Data:', this.channelData);
 
     }
     getRouterLine(callType) {
@@ -201,11 +202,11 @@ export class RuntimeData {
     /**
      * @description 根据分机号或者外线号码获取其legID
      */
-    getLegIdByNumber(number:string){
-        const index  = this.blegUsers.indexOf(number);
-        if(index > -1){
+    getLegIdByNumber(number: string) {
+        const index = this.blegUsers.indexOf(number);
+        if (index > -1) {
             return this.blegIds[index];
-        }else{
+        } else {
             return '';
         }
     }
