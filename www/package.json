@@ -29,6 +29,8 @@
     "@angular/platform-server": "6.0.4",
     "@angular/router": "6.0.4",
     "@ng-bootstrap/ng-bootstrap": "^2.2.0",
+    "angular-admin-lte": "^1.2.6",
+    "angular-loading-page": "^0.6.0",
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
     "deepstream.io-client-js": "^2.3.0",

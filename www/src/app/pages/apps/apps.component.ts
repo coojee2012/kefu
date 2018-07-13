@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { LayoutService } from 'angular-admin-lte';
 import { LoggerService } from '../../services/LogService';
 import { DeepStreamService } from '../../services/DeepStreamService';
 import { SIPService } from '../../services/SIPService';
@@ -13,17 +13,20 @@ import { Subscriber, Subscription } from 'rxjs';
   styleUrls: ['./apps.component.css']
 })
 export class AppsComponent implements OnInit {
-
   private chatRooms: ChatRoom[];
   private chatRoomIds: string[];
   private chatMessageSub: Subscription;
-  constructor(private router: Router, private logger: LoggerService, private dsClient: DeepStreamService, private sipClient: SIPService) {
+  public customLayout: boolean;
+  constructor(private router: Router, private logger: LoggerService,
+     private dsClient: DeepStreamService, private sipClient: SIPService, private layoutService: LayoutService) {
     this.chatRoomIds = [];
     this.chatRooms = [];
   }
-
   ngOnInit() {
     this.logger.log('测试LoggerService');
+    this.layoutService.isCustomLayout.subscribe((value: boolean) => {
+      this.customLayout = value;
+    });
     setTimeout(() => {
       this.router.navigate(['/app/dashbord']);
     }, 500);

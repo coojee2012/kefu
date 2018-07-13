@@ -14,6 +14,9 @@ import {SharedModule} from './shared';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor} from './app.intercept';
 
+
+import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
+
 import { LoggerService } from './services/LogService';
 import { DeepStreamService } from './services/DeepStreamService';
 import { SIPService } from './services/SIPService';
@@ -35,7 +38,8 @@ const APP_PROVIDERS = [
         NgbModule.forRoot(),
         CoreModule,
         SharedModule,
-        AppRoutingModule
+        AppRoutingModule,
+        LoadingPageModule, MaterialBarModule
       ],
     declarations: [
         AppComponent
