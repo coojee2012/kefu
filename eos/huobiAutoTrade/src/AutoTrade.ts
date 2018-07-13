@@ -371,6 +371,12 @@ export class AutoTrade {
                 }
             }
 
+            if(this.BDUseCoins < 1 || this.BDUseUSDT < close){
+
+              this.logger.info(`Sell or By All :${this.sellMounts.join(',')}|${this.sellTradeMounts.length},${this.buyMounts.join(',')}|${this.buyTradeMounts.length}|${this.BDUseCoins}|${this.BDUseUSDT}`);
+              return;
+            }
+
 
             // 卖完 或者 买完  暂停交易
             if (this.BDUseCoins < 1 && this.BDUseUSDT < close) {
@@ -403,6 +409,36 @@ export class AutoTrade {
                 });
                 this.sellMounts = [0, 0, 0, 0, 0];
 
+<<<<<<< HEAD
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy0price ) {
+                this.buyMounts.unshift(buy0price);
+                this.BDUseUSDT -= buy0price;
+            }
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy1price ) {
+                this.buyMounts.unshift(buy1price);
+                this.BDUseUSDT  -= buy1price;
+            }
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy2price ) {
+                this.buyMounts.unshift(buy2price);
+                this.BDUseUSDT  -= buy2price;
+            }
+
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy3price ) {
+                this.buyMounts.unshift(buy3price);
+                this.BDUseUSDT  -= buy3price;
+            }
+            if (this.buyMounts.length < 5 && this.BDUseUSDT > buy4price ) {
+                this.buyMounts.unshift(buy4price);
+                this.BDUseUSDT  -= buy4price;
+            }
+
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 ) {
+                this.sellMounts.unshift(sell0price);
+                this.BDUseCoins -= 1;
+            }
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1  ) {
+                this.sellMounts.unshift(sell1price);
+=======
             }
 
 
@@ -429,9 +465,24 @@ export class AutoTrade {
                 this.buyMounts[1] = buy1price;
                 this.BDUseUSDT -= buy1price;
                 this.sellMounts[1] = sell1price;
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
                 this.BDUseCoins -= 1;
 
             }
+<<<<<<< HEAD
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 ) {
+                this.sellMounts.unshift(sell2price);
+                this.BDUseCoins -= 1;
+            }
+
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1  ) {
+                this.sellMounts.unshift(sell3price);
+                this.BDUseCoins -= 1;
+            }
+
+            if (this.sellMounts.length < 5 && this.BDUseCoins > 1 ) {
+                this.sellMounts.unshift(sell4price);
+=======
             if (this.buyMounts[2] === 0 && this.BDUseUSDT > buy2price && this.sellMounts[2] === 0 && this.BDUseCoins > 1) {
                 this.buyMounts[2] = buy2price;
                 this.BDUseUSDT -= buy2price;
@@ -449,6 +500,7 @@ export class AutoTrade {
                 this.buyMounts[4] = buy4price;
                 this.BDUseUSDT -= buy4price;
                 this.sellMounts[4] = sell4price;
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
                 this.BDUseCoins -= 1;
             }
 
@@ -458,7 +510,14 @@ export class AutoTrade {
             // this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
             // this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
 
+<<<<<<< HEAD
+           // this.logger.debug('buyMounts:', this.buyMounts.length, 'buy usdts:', this.sumArray(this.buyMounts))
+           // this.logger.debug('buyTradeMounts:', this.buyTradeMounts.length, 'buy trade usdt:', this.sumArray(this.buyTradeMounts))
+
+           this.logger.info(`${this.sellMounts.join(',')}|${this.sellTradeMounts.length},${this.buyMounts.join(',')}|${this.buyTradeMounts.length}|${this.BDUseCoins}|${this.BDUseUSDT}`)
+=======
             this.logger.info(`${this.sellMounts.join(',')} | ${this.sellTradeMounts.length}, ${this.buyMounts.join(',')} | ${this.buyTradeMounts.length} | ${this.BDUseCoins} | ${this.BDUseUSDT + this.sumArray(this.buyMounts)}`)
+>>>>>>> 4ecd5ebd95629c3bef7fbead9a4df5162cca7a44
 
 
         } catch (ex) {
@@ -600,11 +659,11 @@ export class AutoTrade {
                     this.logger.debug(`open:${this.openPrice},close:${this.closePrice},money:${this.totalCoins * this.closePrice + this.useCapital}`);
                     if (this.canBuying) {
                         this.canBuying = false;
-                        await this.buyCoins();
+                       // await this.buyCoins();
                     }
                     if (this.canSelling) {
                         this.canSelling = false;
-                        await this.sellCoins();
+                       // await this.sellCoins();
                     }
                     await this.wait(3000);
                 } catch (ex) {
