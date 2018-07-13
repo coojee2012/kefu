@@ -8,10 +8,8 @@ import { FooterComponent } from './footer/footer.component';
 import { AppsComponent } from './apps.component';
 
 import { ROUTER_CONFIG } from './apps.routes';
-import {CoreModule} from '../../core';
 
-import { adminLteConf } from '../../admin-lte.conf';
-import { LayoutModule } from 'angular-admin-lte';
+
 import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
 @NgModule({
   imports: [
@@ -20,8 +18,6 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
     SharedModule,
     SidebarModule,
     ROUTER_CONFIG,
-    CoreModule,
-    LayoutModule.forRoot(adminLteConf),
     LoadingPageModule, MaterialBarModule,
   ],
   declarations: [

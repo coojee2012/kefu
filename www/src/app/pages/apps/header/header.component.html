@@ -1,10 +1,12 @@
 <header class="main-header">
   <!-- Logo -->
-  <a href="index2.html" class="logo">
+  <a href="/" class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
-    <span class="logo-mini"><b>AI</b>KF</span>
+    <span class="logo-mini">
+      <b>AI</b>KF</span>
     <!-- logo for regular state and mobile devices -->
-    <span class="logo-lg"><b>AI</b>云客服</span>
+    <span class="logo-lg">
+      <b>AI</b>云客服</span>
   </a>
   <!-- Nav Navbar: style can be found in header.less -->
   <nav class="navbar navbar-static-top" role="navigation">
@@ -12,8 +14,32 @@
     <a href="javascript:void(0);" class="sidebar-toggle" data-toggle="push-menu" role="button">
       <span class="sr-only">Toggle navigation</span>
     </a>
+
+    <form class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control" id="navbar-search-input" placeholder="快速拨打">
+      </div>
+    </form>
+    <ul class="nav navbar-nav">
+        <li><a href="#">拨打</a></li>
+        <li><a href="#">挂断</a></li>
+        <li class="dropdown" ngbDropdown>
+          <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle>签入<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" ngbDropdownMenu>
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+
     <div class="navbar-custom-menu">
       <ul class="nav navbar-nav">
+
         <!-- Messages: style can be found in dropdown.less-->
         <li class="dropdown messages-menu" ngbDropdown placement="left-top">
           <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle>
@@ -25,18 +51,21 @@
             <li>
               <!-- inner menu: contains the actual data -->
               <ul class="menu">
-                <li><!-- start message -->
+                <li>
+                  <!-- start message -->
                   <a href="#">
                     <div class="pull-left">
                       <img src="../assets/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                     </div>
                     <h4>
                       Support Team
-                      <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                      <small>
+                        <i class="fa fa-clock-o"></i> 5 mins</small>
                     </h4>
                     <p>Why not buy a new awesome theme?</p>
                   </a>
-                </li><!-- end message -->
+                </li>
+                <!-- end message -->
                 <li>
                   <a href="#">
                     <div class="pull-left">
@@ -44,7 +73,8 @@
                     </div>
                     <h4>
                       AdminLTE Design Team
-                      <small><i class="fa fa-clock-o"></i> 2 hours</small>
+                      <small>
+                        <i class="fa fa-clock-o"></i> 2 hours</small>
                     </h4>
                     <p>Why not buy a new awesome theme?</p>
                   </a>
@@ -56,7 +86,8 @@
                     </div>
                     <h4>
                       Developers
-                      <small><i class="fa fa-clock-o"></i> Today</small>
+                      <small>
+                        <i class="fa fa-clock-o"></i> Today</small>
                     </h4>
                     <p>Why not buy a new awesome theme?</p>
                   </a>
@@ -68,7 +99,8 @@
                     </div>
                     <h4>
                       Sales Department
-                      <small><i class="fa fa-clock-o"></i> Yesterday</small>
+                      <small>
+                        <i class="fa fa-clock-o"></i> Yesterday</small>
                     </h4>
                     <p>Why not buy a new awesome theme?</p>
                   </a>
@@ -80,14 +112,17 @@
                     </div>
                     <h4>
                       Reviewers
-                      <small><i class="fa fa-clock-o"></i> 2 days</small>
+                      <small>
+                        <i class="fa fa-clock-o"></i> 2 days</small>
                     </h4>
                     <p>Why not buy a new awesome theme?</p>
                   </a>
                 </li>
               </ul>
             </li>
-            <li class="footer"><a href="#">See All Messages</a></li>
+            <li class="footer">
+              <a href="#">See All Messages</a>
+            </li>
           </ul>
         </li>
         <!-- Notifications: style can be found in dropdown.less -->
@@ -128,7 +163,9 @@
                 </li>
               </ul>
             </li>
-            <li class="footer"><a href="#">View all</a></li>
+            <li class="footer">
+              <a href="#">View all</a>
+            </li>
           </ul>
         </li>
         <!-- Tasks: style can be found in dropdown.less -->
@@ -142,7 +179,8 @@
             <li>
               <!-- inner menu: contains the actual data -->
               <ul class="menu">
-                <li><!-- Task item -->
+                <li>
+                  <!-- Task item -->
                   <a href="#">
                     <h3>
                       Design some buttons
@@ -154,8 +192,10 @@
                       </div>
                     </div>
                   </a>
-                </li><!-- end task item -->
-                <li><!-- Task item -->
+                </li>
+                <!-- end task item -->
+                <li>
+                  <!-- Task item -->
                   <a href="#">
                     <h3>
                       Create a nice theme
@@ -167,8 +207,10 @@
                       </div>
                     </div>
                   </a>
-                </li><!-- end task item -->
-                <li><!-- Task item -->
+                </li>
+                <!-- end task item -->
+                <li>
+                  <!-- Task item -->
                   <a href="#">
                     <h3>
                       Some task I need to do
@@ -180,20 +222,24 @@
                       </div>
                     </div>
                   </a>
-                </li><!-- end task item -->
-                <li><!-- Task item -->
+                </li>
+                <!-- end task item -->
+                <li>
+                  <!-- Task item -->
                   <a href="#">
                     <h3>
                       Make beautiful transitions
                       <small class="pull-right">80%</small>
                     </h3>
                     <div class="progress xs">
-                      <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar" aria-valuenow="20" aria-valuemin="0"
+                        aria-valuemax="100">
                         <span class="sr-only">80% Complete</span>
                       </div>
                     </div>
                   </a>
-                </li><!-- end task item -->
+                </li>
+                <!-- end task item -->
               </ul>
             </li>
             <li class="footer">
@@ -201,48 +247,16 @@
             </li>
           </ul>
         </li>
+        
+        <li><a href="#"><i class="fa fa-sign-out fa-lg"></i> &nbsp;退出</a></li>
+       
         <!-- User Account: style can be found in dropdown.less -->
-        <li class="dropdown user user-menu" ngbDropdown placement="left-top">
-          <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle>
-            <img src="../assets/img/user2-160x160.jpg" class="user-image" alt="User Image">
-            <span class="hidden-xs">陈奕迅</span>
-          </a>
-          <ul class="dropdown-menu" ngbDropdownMenu>
-            <!-- User image -->
-            <li class="user-header">
-              <img src="../assets/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-              <p>
-                Alexander Pierce - Web Developer
-                <small>Member since Nov. 2012</small>
-              </p>
-            </li>
-            <!-- Menu Body -->
-            <li class="user-body">
-              <div class="col-xs-4 text-center">
-                <a href="#">Followers</a>
-              </div>
-              <div class="col-xs-4 text-center">
-                <a href="#">Sales</a>
-              </div>
-              <div class="col-xs-4 text-center">
-                <a href="#">Friends</a>
-              </div>
-            </li>
-            <!-- Menu Footer-->
-            <li class="user-footer">
-              <div class="pull-left">
-                <a href="#" class="btn btn-default btn-flat">Profile</a>
-              </div>
-              <div class="pull-right">
-                <a href="#" class="btn btn-default btn-flat">Sign out</a>
-              </div>
-            </li>
-          </ul>
-        </li>
+      
+        
         <!-- Control Sidebar Toggle Button -->
-        <li>
+        <!-- <li>
           <a href="javascript:void(0);" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-        </li>
+        </li> -->
       </ul>
     </div>
   </nav>

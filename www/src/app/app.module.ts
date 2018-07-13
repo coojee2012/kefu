@@ -15,7 +15,7 @@ import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor} from './app.intercept';
 
 
-import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
+
 
 import { LoggerService } from './services/LogService';
 import { DeepStreamService } from './services/DeepStreamService';
@@ -39,7 +39,6 @@ const APP_PROVIDERS = [
         CoreModule,
         SharedModule,
         AppRoutingModule,
-        LoadingPageModule, MaterialBarModule
       ],
     declarations: [
         AppComponent
