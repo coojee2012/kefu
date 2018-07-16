@@ -4,6 +4,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../../shared';
 import { SidebarModule } from './sidebar';
 import { HeaderComponent } from './header/header.component';
+import {  NgbdDialoutModalComponent } from './header/dialout.modal.compnent';
 import { FooterComponent } from './footer/footer.component';
 import { AppsComponent } from './apps.component';
 
@@ -23,7 +24,11 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
   declarations: [
     HeaderComponent,
     FooterComponent,
+    NgbdDialoutModalComponent,
     AppsComponent
+  ],
+  entryComponents: [
+    NgbdDialoutModalComponent,
   ],
 })
 export class AppsModule { }
