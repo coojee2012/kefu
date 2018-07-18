@@ -50,49 +50,57 @@
     <div class="register-box-body">
       <p class="login-box-msg">新会员开通</p>
 
-      <form [formGroup]="registerForm" novalidate autocomplete="off" (submit)="registerSubmit()">
-        <div class="form-group has-feedback">
+      <form [formGroup]="registerForm" validate autocomplete="off" (submit)="registerSubmit()">
+        <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('nickname').touched || registerForm.get('nickname').dirty) && registerForm.get('nickname').errors }">
           <div class="input-prepend">
-            <input type="text" class="form-control" formControlName="nickname" placeholder="称呼">
+            <input type="text" class="form-control" formControlName="nickname" placeholder="称呼:4-11">
             <span class="glyphicon glyphicon glyphicon-heart form-control-feedback"></span>
           </div>
         </div>
-        <div class="form-group has-feedback">
+        <div class="form-group has-feedback" [ngClass]="{'has-error':(domainFC.touched || domainFC.dirty) && domainFC.errors }">
           <input type="text" class="form-control" formControlName="domain" placeholder="企业域、唯一，如:domain.com">
           <span class="glyphicon glyphicon glyphicon-globe form-control-feedback"></span>
         </div>
 
-        <div class="form-group has-feedback">
+        <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('username').touched || registerForm.get('username').dirty) && registerForm.get('username').errors }">
           <input type="text" class="form-control" formControlName="username" placeholder="手机号">
           <span class="glyphicon glyphicon-user form-control-feedback"></span>
         </div>
 
-        <div class="form-group has-feedback">
-          <input type="password" class="form-control" formControlName="password" placeholder="设置密码">
+        <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('password').touched || registerForm.get('password').dirty) && registerForm.get('password').errors }">
+          <input type="password" class="form-control" formControlName="password" placeholder="设置密码:6-18位字母、数字、特殊字符组成">
           <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
-        <div class="form-group has-feedback">
+        <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('repassword').touched || registerForm.get('repassword').dirty) && registerForm.get('repassword').errors }">
           <input type="password" class="form-control" formControlName="repassword" placeholder="密码确认">
           <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+          <span class="help-block" *ngIf="(registerForm.get('repassword').touched || registerForm.get('repassword').dirty) && registerForm.get('repassword').errors">
+          <span *ngIf="registerForm.get('repassword').errors.required">
+              请再次输入密码
+           </span>
+           <span *ngIf="registerForm.get('repassword').errors.repwdmismatch">
+              两次输入密码不一致
+           </span>
+          </span>
         </div>
         <div class="row">
           <div class="col-xs-1"></div>
           <div class="col-xs-11">
             <div class="checkbox">
               <label>
-                <input type="checkbox" [(ngModel)]="checkStatus">我已阅读并同意
+                <input type="checkbox" formControlName="terms">我已阅读并同意
                 <a href="#">《用户协议及隐私政策》</a>
               </label>
             </div>
           </div>
           <!-- /.col -->
           <div class="col-xs-12">
-            <button type="submit" class="btn btn-primary btn-block btn-flat">马上开通</button>
+            <button type="submit" class="btn  btn-block btn-flat" [ngClass]="{'btn-default':!registerForm.valid,'btn-primary':registerForm.valid}" [disabled]="!registerForm.valid">马上开通</button>
           </div>
           <!-- /.col -->
         </div>
 
-       
+
       </form>
 
       <a routerLink="/login" class="text-center">已注册会员,直接登录</a>
