@@ -1,4 +1,4 @@
-<main class="g-register">
+<!-- <main class="g-register">
   <h1 class="m-logo"><a routerLink="/">简书</a></h1>
   <section class="m-main">
     <h3 class="m-title">
@@ -37,4 +37,69 @@
       </form>
     </div>
   </section>
-</main>
+</main> -->
+
+
+<div class="hold-transition register-page">
+  <div class="register-box">
+    <div class="register-logo">
+      <a routerLink="/">
+        <b>KeFu</b>AI</a>
+    </div>
+
+    <div class="register-box-body">
+      <p class="login-box-msg">新会员开通</p>
+
+      <form [formGroup]="registerForm" novalidate autocomplete="off" (submit)="registerSubmit()">
+        <div class="form-group has-feedback">
+          <div class="input-prepend">
+            <input type="text" class="form-control" formControlName="nickname" placeholder="称呼">
+            <span class="glyphicon glyphicon glyphicon-heart form-control-feedback"></span>
+          </div>
+        </div>
+        <div class="form-group has-feedback">
+          <input type="text" class="form-control" formControlName="domain" placeholder="企业域、唯一，如:domain.com">
+          <span class="glyphicon glyphicon glyphicon-globe form-control-feedback"></span>
+        </div>
+
+        <div class="form-group has-feedback">
+          <input type="text" class="form-control" formControlName="username" placeholder="手机号">
+          <span class="glyphicon glyphicon-user form-control-feedback"></span>
+        </div>
+
+        <div class="form-group has-feedback">
+          <input type="password" class="form-control" formControlName="password" placeholder="设置密码">
+          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+          <input type="password" class="form-control" formControlName="repassword" placeholder="密码确认">
+          <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+        </div>
+        <div class="row">
+          <div class="col-xs-1"></div>
+          <div class="col-xs-11">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" [(ngModel)]="checkStatus">我已阅读并同意
+                <a href="#">《用户协议及隐私政策》</a>
+              </label>
+            </div>
+          </div>
+          <!-- /.col -->
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-primary btn-block btn-flat">马上开通</button>
+          </div>
+          <!-- /.col -->
+        </div>
+
+       
+      </form>
+
+      <a routerLink="/login" class="text-center">已注册会员,直接登录</a>
+
+
+    </div>
+    <!-- /.form-box -->
+  </div>
+  <!-- /.register-box -->
+</div>

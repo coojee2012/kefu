@@ -13,8 +13,8 @@ import { ServerErrorComponent } from './shared/server-error/server-error.compone
 export const appRoutes: Routes = [
   // { path: '', loadChildren: 'app/pages/home/home.module#HomeModule' },
   { path: 'login', loadChildren: 'app/pages/login/login.module#LoginModule' },
-  // { path: 'register', loadChildren: 'app/pages/register/register.module#RegisterModule' },
-  // { path: 'forget', loadChildren: 'app/pages/forget/forget.module#ForgetModule' },
+  { path: 'register', loadChildren: 'app/pages/register/register.module#RegisterModule' },
+  { path: 'forget', loadChildren: 'app/pages/forget/forget.module#ForgetModule' },
   // { path: 'user', loadChildren: 'app/pages/user/user.module#UserModule' },
   // { path: 'settings', loadChildren: 'app/pages/settings/settings.module#SettingsModule' },
   // { path: 'bookmarks', loadChildren: 'app/pages/bookmarks/bookmarks.module#BookmarksModule' },

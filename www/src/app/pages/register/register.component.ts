@@ -6,20 +6,24 @@ import { Router } from '@angular/router';
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
-  providers: [ RegisterService ]
+  providers: [RegisterService]
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
+  checkStatus: boolean;
   register: any = {
-    nickname: "",
-    username: "",
-    password: ""
+    nickname: '',
+    username: '',
+    domain: '',
+    password: ''
   };
   constructor(
     private registerService: RegisterService,
     private router: Router,
     private fb: FormBuilder
-    ) { }
+  ) {
+    this.checkStatus = false;
+  }
 
   ngOnInit() {
     this.createForm();
@@ -42,6 +46,14 @@ export class RegisterComponent implements OnInit {
           Validators.maxLength(11)
         ]
       ],
+      domain: [
+        this.register.domain,
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(12)
+        ]
+      ],
       password: [
         this.register.password,
         [
@@ -60,12 +72,12 @@ export class RegisterComponent implements OnInit {
   }
   registerSubmit() {
     this.registerService.register(this.registerForm.value)
-                     .subscribe(
-                       results => {
-                         if(results.code === 0){
-                            this.router.navigate(['/']);
-                         }
-                       },
-                       error =>  console.log(error));
+      .subscribe(
+        results => {
+          if (results.code === 0) {
+            this.router.navigate(['/']);
+          }
+        },
+        error => console.log(error));
   }
 }
