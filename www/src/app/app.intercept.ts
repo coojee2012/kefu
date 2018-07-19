@@ -56,13 +56,14 @@ export class APPRequestInterceptor implements HttpInterceptor {
     if (!!this.authorizationService.getCurrentUser()) {
       JWT = `Bearer ${this.authorizationService.getCurrentUser().token}`;
     }
+    console.log('befor intercept', req.url);
     req = req.clone({
       setHeaders: {
         Authorization: JWT
       },
       url: environment.api.host + req.url
     });
-    console.log(req.params, this.authorizationService.getCurrentUser(), environment);
+    console.log('intercept request:', req.params, req.url, this.authorizationService.getCurrentUser());
     return next.handle(req);
   }
 }
@@ -86,9 +87,9 @@ export class APPResponseInterceptor implements HttpInterceptor {
           console.log('Response map', event);
           return event;
         }),
-        // catchError((err,cau) => {
-        //   return event;
-        // })
+      // catchError((err,cau) => {
+      //   return event;
+      // })
     );
   }
 
@@ -146,15 +147,15 @@ export class CachingInterceptor implements HttpInterceptor {
     // No cached response exists. Go to the network, and cache
     // the response when it arrives.
     return next.handle(req)
-    .pipe(
-      tap(event => {
-        // Remember, there may be other events besides just the response.
-        if (event instanceof HttpResponse) {
-          // Update the cache.
-          this.cache.put(req, event);
-        }
-      })
-    );
+      .pipe(
+        tap(event => {
+          // Remember, there may be other events besides just the response.
+          if (event instanceof HttpResponse) {
+            // Update the cache.
+            this.cache.put(req, event);
+          }
+        })
+      );
   }
 }
 

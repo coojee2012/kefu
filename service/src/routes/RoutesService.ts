@@ -28,7 +28,7 @@ export class RoutesService {
     /**
      * 全局代理
      */
-    app.all('*', function (req: Request, res: Response, next: NextFunction) {
+    app.all('*',  (req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers',
         'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');

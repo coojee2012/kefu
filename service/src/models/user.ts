@@ -31,6 +31,8 @@ export type UserModel = mongoose.Document & {
         country_code: String   // 来自哪个国家
     };
     author: String;   // 作者身份
+    domain:String; // 企业域
+    role:String; // 角色 master  agent  
     basic: {   // 基本设置
         nickname: String;   // 昵称
         avatar: String;    // 头像
@@ -63,10 +65,14 @@ export interface AuthToken {
 const userSchema = new mongoose.Schema({
     username: {    // 登陆账号
         type: String,
-        unique: true, // 不可重复约束
+       // unique: true, // 不可重复约束
         require: true // 不可为空约束
     },
     password: {    // 登陆密码
+        type: String,
+        require: true // 不可为空约束
+    },
+    domain: {    // 登陆密码
         type: String,
         require: true // 不可为空约束
     },
@@ -75,6 +81,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         enum: ['0', '1', '2'],
         default: '0'
+    },
+    role: {    // 角色身份  0 普通作者 1 签约作者 2 金牌作者
+        type: String,
+        required: true,
+        enum: ['master', 'agent', 'group'],
+        default: 'agent'
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者
         type: String,
@@ -131,6 +143,7 @@ const userSchema = new mongoose.Schema({
     token: String
 }, { timestamps: true });
 
+userSchema.index({username: 1, domain: 1}, {unique: true});
 /**
  * 添加用户保存时中间件对password进行bcrypt加密,这样保证用户密码只有用户本人知道
  */
@@ -182,5 +195,7 @@ userSchema.methods.comparePassword = function (candidatePassword?: string, callb
 userSchema.methods.gravatar = function (size: number) {
     return size;
 };
+
+
 export default userSchema;
 // export default mongoose.model('User', userSchema);

@@ -19,21 +19,21 @@ import * as winston from 'winston';
 import * as expressWinston from 'express-winston';
 import expressLayouts = require('express-ejs-layouts');
 import path = require('path');
-import { Injector, ReflectiveInjector,Injectable } from 'injection-js';
+import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
-import { DeepStreamService } from './service/DeepStreamService';
+// import { DeepStreamService } from './service/DeepStreamService';
 import { default as passport } from './config/passport';
 /**
  * 引入配置
  */
 import { ConfigService } from './service/ConfigService';
-import { MongoService  } from './service/MongoService';
+import { MongoService } from './service/MongoService';
 /**
  * 全部路由
  */
 // import { default as routes } from './routes/index';
-import { RoutesService }  from './routes/RoutesService';
+import { RoutesService } from './routes/RoutesService';
 import { setInterval } from 'timers';
 //import { Promise } from 'mongoose';
 
@@ -41,13 +41,13 @@ import { setInterval } from 'timers';
 export class AppServer {
     public app: express.Application;
     constructor(private injector: Injector, private logger: LoggerService,
-        private routeService: RoutesService,private dsClient: DeepStreamService,private config: ConfigService,
+        private routeService: RoutesService, private config: ConfigService,
         private mongoDB: MongoService
     ) {
-      this.app = express();
-      //this.logger = injector.get(LoggerService);
-      //this.dsClient = injector.get(DeepStreamService);
-      // this.routeService = new RoutesService(injector);
+        this.app = express();
+        //this.logger = injector.get(LoggerService);
+        //this.dsClient = injector.get(DeepStreamService);
+        // this.routeService = new RoutesService(injector);
     }
 
     /**
@@ -56,7 +56,7 @@ export class AppServer {
     async readyMongoDB() {
         const _this = this;
         try {
-           await this.mongoDB.connectDB();
+            await this.mongoDB.connectDB();
         }
         catch (ex) {
             return Promise.reject(ex);
@@ -153,7 +153,7 @@ export class AppServer {
 
 
         // catch 404 and forward to error handler
-        this.app.use(function (req, res, next) {
+        this.app.use((req, res, next) => {
             const err: any = new Error('Not Found');
             err.status = 404;
             next(err);

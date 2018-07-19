@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { RegisterService } from './register.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -10,7 +12,10 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
+  submitErrorMsg: string;
   checkStatus: boolean;
+  isSubmitError: boolean;
+  private _success = new Subject<string>();
   domainFC: AbstractControl;
   register: any = {
     nickname: '',
@@ -26,10 +31,24 @@ export class RegisterComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.checkStatus = false;
+    this.isSubmitError = false;
+    this.submitErrorMsg = '';
   }
 
   ngOnInit() {
     this.createForm();
+    this._success.subscribe((message) => {
+
+      this.submitErrorMsg = message;
+      this.isSubmitError = true;
+    });
+    this._success.pipe(
+      debounceTime(5000)
+    ).subscribe(() => {
+       this.submitErrorMsg = '';
+
+       this.isSubmitError = false;
+      });
   }
   createForm(): void {
 
@@ -39,7 +58,7 @@ export class RegisterComponent implements OnInit {
         [
           Validators.required,
           Validators.minLength(4),
-          Validators.maxLength(11)
+          Validators.maxLength(12)
         ]
       ],
       username: [
@@ -119,8 +138,11 @@ export class RegisterComponent implements OnInit {
     this.registerService.register(this.registerForm.value)
       .subscribe(
         results => {
-          if (results.code === 0) {
+          if (results.meta && results.meta.code === 200) {
             this.router.navigate(['/']);
+          } else {
+            // this.isSubmitError = true;
+            this._success.next(results.meta.message);
           }
         },
         error => console.log(error));

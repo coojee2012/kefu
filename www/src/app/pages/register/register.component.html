@@ -53,12 +53,12 @@
       <form [formGroup]="registerForm" validate autocomplete="off" (submit)="registerSubmit()">
         <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('nickname').touched || registerForm.get('nickname').dirty) && registerForm.get('nickname').errors }">
           <div class="input-prepend">
-            <input type="text" class="form-control" formControlName="nickname" placeholder="称呼:4-11">
+            <input type="text" class="form-control" formControlName="nickname" placeholder="称呼:4-12">
             <span class="glyphicon glyphicon glyphicon-heart form-control-feedback"></span>
           </div>
         </div>
         <div class="form-group has-feedback" [ngClass]="{'has-error':(domainFC.touched || domainFC.dirty) && domainFC.errors }">
-          <input type="text" class="form-control" formControlName="domain" placeholder="企业域、唯一，如:domain.com">
+          <input type="text" class="form-control" formControlName="domain" placeholder="唯一的企业域，如:domain.com">
           <span class="glyphicon glyphicon glyphicon-globe form-control-feedback"></span>
         </div>
 
@@ -66,24 +66,27 @@
           <input type="text" class="form-control" formControlName="username" placeholder="手机号">
           <span class="glyphicon glyphicon-user form-control-feedback"></span>
         </div>
-
+       
         <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('password').touched || registerForm.get('password').dirty) && registerForm.get('password').errors }">
-          <input type="password" class="form-control" formControlName="password" placeholder="设置密码:6-18位字母、数字、特殊字符组成">
+          <input type="password" class="form-control" formControlName="password" placeholder="密码:6-18位字母、数字、特殊字符">
           <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
         <div class="form-group has-feedback" [ngClass]="{'has-error':(registerForm.get('repassword').touched || registerForm.get('repassword').dirty) && registerForm.get('repassword').errors }">
           <input type="password" class="form-control" formControlName="repassword" placeholder="密码确认">
           <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-          <span class="help-block" *ngIf="(registerForm.get('repassword').touched || registerForm.get('repassword').dirty) && registerForm.get('repassword').errors">
+          <!-- <span class="help-block" *ngIf="(registerForm.get('repassword').touched || registerForm.get('repassword').dirty) && registerForm.get('repassword').errors">
           <span *ngIf="registerForm.get('repassword').errors.required">
               请再次输入密码
            </span>
            <span *ngIf="registerForm.get('repassword').errors.repwdmismatch">
               两次输入密码不一致
            </span>
-          </span>
+          </span> -->
         </div>
         <div class="row">
+            <div class="col-xs-12">
+                <ngb-alert *ngIf="isSubmitError" type="danger" (close)="isSubmitError = false">{{ submitErrorMsg }}</ngb-alert>
+            </div>
           <div class="col-xs-1"></div>
           <div class="col-xs-11">
             <div class="checkbox">
