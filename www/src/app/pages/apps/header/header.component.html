@@ -54,42 +54,61 @@
       <!-- fa-lg (比默认大小大33%), fa-2x, fa-3x, fa-4x, fa-5  fa-rotate-180 旋转 http://www.runoob.com/font-awesome/fontawesome-tutorial.html-->
 
       <ul class="nav navbar-nav">
-        <li >
-          <a href="javascript:void(0);" (click)="openDialout()" >
+        <li *ngIf="isCheckIn">
+          <a href="javascript:void(0);" (click)="openDialout()">
             <i class="fa fa-phone-square fa-lg" style="color:springgreen;"></i>
-           
           </a>
         </li>
 
-        <li>
+        <li *ngIf="isCheckIn">
           <a href="javascript:void(0);">
             <i class="fa fa-pause fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li>
+        <li *ngIf="isCheckIn">
           <a href="javascript:void(0);">
             <i class="fa fa-share-square fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li>
-            <a href="javascript:void(0);">
-              <i class="fa   fa-comments fa-lg" style="color:springgreen;"></i>
-            </a>
-          </li>
+        <li *ngIf="isCheckIn">
+          <a href="javascript:void(0);">
+            <i class="fa   fa-comments fa-lg" style="color:springgreen;"></i>
+          </a>
+        </li>
 
-        <li>
+        <li *ngIf="isCheckIn">
           <a href="javascript:void(0);">
             <i class="fa  fa-user-plus fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li>
-          <a href="javascript:void(0);">
+        <li *ngIf="isCheckIn">
+          <a href="javascript:void(0);" >
             <i class="fa  fa-tty  fa-lg" style="color:red;"></i>
           </a>
         </li>
+
+
+        <li *ngIf="!isCheckIn">
+            <a class="disabled">
+                <i class="fa fa-sign-in fa-lg"></i>&nbsp;签入:
+              </a>
+        </li>
+        <li *ngIf="!isCheckIn">
+          <a href="javascript:void(0);" (click)="checkInServ('embed')">
+            <i class="fa fa-headphones"></i></a>
+        </li>
+        <li *ngIf="!isCheckIn">
+          <a href="javascript:void(0);" (click)="checkInServ('sip')">
+            <i class="fa fa-fax "></i></a>
+        </li>
+        <li *ngIf="!isCheckIn">
+          <a href="javascript:void(0);" (click)="checkInServ('mobile')">
+            <i class="fa fa-mobile "></i></a>
+        </li>
+
 
         <li>
           <a class="disabled">
@@ -305,9 +324,40 @@
         </li>
 
         <li>
-          <a href="#">
+          <a href="javascript:void(0);" (click)="loginOut()">
             <i class="fa fa-sign-out fa-lg"></i> &nbsp;退出</a>
         </li>
+
+        <!-- <li *ngIf="!isCheckIn" class="dropdown messages-menu" ngbDropdown placement="left-top">
+
+          <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle>
+            <i class="fa fa-sign-in fa-lg"></i>&nbsp;签入
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" ngbDropdownMenu>
+
+            <li>
+              <a href="javascript:void(0);" (click)="checkInServ('embed')">
+                <i class="fa fa-headphones fa-lg"></i>&nbsp;嵌入式</a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" (click)="checkInServ('sip')">
+                <i class="fa fa-fax fa-lg"></i>&nbsp;SIP终端</a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" (click)="checkInServ('mobile')">
+                <i class="fa fa-signal fa-lg"></i>&nbsp;手机固话</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a href="javascript:void(0);" (click)="loginOut()">
+                <i class="fa fa-sign-out fa-lg"></i>&nbsp;退出</a>
+            </li>
+
+
+          </ul>
+
+        </li> -->
 
         <!-- User Account: style can be found in dropdown.less -->
 

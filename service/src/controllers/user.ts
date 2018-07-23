@@ -250,8 +250,8 @@ export class UserController implements UserInterface {
                 'nickname': {
                     notEmpty: true,
                     isLength: {
-                        options: [{ min: 4, max: 12 }],
-                        errorMessage: '称呼长度不是4-12位' // Error message for the validator, takes precedent over parameter message
+                        options: [{ min: 2, max: 12 }],
+                        errorMessage: '称呼长度不是2-12位' // Error message for the validator, takes precedent over parameter message
                     },
                     errorMessage: '称呼不能为空'
                 },

@@ -10,7 +10,7 @@ import { AppsComponent } from './apps.component';
 
 import { ROUTER_CONFIG } from './apps.routes';
 
-
+import { LoginService } from '../login/login.service';
 import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
 @NgModule({
   imports: [
@@ -20,6 +20,9 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
     SidebarModule,
     ROUTER_CONFIG,
     LoadingPageModule, MaterialBarModule,
+  ],
+  providers: [
+    LoginService
   ],
   declarations: [
     HeaderComponent,

@@ -57,7 +57,7 @@ export class RegisterComponent implements OnInit {
         this.register.nickname,
         [
           Validators.required,
-          Validators.minLength(4),
+          Validators.minLength(2),
           Validators.maxLength(12)
         ]
       ],
@@ -74,7 +74,7 @@ export class RegisterComponent implements OnInit {
         this.register.domain,
         [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(4),
           Validators.maxLength(12)
         ]
       ],

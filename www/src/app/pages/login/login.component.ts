@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
       'maxlength': '密码长度不能大于18位'
     },
     'username': {
-      'required': '手机号不能为空'
+      'required': '账户不能为空'
     }
   };
 
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
         [
           Validators.required,
           Validators.minLength(11),
-          Validators.maxLength(11)
+          Validators.maxLength(32)
         ]
       ],
       password: [
@@ -67,7 +67,8 @@ export class LoginComponent implements OnInit {
       verifycode: [
         this.login.verifycode,
         [
-          Validators.required
+          Validators.required,
+          Validators.requiredTrue
         ]
       ],
       rememberme: [
@@ -86,9 +87,8 @@ export class LoginComponent implements OnInit {
     // console.log('onValueChanged', this.loginForm, data);
   }
 
-  loginSubmit(loginForm: any): any {
-    console.log('loginSubmit', loginForm);
-    this.loginService.login(loginForm.value)
+  loginSubmit(): any {
+    this.loginService.login(this.loginForm.value)
       .subscribe(
         user => user.meta.code === 200 && this.router.navigate(['/']),
         error => this.error = error

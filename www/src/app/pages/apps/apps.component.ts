@@ -23,11 +23,11 @@ export class AppsComponent implements OnInit {
   }
   ngOnInit() {
     this.logger.log('测试LoggerService');
-    setTimeout(() => {
-      this.router.navigate(['/app/dashbord']);
-    }, 500);
+    // setTimeout(() => {
+    //   this.router.navigate(['/app/dashbord']);
+    // }, 500);
     // this.dsClient.login(null, this.loginHandler.bind(this));
-    this.sipClient.init();
+    // this.sipClient.init();
     this.chatMessageSub = this.sipClient.getChatMessage().subscribe(this.handleChatMsg.bind(this));
     // this.sipClient.client.on('message', this.handleChatMsg.bind(this));
   }
