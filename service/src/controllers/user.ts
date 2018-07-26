@@ -75,7 +75,17 @@ export class UserController implements UserInterface {
             return;
         }
         try {
-            const user: any = await this.mongoDB.models.Users.findOne({ username: req.body.username });
+            const [username,domain] = req.body.username.split('@');
+            if(!domain){
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '用户名格式不正确'
+                    }
+                });
+                return;
+            }
+            const user: any = await this.mongoDB.models.Users.findOne({ username,domain });
             if (!user) {
                 res.json({
                     'meta': {
@@ -89,8 +99,8 @@ export class UserController implements UserInterface {
                     return next(err);
                 }
                 if (isMatch) {
-                    const token = jwt.sign({ username: user.username }, 'jiayishejijianshu', {
-                        expiresIn: '7 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
+                    const token = jwt.sign({ username: user.username }, `kefu2018@${domain}`, {
+                        expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
                     });
                     user.token = token;
                     user.save(function (error) {

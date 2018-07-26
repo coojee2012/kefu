@@ -6,6 +6,20 @@
     <app-sidebar-user-pannel></app-sidebar-user-pannel>
     <!-- search form -->
     <!-- <app-sidebar-search></app-sidebar-search> -->
+
+    <!-- <form class="sidebar-form">
+      <div class="row ">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-10">
+          <div class="btn-group">
+            <button type="button" class="btn bg-olive btn-xs">示闲</button>
+            <button type="button" class="btn bg-orange btn-xs">示忙</button>
+            <button type="button" class="btn bg-maroon btn-xs">小休</button>
+          </div>
+        </div>
+        <div class="col-xs-1"></div>
+      </div>
+    </form> -->
     <!-- /.search form -->
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu">
@@ -190,7 +204,12 @@
           </li>
         </ul>
       </li>
-
+      <li>
+        <a href="javascript:void(0);" (click)="loginOut()">
+          <i class="fa   fa-sign-out"></i>
+          <span>退出</span>
+        </a>
+      </li>
     </ul>
   </section>
   <!-- /.sidebar -->

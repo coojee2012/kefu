@@ -1,4 +1,15 @@
-<app-apps-content-header></app-apps-content-header>
+<section class="content-header">
+    <h1>
+      我的服务
+      <small>WebChat</small>
+    </h1>
+    <ol class="breadcrumb">
+      <!-- <li>
+        <a href="#">
+          <i class="fa fa-refresh"></i> 刷新</a>
+      </li> -->
+    </ol>
+  </section>
 <!-- Main content -->
 <section class="content">
   <!-- Small boxes (Stat box) -->
@@ -6,7 +17,7 @@
     <div class="col-md-12">
       <!-- Custom Tabs -->
       <ngb-tabset class="nav-tabs-custom">
-        <ngb-tab title="联系人" class="tab-pane active">
+        <ngb-tab title="联系人" class="nav nav-tabs active">
           <ng-template ngbTabContent >
             <div class="box box-info">
               <div class="box-header">
@@ -106,7 +117,7 @@
             </div>
           </ng-template>
         </ngb-tab>
-        <ngb-tab title="最近联络" class="tab-pane">
+        <ngb-tab title="最近联络" class="nav nav-tabs">
           <ng-template ngbTabContent>
             <div class="row">
               <div class="col-xs-12">

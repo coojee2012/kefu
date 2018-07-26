@@ -11,12 +11,13 @@ import { SIPService } from '../../../services/SIPService';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-
+  checkInType: string;
   isCheckIn: boolean;
   constructor(private modalService: NgbModal, private loginService: LoginService, private router: Router,
     private sipClient: SIPService
   ) {
     this.isCheckIn = false;
+    this.checkInType = '';
   }
 
   ngOnInit() {
@@ -33,9 +34,14 @@ export class HeaderComponent implements OnInit {
     this.loginService.logout();
     this.router.navigate(['/login']);
   }
+  checkInClass() {
+    return this.checkInType === 'sip' ? 'fa fa-fax fa-lg '  :
+      this.checkInType === 'mobile' ? 'fa fa-mobile fa-lg ' : 'fa fa-headphones fa-lg ';
+  }
   // 签入服务
   checkInServ(ckType: string) {
     this.sipClient.init();
+    this.checkInType = ckType;
     this.isCheckIn = true;
   }
 }
