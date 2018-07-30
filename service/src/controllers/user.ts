@@ -75,8 +75,8 @@ export class UserController implements UserInterface {
             return;
         }
         try {
-            const [username,domain] = req.body.username.split('@');
-            if(!domain){
+            const [username, domain] = req.body.username.split('@');
+            if (!domain) {
                 res.json({
                     'meta': {
                         'code': 422,
@@ -85,7 +85,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const user: any = await this.mongoDB.models.Users.findOne({ username,domain });
+            const user: any = await this.mongoDB.models.Users.findOne({ username, domain });
             if (!user) {
                 res.json({
                     'meta': {
@@ -117,6 +117,8 @@ export class UserController implements UserInterface {
                                 'user': {
                                     'nickname': user.basic.nickname,
                                     'avatar': user.basic.avatar,
+                                    'phone': user.phone,
+                                    'state': user.state,
                                     'slug': user.slug
                                 }
                             }
@@ -279,7 +281,7 @@ export class UserController implements UserInterface {
                         options: [{ min: 11, max: 11 }],
                         errorMessage: '用户不是合法11位手机号' // Error message for the validator, takes precedent over parameter message
                     },
-                    errorMessage: '用户名不能为空'
+                    errorMessage: '用户名应该是11位手机号'
                 },
                 'password': {
                     notEmpty: true, // won't validate if field is empty
@@ -304,17 +306,16 @@ export class UserController implements UserInterface {
             }
 
             const user: any = await this.mongoDB.models.Users.findOne({
-                $or: [
-                    // {
-                    //     username: req.body.username
-                    // },
-                    // {
-                    //     'basic.nickname': req.body.nickname
-                    // },
-                    {
-                        'domain': req.body.domain
-                    }
-                ]
+                'domain': req.body.domain,
+                // $or: [
+                //     {
+                //         username: req.body.username
+                //     },
+                //     {
+                //         'basic.nickname': req.body.nickname
+                //     },
+
+                // ]
             });
             if (user) {
                 res.json({
@@ -325,8 +326,8 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const token = jwt.sign({ username: req.body.username.username }, 'jiayishejijianshu', {
-                expiresIn: '7 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
+            const token = jwt.sign({ username: req.body.username.username }, `kefu2018@${req.body.domain}`, {
+                expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
             const newUser = new this.mongoDB.models.Users({
                 basic: {
@@ -336,6 +337,8 @@ export class UserController implements UserInterface {
                 username: req.body.username,
                 password: req.body.password,
                 role: 'master',
+                status: 1 ,
+                pgone: req.body.username,
                 token: token
             });
             // 保存用户账号
@@ -392,6 +395,37 @@ export class UserController implements UserInterface {
                         'meta': {
                             'code': 200,
                             'message': '退出成功'
+                        }
+                    });
+                });
+        }
+    }
+
+     /**
+     * GET /checkIn
+     * 退出
+     */
+    async checkIn(req: Request, res: Response, next: NextFunction) {
+        if ((req as any).isAuthenticated()) {
+            this.mongoDB.models.Users.update({ _id: (req as any).user._id }, { state: 'waiting' })
+                .exec((err: any, user: UserModel) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    if (!user) {
+                        res.json({
+                            'meta': {
+                                'code': 422,
+                                'message': '用户不存在'
+                            }
+                        });
+                        return;
+                    }
+                    (req as any).logout();
+                    res.json({
+                        'meta': {
+                            'code': 200,
+                            'message': '签入成功'
                         }
                     });
                 });

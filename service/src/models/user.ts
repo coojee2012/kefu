@@ -19,7 +19,10 @@ export type UserModel = mongoose.Document & {
     updatedAt: Date;   // 更新时间
     username: String; // 登陆账号
     password: String; // 登陆密码
-    status: String;  // 用户状态
+    status: String;  // 用户账号状态
+    state: String;  // 用户工作状态
+    phone: String; // 用户工作电话
+    checkInType: String; // 签入方式
     tokens: AuthToken[];  // 第三方认证
     auths: AuthList[];  // 实名认证
     profile: {        // 个人资料
@@ -32,7 +35,7 @@ export type UserModel = mongoose.Document & {
     };
     author: String;   // 作者身份
     domain:String; // 企业域
-    role:String; // 角色 master  agent  
+    role:String; // 用户角色   
     basic: {   // 基本设置
         nickname: String;   // 昵称
         avatar: String;    // 头像
@@ -40,7 +43,7 @@ export type UserModel = mongoose.Document & {
         chats_notify: Boolean;   // 简信接收设置
         email_notify: String    // 提醒邮件通知
     };
-    token: String    // 登陆前面
+    token: String    // 登陆签名
     comparePassword: (candidatePassword: String, callback: (err: any, isMatch: boolean) => any) => void;  // 验证密码
     gravatar: (size: number) => String   // 获取头像
 };
@@ -82,11 +85,26 @@ const userSchema = new mongoose.Schema({
         enum: ['0', '1', '2'],
         default: '0'
     },
-    role: {    // 角色身份  0 普通作者 1 签约作者 2 金牌作者
+    state: {  // 用户业务状态  -1 未签入 waiting 空闲 busy 示忙 rest 小休  ringing SIP响铃  inthecall SIP通话中 idle  话后处理
+        type: String,
+        required: true,
+        enum: ['-1', 'waiting', 'busy', 'rest', 'idle', 'ringing', 'inthecall'],
+        default: '-1'
+    },
+    checkInType:{ // 用户电话签入类型 mobile  sip  embed msg
+        type: String,
+        required: true,
+        enum: ['-1', 'embed', 'sip', 'mobile', 'msg'],
+        default: '-1'
+    },
+    role: {    // 角色身份  0 超级管理员 1 坐席 group 组长
         type: String,
         required: true,
         enum: ['master', 'agent', 'group'],
         default: 'agent'
+    },
+    phone:{ // 工作使用的电话
+        type: String,
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者
         type: String,
@@ -161,7 +179,7 @@ userSchema.pre('save', function (next) {
                 return next(error);
             }
             user.password = hash;
-            user.status = 1;
+            // user.status = 1;
             user.auths.push({
                 key: 'mobile',
                 value: user.username,
