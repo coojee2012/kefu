@@ -11,7 +11,7 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, Htt
 import { Injectable } from '@angular/core';
 import { AuthorizationService } from './core/authorization/authorization.service';
 import { Router } from '@angular/router';
-import { environment } from './../environments/environment';
+import { environment } from '../environments/environment';
 
 import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
 import { map, filter, switchMap, catchError, tap } from 'rxjs/operators';

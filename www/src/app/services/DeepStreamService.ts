@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import * as deepstream from 'deepstream.io-client-js';
 // import  { deepstreamQuarantine  } from 'deepstream.io-client-js';
 import { LoggerService } from './LogService';
-import { environment } from './../../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class DeepStreamService {

@@ -14,7 +14,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
-      { path: 'chat/:id', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' }
+      { path: 'chat/:id', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' },
+      { path: 'userma', loadChildren: 'app/pages/apps/user-manage/user-manage.module#UserManageModule' }
     ]
   },
 ];

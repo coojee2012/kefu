@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { LoggerService } from './LogService';
-import { environment } from './../../environments/environment';
+import { environment } from '../../environments/environment';
 import { Subject, Observable } from 'rxjs';
 @Injectable()
 export class SIPService {

@@ -12,6 +12,7 @@ import { ROUTER_CONFIG } from './apps.routes';
 
 import { LoginService } from '../login/login.service';
 import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
+
 @NgModule({
   imports: [
     CommonModule,

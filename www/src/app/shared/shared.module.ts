@@ -17,10 +17,10 @@ import { VerifySliderbarComponent } from './verify-sliderbar/verify-sliderbar.co
 /**
  * 滚动加载
  */
-import { InfinitescrollModule } from '../shared/infinitescroll';
+import { InfinitescrollModule } from './infinitescroll';
 
-import { DropdownDirective } from '../shared/dropdown/dropdown.directive';
-import { ProgressBarComponent } from '../shared/progress-bar/progress-bar.component';
+import { DropdownDirective } from './dropdown/dropdown.directive';
+import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 @NgModule({
   imports: [
     CommonModule,

@@ -60,14 +60,14 @@
         </a>
       </li>
       <li>
-        <a routerLink="#">
+        <a routerLink="/">
           <i class="fa fa-tasks"></i>
           <span>我的任务</span>
           <small class="label pull-right bg-yellow">3</small>
         </a>
       </li>
       <li>
-        <a routerLink="#">
+        <a routerLink="/">
           <i class="fa  fa-street-view"></i>
           <span>客户管理</span>
         </a>
@@ -183,7 +183,12 @@
           </li>
         </ul>
       </li>
-
+      <li>
+        <a routerLink="userma">
+          <i class="fa   fa-users"></i>
+          <span>用户管理</span>
+        </a>
+      </li>
       <li class="treeview" [class.active]="isActive[5]">
         <a href="javascript:void(0);" (click)="onTreeClick(5)">
           <i class="fa  fa-btc"></i>

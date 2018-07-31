@@ -43,12 +43,12 @@ export class SidebarUserPannelComponent implements OnInit {
       let hour = Math.floor(s / 3600);
       const min = Math.floor(s / 60) % 60;
       const sec = s % 60;
-      const day = parseInt(hour / 24);
+      const day = Math.floor(hour / 24);
       if (day > 0) {
         hour = hour - 24 * day;
-        t = day + 'day ' + hour + ':';
+        t = day + 'day ' + (hour < 10 ? '0' + hour : hour) + ':';
       } else {
-        t = hour + ':';
+        t = (hour < 10 ? '0' + hour : hour) + ':';
       }
       if (min < 10) { t += '0'; }
       t += min + ':';

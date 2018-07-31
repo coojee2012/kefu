@@ -118,6 +118,7 @@ export class UserController implements UserInterface {
                                     'nickname': user.basic.nickname,
                                     'avatar': user.basic.avatar,
                                     'phone': user.phone,
+                                    'domain': user.domain,
                                     'state': user.state,
                                     'slug': user.slug
                                 }
@@ -356,6 +357,9 @@ export class UserController implements UserInterface {
                         'user': {
                             'nickname': users.basic.nickname,
                             'avatar': users.basic.avatar,
+                            'phone': user.phone,
+                            'domain': user.domain,
+                            'state': user.state,
                             '_id': users._id
                         }
                     }
