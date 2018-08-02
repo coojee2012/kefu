@@ -11,11 +11,15 @@ import { AppsComponent } from './apps.component';
 import { ROUTER_CONFIG } from './apps.routes';
 
 import { LoginService } from '../login/login.service';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor } from '../../app.intercept';
+
 import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
 
 @NgModule({
   imports: [
     CommonModule,
+    HttpClientModule,
     NgbModule,
     SharedModule,
     SidebarModule,
@@ -23,7 +27,10 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
     LoadingPageModule, MaterialBarModule,
   ],
   providers: [
-    LoginService
+    { provide: HTTP_INTERCEPTORS, useClass: APPRequestInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: APPResponseInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: TimingInterceptor, multi: true },
+    LoginService,
   ],
   declarations: [
     HeaderComponent,

@@ -338,7 +338,7 @@ export class UserController implements UserInterface {
                 username: req.body.username,
                 password: req.body.password,
                 role: 'master',
-                status: 1 ,
+                status: 1,
                 pgone: req.body.username,
                 token: token
             });
@@ -405,10 +405,10 @@ export class UserController implements UserInterface {
         }
     }
 
-     /**
-     * GET /checkIn
-     * 退出
-     */
+    /**
+    * GET /checkIn
+    * 退出
+    */
     async checkIn(req: Request, res: Response, next: NextFunction) {
         if ((req as any).isAuthenticated()) {
             this.mongoDB.models.Users.update({ _id: (req as any).user._id }, { state: 'waiting' })
@@ -433,6 +433,67 @@ export class UserController implements UserInterface {
                         }
                     });
                 });
+        }
+    }
+
+    /**
+     * GET /user/list
+     * 获取租户用户列表
+     * req.params req.query req.headers req.body
+     */
+
+    async list(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { tenantId } = req.params
+            this.logger.debug(`获取租户${tenantId}的用户列表!`, req.body);
+            req.checkBody({
+                'page': {
+                    notEmpty: true,
+                    errorMessage: '指定页数不能为空'
+                }
+            });
+            const errors = req.validationErrors();
+            if (errors) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '请求参数不正确！'
+                    }
+                });
+                return;
+            }
+
+            const total = await this.mongoDB.models.Users.count({ domain: tenantId });
+            const users: any = await this.mongoDB.models.Users.find(
+                {
+                    domain: tenantId,
+                },
+                {
+                    password: 0,
+                    auths: 0,
+                    tokens: 0,
+                    token: 0
+                }
+            );
+
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '获取用户列表成功'
+                },
+                'data': {
+                    total,
+                    users
+                }
+            });
+        } catch (ex) {
+            this.logger.error('测试日志打印user list error', ex);
+            res.json({
+                'meta': {
+                    'code': 433,
+                    'message': ex
+                }
+            });
         }
     }
 

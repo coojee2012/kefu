@@ -38,14 +38,19 @@ export class WebAPI {
     this.Router.post('/login', (req,res,next) => { 
       this.userController.login(req,res,next)
       .then()
-      .catch()
+      .catch(console.log)
     });
     this.Router.post('/register', (req,res,next) => { 
       this.userController.register(req,res,next)
       .then()
-      .catch()
+      .catch(console.log)
     });
     this.Router.post('/logout', passport.authenticate('user', { session: false }), this.userController.logout);
+    this.Router.post('/user/:tenantId/list', (req,res,next) => { 
+      this.userController.list(req,res,next)
+      .then()
+      .catch(console.log)
+    });
     this.Router.get('/user/:userid/home', this.userController.home);
     /*Router.get('/user/:id/profile', userController.profile);
     Router.get('/user/:id/basic', userController.basic);*/

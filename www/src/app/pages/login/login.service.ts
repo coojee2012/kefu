@@ -1,15 +1,15 @@
 import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
 import { map, filter, switchMap, catchError } from 'rxjs/operators';
-import {Injectable} from '@angular/core';
-import {AuthorizationService} from '../../core/authorization';
-import {HttpClient} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { AuthorizationService } from '../../core/authorization';
+import { HttpClient } from '@angular/common/http';
 
 
 @Injectable()
 export class LoginService {
 
   constructor(protected http: HttpClient,
-              private authorizationService: AuthorizationService) {
+    private authorizationService: AuthorizationService) {
   }
 
   isLogin(): boolean {
@@ -24,21 +24,33 @@ export class LoginService {
     const authorizationService = this.authorizationService;
     console.log(loginInfo, authorizationService);
     return this.http.post('/login', loginInfo)
-    .pipe(
-      map((user: any) => {
-        console.log(user);
-        if (user.meta.code === 200) {
-          authorizationService.setCurrentUser(user.data);
-        }
-        return user;
-      })
-    );
+      .pipe(
+        map((user: any) => {
+          console.log(user);
+          if (user.meta.code === 200) {
+            authorizationService.setCurrentUser(user.data);
+          }
+          return user;
+        })
+      );
   }
 
   /**
    * 退出登录
    */
   logout(): void {
-    this.authorizationService.logout();
+    this.http.post('/logout', {})
+      .pipe(
+        map((res: any) => {
+          console.log(res);
+          if (res.meta.code === 200) {
+
+          }
+          return res;
+        })
+      )
+      .subscribe(res => {
+        this.authorizationService.logout();
+      });
   }
 }
