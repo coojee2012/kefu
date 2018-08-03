@@ -29,31 +29,31 @@
             <div class="form-group">
               <label>登录账号</label>
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="登录系统使用的账号">
+                <input type="text" class="form-control" formControlName="username" placeholder="登录系统使用的账号">
                 <span class="input-group-addon">@{{ optUser.domain }}</span>
               </div>
             </div>
             <div class="form-group">
               <label>姓名</label>
-              <input type="text" class="form-control" placeholder="姓名">
+              <input type="text" class="form-control" formControlName="nickname" placeholder="姓名">
             </div>
 
             <div class="form-group">
               <label>密码</label>
-              <input type="password" class="form-control" placeholder="登录密码">
+              <input type="password" class="form-control" formControlName="password" placeholder="登录密码">
             </div>
             <div class="form-group">
               <label>确认密码</label>
-              <input type="password" class="form-control" placeholder="密码确认">
+              <input type="password" class="form-control" formControlName="rePassword" placeholder="密码确认">
             </div>
             <div class="form-group">
               <label>联系电话</label>
-              <input type="text" class="form-control" placeholder="手机、固话">
+              <input type="text" class="form-control" formControlName="phone" placeholder="手机、固话">
             </div>
 
             <div class="form-group">
               <label>使用分机</label>
-              <select class="form-control select2" style="width: 100%;" placeholder="选择坐席使用的分机号">
+              <select class="form-control select2" formControlName="extension" style="width: 100%;" placeholder="选择坐席使用的分机号">
                 <option selected="selected">1000</option>
                 <option>1001</option>
                 <option>1002</option>
@@ -66,7 +66,7 @@
 
             <div class="form-group">
               <label>备注</label>
-              <textarea class="text-comments" rows="3" placeholder="其他信息..."></textarea>
+              <textarea class="form-control text-comments" formControlName="memo" rows="3" placeholder="其他信息..."></textarea>
             </div>
 
 
