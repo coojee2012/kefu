@@ -51,6 +51,12 @@ export class WebAPI {
       .then()
       .catch(console.log)
     });
+
+    this.Router.post('/user/:tenantId/add', (req,res,next) => { 
+      this.userController.add(req,res,next)
+      .then()
+      .catch(console.log)
+    });
     this.Router.get('/user/:userid/home', this.userController.home);
     /*Router.get('/user/:id/profile', userController.profile);
     Router.get('/user/:id/basic', userController.basic);*/

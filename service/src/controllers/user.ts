@@ -23,6 +23,8 @@ export interface UserInterface {
 
     register(req: Request, res: Response, next: NextFunction);
 
+    add(req: Request, res: Response, next: NextFunction);
+
     home(req: Request, res: Response, next: NextFunction);
 
     checkNickname(req: Request, res: Response, next: NextFunction);
@@ -494,6 +496,99 @@ export class UserController implements UserInterface {
                     'message': ex
                 }
             });
+        }
+    }
+
+    async add(req: Request, res: Response, next: NextFunction) {
+        try {
+            req.checkBody({
+                'nickname': {
+                    notEmpty: true,
+                    isLength: {
+                        options: [{ min: 2, max: 12 }],
+                        errorMessage: '称呼长度不是2-12位' // Error message for the validator, takes precedent over parameter message
+                    },
+                    errorMessage: '称呼不能为空'
+                },
+                // 'domain': {
+                //     notEmpty: true,
+                //     isLength: {
+                //         options: [{ min: 4, max: 12 }],
+                //         errorMessage: '企业域长度不是4-12位' // Error message for the validator, takes precedent over parameter message
+                //     },
+                //     errorMessage: '企业域不能为空'
+                // },
+                'username': {
+                    notEmpty: true,
+                    matches:{
+                        options:/^[a-zA-Z0-9_-]{4,16}$/,
+                        errorMessage: '用户名不是合法' // Error message for the validator, takes precedent over parameter message
+                    },
+                    errorMessage: '用户名不能为空'
+                },
+                'password': {
+                    notEmpty: true, // won't validate if field is empty
+                    isLength: {
+                        options: [{ min: 6, max: 18 }],
+                        errorMessage: '密码长度不是6-18位' // Error message for the validator, takes precedent over parameter message
+                    },
+                    errorMessage: '密码不能为空' // Error message for the parameter
+                }
+            });
+            const result = await req.getValidationResult();
+            if (!result.isEmpty()) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': result.array()[0].msg
+                    }
+                });
+                return;
+            }
+
+            const { tenantId } = req.params
+            const token = jwt.sign({ username: req.body.username.username }, `kefu2018@${tenantId}`, {
+                expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
+            });
+            const newUser = new this.mongoDB.models.Users({
+                basic: {
+                    nickname: req.body.nickname
+                },
+                domain: tenantId,
+                username: req.body.username,
+                password: req.body.password,
+                role: req.body.role,
+                status: 1,
+                phone: req.body.phone,
+                token: token
+            });
+            // 保存用户账号
+            newUser.save((err, user: UserModel) => {
+                if (err) {
+                    return next(err);
+                }
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': '成功创建新用户!'
+                    },
+                    'data': {
+                        token,
+                        'user': {
+                            'nickname': user.basic.nickname,
+                            'avatar': user.basic.avatar,
+                            'phone': user.phone,
+                            'domain': user.domain,
+                            'state': user.state,
+                            '_id': user._id
+                        }
+                    }
+                });
+            });
+        }
+        catch (ex) {
+            console.log(ex, req);
+            return next(ex);
         }
     }
 

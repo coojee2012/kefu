@@ -44,7 +44,7 @@
             </div>
             <div class="form-group">
               <label>确认密码</label>
-              <input type="password" class="form-control" formControlName="rePassword" placeholder="密码确认">
+              <input type="password" class="form-control" formControlName="repassword" placeholder="密码确认">
             </div>
             <div class="form-group">
               <label>联系电话</label>
@@ -78,17 +78,17 @@
               <label for="exampleInputFile">角色权限</label>
               <div class="radio">
                 <label>
-                  <input type="radio" name="optionsRoleRadios" value="agent" checked> 普通坐席
+                  <input type="radio" name="role" formControlName="role"  value="agent" checked> 普通坐席
                 </label>
               </div>
               <div class="radio">
                 <label>
-                  <input type="radio" name="optionsRoleRadios" value="group"> 组长坐席
+                  <input type="radio" name="role" formControlName="role" value="group"> 组长坐席
                 </label>
               </div>
               <div class="radio">
                 <label>
-                  <input type="radio" name="optionsRoleRadios" value="master" disabled>管理员
+                  <input type="radio" name="role" formControlName="role" value="master" disabled>管理员
                 </label>
               </div>
             </div>
@@ -97,7 +97,7 @@
           <!-- /.box-body -->
 
           <div class="box-footer">
-            <button type="submit" class="btn btn-primary">提交</button>
+            <button type="submit" class="btn btn-primary" [ngClass]="{'btn-default':!addUserForm.valid,'btn-primary':addUserForm.valid}" [disabled]="!addUserForm.valid">提交</button>
           </div>
         </form>
       </div>
