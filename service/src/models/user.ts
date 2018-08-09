@@ -43,7 +43,9 @@ export type UserModel = mongoose.Document & {
         chats_notify: Boolean;   // 简信接收设置
         email_notify: String    // 提醒邮件通知
     };
-    token: String    // 登陆签名
+    token: String;    // 登陆签名
+    memo:String; // 备注
+    extension:String; // 使用分机
     comparePassword: (candidatePassword: String, callback: (err: any, isMatch: boolean) => any) => void;  // 验证密码
     gravatar: (size: number) => String   // 获取头像
 };
@@ -104,6 +106,12 @@ const userSchema = new mongoose.Schema({
         default: 'agent'
     },
     phone:{ // 工作使用的电话
+        type: String,
+    },
+    memo:{ // 备注
+        type: String,
+    },
+    extension:{ // 工作使用的分机
         type: String,
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者

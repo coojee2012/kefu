@@ -19,9 +19,9 @@
         </div>
         <div class="col-sm-6">
           <div class="input-group input-group-sm">
-            <input type="text" class="form-control" placeholder="姓名、邮件等关键字" [(ngModel)]="searchKey" (keyup.enter)="onEnter()" />
+            <input type="text" class="form-control" placeholder="姓名、账号、手机等关键字" [(ngModel)]="searchKey" (keyup.enter)="onEnter()" />
             <span class="input-group-btn">
-              <button type="button" class="btn btn-info btn-flat">搜!</button>
+              <button type="button" class="btn btn-info btn-flat" (click)="search()">搜!</button>
             </span>
           </div>
         </div>
@@ -32,19 +32,19 @@
       <table class="table table-bordered table-striped">
         <thead>
           <tr>
-            <th class="dropup">
-              <a href="javascript:void(0);">姓名
+            <th [ngClass]="{'dropup':sort.nickname === 1,'dropdown':sort.nickname === -1}">
+              <a href="javascript:void(0);" (click)="setOrder('nickname')">姓名
                 <span class="caret"></span>
               </a>
             </th>
-            <th class="dropdown">
-              <a href="javascript:void(0);"> 账号
+            <th [ngClass]="{'dropup':sort.username === 1,'dropdown':sort.username === -1}">
+              <a href="javascript:void(0);" (click)="setOrder('username')"> 账号
                 <span class="caret"></span>
               </a>
             </th>
             <th>电话</th>
-            <th>邮件</th>
-            <th>部门</th>
+            <th>分机</th>
+            <th>角色</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -55,17 +55,17 @@
               <td> {{ user.username }}
               </td>
               <td> {{ user.phone }}</td>
-              <td> {{  user.mail }}</td>
-              <td> {{ user.group }}</td>
+              <td> {{  user.extension }}</td>
+              <td> {{ user.role }}</td>
               <td>
                 <div class="btn-group">
                   <a type="button" class="btn btn-default btn-flat" routerLink="user/1">
                     <i class="fa  fa-edit text-green"></i>
                   </a>
-                  <button type="button" class="btn btn-default btn-flat">
+                  <button type="button" class="btn btn-default btn-flat" (click)="resetPassword(user._id,user.basic.nickname)">
                     <i class="fa fa-unlock-alt text-yellow"></i>
                   </button>
-                  <button type="button" class="btn btn-default btn-flat">
+                  <button type="button" class="btn btn-default btn-flat" (click)="delUser(user._id,user.basic.nickname)">
                     <i class="fa fa-trash text-red"></i>
                   </button>
                 </div>

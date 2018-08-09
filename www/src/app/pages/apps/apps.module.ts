@@ -5,6 +5,7 @@ import { SharedModule } from '../../shared';
 import { SidebarModule } from './sidebar';
 import { HeaderComponent } from './header/header.component';
 import {  NgbdDialoutModalComponent } from './header/dialout.modal.compnent';
+import { NgbdEnsureModalComponent } from './user-manage/ensure.modal.compnent';
 import { FooterComponent } from './footer/footer.component';
 import { AppsComponent } from './apps.component';
 
@@ -36,10 +37,12 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
     HeaderComponent,
     FooterComponent,
     NgbdDialoutModalComponent,
+    NgbdEnsureModalComponent,
     AppsComponent
   ],
   entryComponents: [
     NgbdDialoutModalComponent,
+    NgbdEnsureModalComponent,
   ],
 })
 export class AppsModule { }

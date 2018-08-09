@@ -18,13 +18,22 @@ export class UserManageService {
     this.optUser = this.authorizationService.getCurrentUser().user;
   }
   addUser(data: any): Observable<any> {
-    data = Object.assign({}, data, { domain: this.optUser.domain});
+    data = Object.assign({}, data, { domain: this.optUser.domain });
     return this.http.post(`/user/${this.optUser.domain}/add`, data)
       .pipe(
         map(this.extractData.bind(this)),
         catchError(this.handleError)
       );
   }
+
+  delUser(id) {
+
+  }
+
+  resetPwd(id) {
+
+  }
+
   private extractData(res: any) {
     if (res.meta && res.meta.code === 200) {
       // this.authorizationService.setCurrentUser(res.data);

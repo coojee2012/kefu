@@ -465,16 +465,44 @@ export class UserController implements UserInterface {
                 return;
             }
 
-            const total = await this.mongoDB.models.Users.count({ domain: tenantId });
+
+
+            let query = {
+                domain: tenantId,
+            }
+            if (req.body.query) {
+                const reg = new RegExp(req.body.query);
+                query = Object.assign({}, query, {
+                    $or: [
+                        { username: { $regex: reg } },
+                        { phone: { $regex: reg } },
+                        { 'basic.nickname': { $regex: reg } },
+                    ]
+                })
+            }
+            const sort = {
+                'basic.nickname': 1,
+                'username': 1
+            }
+            if (req.body.order) {
+                sort['basic.nickname'] = req.body.order.nickname ? req.body.order.nickname : 1;
+                sort['username'] = req.body.order.username ? req.body.order.username : 1;
+            }
+
+            const total = await this.mongoDB.models.Users.count(query);
+
             const users: any = await this.mongoDB.models.Users.find(
-                {
-                    domain: tenantId,
-                },
+                query,
                 {
                     password: 0,
                     auths: 0,
                     tokens: 0,
                     token: 0
+                },
+                {
+                    limit: req.body.pageSize,
+                    skip: (+req.body.page - 1) * req.body.pageSize,
+                    sort: sort
                 }
             );
 
@@ -520,8 +548,8 @@ export class UserController implements UserInterface {
                 // },
                 'username': {
                     notEmpty: true,
-                    matches:{
-                        options:/^[a-zA-Z0-9_-]{4,16}$/,
+                    matches: {
+                        options: /^[a-zA-Z0-9_-]{4,16}$/,
                         errorMessage: '用户名不是合法' // Error message for the validator, takes precedent over parameter message
                     },
                     errorMessage: '用户名不能为空'
@@ -558,6 +586,8 @@ export class UserController implements UserInterface {
                 username: req.body.username,
                 password: req.body.password,
                 role: req.body.role,
+                extension: req.body.extension,
+                memo: req.body.memo,
                 status: 1,
                 phone: req.body.phone,
                 token: token
