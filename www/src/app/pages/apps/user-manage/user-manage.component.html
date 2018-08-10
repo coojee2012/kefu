@@ -14,6 +14,12 @@
   <div class="box">
     <div class="box-header">
       <div class="row">
+        <div class="col-sm-12">
+          <ngb-alert *ngIf="tipMsg && tipStyle==='danger'" type="danger" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+        </div>
+        <div class="col-sm-12">
+            <ngb-alert *ngIf="tipMsg && tipStyle==='success'" type="success" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+          </div>
         <div class="col-sm-6">
 
         </div>
@@ -49,29 +55,29 @@
           </tr>
         </thead>
         <tbody>
-     
-            <tr  *ngFor="let user of userList">
-              <td> {{ user.basic.nickname }} </td>
-              <td> {{ user.username }}
-              </td>
-              <td> {{ user.phone }}</td>
-              <td> {{  user.extension }}</td>
-              <td> {{ user.role }}</td>
-              <td>
-                <div class="btn-group">
-                  <a type="button" class="btn btn-default btn-flat" routerLink="user/1">
-                    <i class="fa  fa-edit text-green"></i>
-                  </a>
-                  <button type="button" class="btn btn-default btn-flat" (click)="resetPassword(user._id,user.basic.nickname)">
-                    <i class="fa fa-unlock-alt text-yellow"></i>
-                  </button>
-                  <button type="button" class="btn btn-default btn-flat" (click)="delUser(user._id,user.basic.nickname)">
-                    <i class="fa fa-trash text-red"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-        
+
+          <tr *ngFor="let user of userList">
+            <td> {{ user.basic.nickname }} </td>
+            <td> {{ user.username }}
+            </td>
+            <td> {{ user.phone }}</td>
+            <td> {{ user.extension }}</td>
+            <td> {{ user.role }}</td>
+            <td>
+              <div class="btn-group">
+                <a type="button" class="btn btn-default btn-flat" routerLink="user/1">
+                  <i class="fa  fa-edit text-green"></i>
+                </a>
+                <button type="button" class="btn btn-default btn-flat" (click)="resetPassword(user._id,user.basic.nickname)">
+                  <i class="fa fa-unlock-alt text-yellow"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-flat" (click)="delUser(user._id,user.basic.nickname)">
+                  <i class="fa fa-trash text-red"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
         </tbody>
         <tfoot>
           <tr>

@@ -66,12 +66,12 @@ export class UserController implements UserInterface {
                 errorMessage: '密码不能为空' // Error message for the parameter
             },
         });
-        const errors = req.validationErrors();
-        if (errors) {
+        const result = await req.getValidationResult();
+        if (!result.isEmpty()) {
             res.json({
                 'meta': {
                     'code': 422,
-                    'message': '用户名和密码不正确'
+                    'message': result.array()[0].msg
                 }
             });
             return;
@@ -87,12 +87,12 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const user: any = await this.mongoDB.models.Users.findOne({ username, domain });
+            const user: any = await this.mongoDB.models.Users.findOne({ username, domain , status: '1' });
             if (!user) {
                 res.json({
                     'meta': {
                         'code': 422,
-                        'message': '用户不存在'
+                        'message': '用户不存在或用户已注销！'
                     }
                 });
             }
@@ -101,7 +101,7 @@ export class UserController implements UserInterface {
                     return next(err);
                 }
                 if (isMatch) {
-                    const token = jwt.sign({ username: user.username }, `kefu2018@${domain}`, {
+                    const token = jwt.sign({ username: user.username }, `kefu2018@abcf`, {
                         expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
                     });
                     user.token = token;
@@ -329,7 +329,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const token = jwt.sign({ username: req.body.username.username }, `kefu2018@${req.body.domain}`, {
+            const token = jwt.sign({ username: req.body.username.username }, `kefu2018@abcf`, {
                 expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
             const newUser = new this.mongoDB.models.Users({
@@ -381,30 +381,44 @@ export class UserController implements UserInterface {
      * 退出
      */
     async logout(req: Request, res: Response, next: NextFunction) {
-        if ((req as any).isAuthenticated()) {
-            this.mongoDB.models.Users.update({ _id: (req as any).user._id }, { token: undefined })
-                .exec((err: any, user: UserModel) => {
-                    if (err) {
-                        return next(err);
-                    }
-                    if (!user) {
+        try {
+            if ((req as any).isAuthenticated()) {
+                // console.log('req', (req as any).user)
+                this.mongoDB.models.Users.update({ _id: (req as any).user._id }, { token: undefined })
+                    .exec((err: any, user: UserModel) => {
+                        if (err) {
+                            return next(err);
+                        }
+                        if (!user) {
+                            res.json({
+                                'meta': {
+                                    'code': 422,
+                                    'message': '用户不存在'
+                                }
+                            });
+                            return;
+                        }
+                        (req as any).logout();
                         res.json({
                             'meta': {
-                                'code': 422,
-                                'message': '用户不存在'
+                                'code': 200,
+                                'message': '退出成功'
                             }
                         });
-                        return;
-                    }
-                    (req as any).logout();
-                    res.json({
-                        'meta': {
-                            'code': 200,
-                            'message': '退出成功'
-                        }
                     });
+            } else {
+                res.json({
+                    'meta': {
+                        'code': 423,
+                        'message': '无权限'
+                    }
                 });
+                return;
+            }
+        } catch (ex) {
+            return next(ex);
         }
+
     }
 
     /**
@@ -454,12 +468,12 @@ export class UserController implements UserInterface {
                     errorMessage: '指定页数不能为空'
                 }
             });
-            const errors = req.validationErrors();
-            if (errors) {
+            const result = await req.getValidationResult();
+            if (!result.isEmpty()) {
                 res.json({
                     'meta': {
                         'code': 422,
-                        'message': '请求参数不正确！'
+                        'message': result.array()[0].msg
                     }
                 });
                 return;
@@ -469,6 +483,7 @@ export class UserController implements UserInterface {
 
             let query = {
                 domain: tenantId,
+                status: { $ne: '0' }
             }
             if (req.body.query) {
                 const reg = new RegExp(req.body.query);
@@ -614,6 +629,102 @@ export class UserController implements UserInterface {
                         }
                     }
                 });
+            });
+        }
+        catch (ex) {
+            console.log(ex, req);
+            return next(ex);
+        }
+    }
+
+    async del(req: Request, res: Response, next: NextFunction) {
+        try {
+            const opUser = (req as any).user;
+            if ((req as any).isAuthenticated() && opUser.role === 'master') {
+                req.checkBody({
+                    'id': {
+                        notEmpty: true,
+                        errorMessage: '用户ID不能为空'
+                    },
+                });
+                const result = await req.getValidationResult();
+                if (!result.isEmpty()) {
+                    res.json({
+                        'meta': {
+                            'code': 422,
+                            'message': result.array()[0].msg
+                        }
+                    });
+                    return;
+                }
+
+                const { tenantId } = req.params
+
+                // 保存用户账号
+                await this.mongoDB.models.Users.update({ domain: tenantId, _id: req.body.id }, { $set: { status: '0' } });
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': '成功删除用户!'
+                    },
+                    'data': {
+                    }
+                });
+            }
+            else {
+                res.json({
+                    'meta': {
+                        'code': 423,
+                        'message': '无操作权限'
+                    }
+                });
+                return;
+            }
+        }
+        catch (ex) {
+            console.log(ex, req);
+            return next(ex);
+        }
+    }
+
+    async reset(req: Request, res: Response, next: NextFunction) {
+        try {
+            req.checkBody({
+                'id': {
+                    notEmpty: true,
+                    errorMessage: '用户ID不能为空'
+                },
+                'password': {
+                    notEmpty: true, // won't validate if field is empty
+                    isLength: {
+                        options: [{ min: 6, max: 18 }],
+                        errorMessage: '密码长度不是6-18位' // Error message for the validator, takes precedent over parameter message
+                    },
+                    errorMessage: '密码不能为空' // Error message for the parameter
+                }
+            });
+            const result = await req.getValidationResult();
+            if (!result.isEmpty()) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': result.array()[0].msg
+                    }
+                });
+                return;
+            }
+
+            const { tenantId } = req.params
+
+            // 保存用户账号
+            await this.mongoDB.models.Users.update({ domain: tenantId, _id: req.body.id }, { $set: { password: req.body.password } });
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '密码重置成功!'
+                },
+                'data': {
+                }
             });
         }
         catch (ex) {

@@ -38,19 +38,16 @@ export class LoginService {
   /**
    * 退出登录
    */
-  logout(): void {
-    this.http.post('/logout', {})
+  logout(): Observable<any> {
+    return this.http.post('/logout', {})
       .pipe(
         map((res: any) => {
-          console.log(res);
+          console.log('logiouttt :', res);
           if (res.meta.code === 200) {
-
+            this.authorizationService.logout();
           }
           return res;
         })
-      )
-      .subscribe(res => {
-        this.authorizationService.logout();
-      });
+      );
   }
 }

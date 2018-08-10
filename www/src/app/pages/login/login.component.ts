@@ -35,33 +35,28 @@ export class LoginComponent implements OnInit {
   };
   submitErrorMsg: string;
   checkStatus: boolean;
-  isSubmitError: boolean;
   private _success = new Subject<string>();
 
   constructor(private router: Router,
     private fb: FormBuilder,
     private loginService: LoginService) {
-    this.isSubmitError = false;
     this.submitErrorMsg = '';
   }
 
   ngOnInit(): void {
-
+    this.createForm();
     if (this.loginService.isLogin()) {
       this.router.navigate(['/']);
     }
+
     this._success.subscribe((message) => {
-      this.isSubmitError = true;
       this.submitErrorMsg = message;
-      console.log('submit message:', message, this.isSubmitError);
     });
     this._success.pipe(
-      debounceTime(3000)
+      debounceTime(5000)
     ).subscribe(() => {
       this.submitErrorMsg = '';
-      this.isSubmitError = false;
     });
-    this.createForm();
     // this.onValueChanged();
   }
 
@@ -107,17 +102,20 @@ export class LoginComponent implements OnInit {
   }
 
   loginSubmit(): any {
-    this.loginService.login(this.loginForm.value)
+    const sub = this.loginService.login(this.loginForm.value)
       .subscribe(
         (user) => {
           if (user.meta.code === 200) {
+            sub.unsubscribe();
             this.router.navigate(['/']);
           } else {
             // this.isSubmitError = true;
+            sub.unsubscribe();
             this._success.next(user.meta.message);
           }
         },
         (error) => {
+          sub.unsubscribe();
           this.error = error;
           this._success.next(error);
         }

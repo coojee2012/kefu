@@ -7,6 +7,7 @@ import { DeepStreamService } from './service/DeepStreamService';
 import { MongoService } from './service/MongoService';
 import { RoutesService } from './routes/RoutesService';
 import { AppServer } from './AppServer';
+import { Passport } from './config/passport'
 // import { RoutesService }  from './routes/RoutesService';
 // import { App } from './app/index';
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
@@ -20,6 +21,7 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
     ConfigService,
     DeepStreamService,
     MongoService,
+    Passport,
     HeroService,
     RoutesService,
     AppServer

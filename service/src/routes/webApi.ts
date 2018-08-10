@@ -9,13 +9,14 @@
 import { Injectable, Injector, ReflectiveInjector } from 'injection-js';
 import * as Express from 'express';
 
-import * as passport from 'passport';
+
 
 /**
  * web 控制器
  */
 import { UserController } from '../controllers/user';
 import { LoggerService } from '../service/LogService';
+import { Passport } from '../config/passport'
 // import { default as BooksController } from '../controllers/books';
 // import { default as ArticleController } from '../controllers/article';
 // import { default as CorpusController } from '../controllers/corpus';
@@ -23,40 +24,63 @@ import { LoggerService } from '../service/LogService';
 export class WebAPI {
   private Router: Express.Router;
   private userController: UserController;
+  private logger: LoggerService;
+  private passport: Passport;
   constructor(private injector: Injector) {
     this.Router = Express.Router();
     this.userController = this.injector.get(UserController);
-
-   //this.userController = new UserController(new LoggerService(true));
+    this.logger = this.injector.get(LoggerService);
+    this.passport = this.injector.get(Passport);
+    //this.userController = new UserController(new LoggerService(true));
   }
+
 
   getRouter() {
     /**
      * web API接口
      */
     // 用户登录注册退出找回密码 用户修改资料，查看信息
-    this.Router.post('/login', (req,res,next) => { 
-      this.userController.login(req,res,next)
-      .then()
-      .catch(console.log)
+    this.Router.post('/login', (req, res, next) => {
+      this.userController.login(req, res, next)
+        .then()
+        .catch(console.log)
     });
-    this.Router.post('/register', (req,res,next) => { 
-      this.userController.register(req,res,next)
-      .then()
-      .catch(console.log)
-    });
-    this.Router.post('/logout', passport.authenticate('user', { session: false }), this.userController.logout);
-    this.Router.post('/user/:tenantId/list', (req,res,next) => { 
-      this.userController.list(req,res,next)
-      .then()
-      .catch(console.log)
+    this.Router.post('/register', (req, res, next) => {
+      this.userController.register(req, res, next)
+        .then()
+        .catch(console.log)
     });
 
-    this.Router.post('/user/:tenantId/add', (req,res,next) => { 
-      this.userController.add(req,res,next)
-      .then()
-      .catch(console.log)
+    this.Router.post('/logout',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.logout(req, res, next)
+        .then()
+        .catch(console.log)
     });
+
+    this.Router.post('/user/:tenantId/list', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.list(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/user/:tenantId/add',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.add(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/user/:tenantId/del',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.del(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/user/:tenantId/reset',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.reset(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
     this.Router.get('/user/:userid/home', this.userController.home);
     /*Router.get('/user/:id/profile', userController.profile);
     Router.get('/user/:id/basic', userController.basic);*/

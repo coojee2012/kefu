@@ -34,8 +34,8 @@ export type UserModel = mongoose.Document & {
         country_code: String   // 来自哪个国家
     };
     author: String;   // 作者身份
-    domain:String; // 企业域
-    role:String; // 用户角色   
+    domain: String; // 企业域
+    role: String; // 用户角色   
     basic: {   // 基本设置
         nickname: String;   // 昵称
         avatar: String;    // 头像
@@ -44,8 +44,8 @@ export type UserModel = mongoose.Document & {
         email_notify: String    // 提醒邮件通知
     };
     token: String;    // 登陆签名
-    memo:String; // 备注
-    extension:String; // 使用分机
+    memo: String; // 备注
+    extension: String; // 使用分机
     comparePassword: (candidatePassword: String, callback: (err: any, isMatch: boolean) => any) => void;  // 验证密码
     gravatar: (size: number) => String   // 获取头像
 };
@@ -70,7 +70,7 @@ export interface AuthToken {
 const userSchema = new mongoose.Schema({
     username: {    // 登陆账号
         type: String,
-       // unique: true, // 不可重复约束
+        // unique: true, // 不可重复约束
         require: true // 不可为空约束
     },
     password: {    // 登陆密码
@@ -81,7 +81,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true // 不可为空约束
     },
-    status: {  // 用户状态  0 不存在（注销） 1 启用 2 黑名单
+    status: {  // 用户状态  0 不存在（注销） 1 启用 2 黑名单 
         type: String,
         required: true,
         enum: ['0', '1', '2'],
@@ -93,7 +93,7 @@ const userSchema = new mongoose.Schema({
         enum: ['-1', 'waiting', 'busy', 'rest', 'idle', 'ringing', 'inthecall'],
         default: '-1'
     },
-    checkInType:{ // 用户电话签入类型 mobile  sip  embed msg
+    checkInType: { // 用户电话签入类型 mobile  sip  embed msg
         type: String,
         required: true,
         enum: ['-1', 'embed', 'sip', 'mobile', 'msg'],
@@ -105,13 +105,13 @@ const userSchema = new mongoose.Schema({
         enum: ['master', 'agent', 'group'],
         default: 'agent'
     },
-    phone:{ // 工作使用的电话
+    phone: { // 工作使用的电话
         type: String,
     },
-    memo:{ // 备注
+    memo: { // 备注
         type: String,
     },
-    extension:{ // 工作使用的分机
+    extension: { // 工作使用的分机
         type: String,
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者
@@ -169,7 +169,7 @@ const userSchema = new mongoose.Schema({
     token: String
 }, { timestamps: true });
 
-userSchema.index({username: 1, domain: 1}, {unique: true});
+userSchema.index({ username: 1, domain: 1 }, { unique: true });
 /**
  * 添加用户保存时中间件对password进行bcrypt加密,这样保证用户密码只有用户本人知道
  */
@@ -196,6 +196,28 @@ userSchema.pre('save', function (next) {
             next();
         });
     });
+});
+
+userSchema.pre('update', function (next) {
+    const self = this;
+    if (self._update.$set.password) {
+        const password = self._update.$set.password;
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) {
+                return next(err);
+            }
+            bcrypt.hash(password, salt, (error, hash) => {
+                if (error) {
+                    return next(error);
+                }
+                self._update.$set.password = hash
+                next();
+            });
+        });
+    } else {
+        next();
+    }
+
 });
 
 /**

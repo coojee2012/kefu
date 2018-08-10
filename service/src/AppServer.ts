@@ -23,7 +23,7 @@ import { Injector, ReflectiveInjector, Injectable } from 'injection-js';
 import { HeroService } from './service/HeroService';
 import { LoggerService } from './service/LogService';
 // import { DeepStreamService } from './service/DeepStreamService';
-import { default as passport } from './config/passport';
+import { Passport } from './config/passport';
 /**
  * 引入配置
  */
@@ -42,7 +42,7 @@ export class AppServer {
     public app: express.Application;
     constructor(private injector: Injector, private logger: LoggerService,
         private routeService: RoutesService, private config: ConfigService,
-        private mongoDB: MongoService
+        private mongoDB: MongoService,private passport:Passport
     ) {
         this.app = express();
         //this.logger = injector.get(LoggerService);
@@ -84,7 +84,7 @@ export class AppServer {
         // 初始化passport模块
 
 
-        this.app.use(passport.initialize());
+        this.app.use(this.passport.getPassport().initialize());
 
         /**
          * 设置解析数据中间件，默认json传输

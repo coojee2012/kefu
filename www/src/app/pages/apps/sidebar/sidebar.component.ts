@@ -21,8 +21,21 @@ export class SidebarComponent implements OnInit {
   }
 
   loginOut() {
-    this.loginService.logout();
-    this.router.navigate(['/login']);
+    this.loginService.logout()
+    .subscribe(
+      (user) => {
+        if (user.meta.code === 200) {
+          this.router.navigate(['/login']);
+        } else {
+          // this.isSubmitError = true;
+         // this._success.next(user.meta.message);
+        }
+      },
+      (error) => {
+        // this.error = error;
+        // this._success.next(error);
+      }
+    );
   }
 
   onTreeClick(index: number) {

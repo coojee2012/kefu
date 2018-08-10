@@ -26,12 +26,18 @@ export class UserManageService {
       );
   }
 
-  delUser(id) {
-
+  delUser(id): Observable<any> {
+    return this.http.post(`/user/${this.optUser.domain}/del`, { id })
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
-  resetPwd(id) {
-
+  resetPwd(id): Observable<any> {
+    return this.http.post(`/user/${this.optUser.domain}/reset`, { id, password: '111111' })
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   private extractData(res: any) {
