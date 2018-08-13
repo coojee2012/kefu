@@ -22,6 +22,7 @@ export class Passport {
             if (!decoded) {
                 return done(null, false);
             }
+            console.log('jwt decoded:',decoded);
             self.mongoServer.models.Users.findOne({
                 username: decoded.username,
                 token: token

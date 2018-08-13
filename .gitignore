@@ -49,3 +49,4 @@ eos/huobiAutoTrade/file-info.log
 
 deploy
 ./exe/config.ini
+service/logs/success.log

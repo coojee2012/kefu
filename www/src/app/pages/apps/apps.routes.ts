@@ -15,7 +15,8 @@ export const routes: Routes = [
     children: [
       { path: '', loadChildren: 'app/pages/apps/dashbord/dashbord.module#DashbordModule' },
       { path: 'chat/:id', loadChildren: 'app/pages/apps/chat-room/chat-room.module#ChatRoomModule' },
-      { path: 'userma', loadChildren: 'app/pages/apps/user-manage/user-manage.module#UserManageModule' }
+      { path: 'userma', loadChildren: 'app/pages/apps/user-manage/user-manage.module#UserManageModule' },
+      { path: 'set/pbx', loadChildren: 'app/pages/apps/user-manage/user-manage.module#UserManageModule' }
     ]
   },
 ];

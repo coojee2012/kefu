@@ -1,4 +1,4 @@
-import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
+import { Observable, Subject, ReplaySubject, from, of, range, throwError } from 'rxjs';
 import { map, filter, switchMap, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { AuthorizationService } from '../../core/authorization';
@@ -44,9 +44,15 @@ export class LoginService {
         map((res: any) => {
           console.log('logiouttt :', res);
           if (res.meta.code === 200) {
-            this.authorizationService.logout();
+
+          } else {
           }
+          this.authorizationService.logout();
           return res;
+        }),
+        catchError((error) => {
+          this.authorizationService.logout();
+          return throwError(error);
         })
       );
   }
