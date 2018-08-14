@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-pbx-memu',
@@ -6,10 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./pbx-memu.component.css']
 })
 export class PbxMemuComponent implements OnInit {
-
+  @Input() memu: string;
   constructor() { }
 
   ngOnInit() {
+    console.log('men', this.memu);
   }
 
 }

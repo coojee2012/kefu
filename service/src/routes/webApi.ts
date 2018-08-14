@@ -21,14 +21,17 @@ import { Passport } from '../config/passport'
 // import { default as ArticleController } from '../controllers/article';
 // import { default as CorpusController } from '../controllers/corpus';
 
+import { PBXExtensionController } from '../controllers/pbx_extension';
 export class WebAPI {
   private Router: Express.Router;
   private userController: UserController;
+  private pbxExtensionCtr: PBXExtensionController;
   private logger: LoggerService;
   private passport: Passport;
   constructor(private injector: Injector) {
     this.Router = Express.Router();
     this.userController = this.injector.get(UserController);
+    this.pbxExtensionCtr = this.injector.get(PBXExtensionController);
     this.logger = this.injector.get(LoggerService);
     this.passport = this.injector.get(Passport);
     //this.userController = new UserController(new LoggerService(true));
@@ -86,6 +89,31 @@ export class WebAPI {
     Router.get('/user/:id/basic', userController.basic);*/
     this.Router.param('userid', this.userController.byId);
 
+
+    // 分机管理
+
+    this.Router.post('/pbx/extension/:tenantId', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.getList(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    this.Router.post('/pbx/extension/:tenantId/add', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.create(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/pbx/extension/:tenantId/addmuti', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.addmuti(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/pbx/extension/:tenantId/del', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.delExtension(req, res, next)
+        .then()
+        .catch(console.log)
+    });
 
     // 文集增删改查
     // this.Router.post('/article', passport.authenticate('user', { session: false }), ArticleController.save);

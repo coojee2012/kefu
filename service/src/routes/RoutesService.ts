@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { UserController } from '../controllers/user';
 import { ArticleController } from '../controllers/article'
+import { PBXExtensionController } from '../controllers/pbx_extension';
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -20,6 +21,7 @@ export class RoutesService {
   createChildInjector(): void {
     this.childInjector = ReflectiveInjector.resolveAndCreate([
       UserController,
+      PBXExtensionController,
       ArticleController
     ], this.injector);
   }

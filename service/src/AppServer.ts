@@ -42,7 +42,7 @@ export class AppServer {
     public app: express.Application;
     constructor(private injector: Injector, private logger: LoggerService,
         private routeService: RoutesService, private config: ConfigService,
-        private mongoDB: MongoService,private passport:Passport
+        private mongoDB: MongoService, private passport: Passport
     ) {
         this.app = express();
         //this.logger = injector.get(LoggerService);
@@ -115,6 +115,17 @@ export class AppServer {
                 }
             }
         }));
+
+        this.app.use((req, res, next) => {
+            const opUser = (req as any).user;
+            const { tenantId } = req.params
+            if (tenantId && opUser && opUser.domain !== tenantId) {
+                next('操作不被允许');
+            } else {
+                next();
+            }
+        });
+
         /**
          * 路由挂载到app上
          */
@@ -158,6 +169,11 @@ export class AppServer {
             err.status = 404;
             next(err);
         });
+
+        this.app.use((err, req, res, next) => {
+            res.status(500);
+            res.json({err});
+          })
 
         this.app.listen(apiConfig.port, () => this.logger.debug('Express server listening on port ' + apiConfig.port));
     }

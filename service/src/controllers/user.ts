@@ -659,6 +659,15 @@ export class UserController implements UserInterface {
                 }
 
                 const { tenantId } = req.params
+                if(opUser.domain !== tenantId){
+                    res.json({
+                        'meta': {
+                            'code': 424,
+                            'message': '操作不被允许'
+                        }
+                    });
+                    return;
+                }
 
                 // 保存用户账号
                 await this.mongoDB.models.Users.update({ domain: tenantId, _id: req.body.id }, { $set: { status: '0' } });
