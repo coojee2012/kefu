@@ -115,6 +115,14 @@ export class WebAPI {
         .catch(console.log)
     });
 
+    // 分机注册
+
+    this.Router.post('/fs/directory', (req, res, next) => {
+      this.pbxExtensionCtr.directory(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
     // 文集增删改查
     // this.Router.post('/article', passport.authenticate('user', { session: false }), ArticleController.save);
     // this.Router.put('/article/:articleid', passport.authenticate('user', { session: false }), ArticleController.updata);
