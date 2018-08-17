@@ -72,6 +72,12 @@ export class WebAPI {
         .catch(console.log)
     });
 
+    this.Router.post('/user/safe',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.safe(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
     this.Router.post('/user/:tenantId/del',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.del(req, res, next)
         .then()
@@ -117,11 +123,19 @@ export class WebAPI {
 
     // 分机注册
 
-    this.Router.post('/fs/directory', (req, res, next) => {
+    this.Router.post('/fs/directory',this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
       this.pbxExtensionCtr.directory(req, res, next)
         .then()
         .catch(console.log)
     });
+
+   // TODO 动态加载一些配置 如  gateways 会议等
+    this.Router.post('/fs/configuration',this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.configuration(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    
 
     // 文集增删改查
     // this.Router.post('/article', passport.authenticate('user', { session: false }), ArticleController.save);

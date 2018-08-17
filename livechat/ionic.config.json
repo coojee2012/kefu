@@ -1,0 +1,8 @@
+{
+  "name": "uuchat",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular",
+  "pro_id": "bee3d207"
+}

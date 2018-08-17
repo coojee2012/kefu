@@ -4,6 +4,7 @@
 import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import * as passportBearer from 'passport-http-bearer';
+import * as passportHttp from 'passport-http';
 import { Injectable, Injector } from 'injection-js';
 import { MongoService } from '../service/MongoService';
 const Strategy = passportBearer.Strategy;
@@ -39,7 +40,15 @@ export class Passport {
     }
     init() {
         passport.use('user', new Strategy(this.strategy.bind(this)));
-
+        passport.use(new passportHttp.BasicStrategy(
+            (username, password, done) => {           
+                if(username === 'freeswitch' && password == 'kf2018@liny'){
+                    return done(null, true);
+                } else{
+                    return done(null, false);
+                }
+            }
+        ));
         /**
          * 注册后台管理 管理员权限
          */

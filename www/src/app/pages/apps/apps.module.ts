@@ -4,8 +4,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../../shared';
 import { SidebarModule } from './sidebar';
 import { HeaderComponent } from './header/header.component';
-import {  NgbdDialoutModalComponent } from './header/dialout.modal.compnent';
+import { NgbdDialoutModalComponent } from './header/dialout.modal.compnent';
 import { NgbdEnsureModalComponent } from './user-manage/ensure.modal.compnent';
+import { AlertModalComponent } from './shared/alert-modal/alert-modal.component';
 import { FooterComponent } from './footer/footer.component';
 import { AppsComponent } from './apps.component';
 
@@ -37,10 +38,12 @@ import { LoadingPageModule, MaterialBarModule } from 'angular-loading-page';
     HeaderComponent,
     FooterComponent,
     NgbdDialoutModalComponent,
+    AlertModalComponent,
     NgbdEnsureModalComponent,
     AppsComponent
   ],
   entryComponents: [
+    AlertModalComponent,
     NgbdDialoutModalComponent,
     NgbdEnsureModalComponent,
   ],

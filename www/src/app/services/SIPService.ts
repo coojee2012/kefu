@@ -15,21 +15,21 @@ export class SIPService {
         this.chatMessage$ = this.chatMessageSource.asObservable();
     }
 
-    async init() {
+    async init(options: any) {
         try {
             await new Promise((resolve, reject) => {
                 this.client = new SIP.UA({
                     // Replace this IP address with your FreeSWITCH IP address
-                    uri: '1002@192.168.2.230',
+                    uri: `${options.exten}@${options.domain}`,
                     // Replace this IP address with your FreeSWITCH IP address
                     // and replace the port with your FreeSWITCH ws port
                     transportOptions: {
                         wsServers: 'ws://192.168.2.230:5066',
                     },
                     // FreeSWITCH Default Username
-                    authorizationUser: '1002',
+                    authorizationUser: options.exten,
                     // FreeSWITCH Default Password
-                    password: '123456',
+                    password: options.password,
                     register: true,
                     // sessionDescriptionHandlerFactory: (session, options) => {
                     //     return new SessionDescriptionHandler(session, options);
@@ -83,8 +83,8 @@ export class SIPService {
         try {
             this.session = session;
             this.logger.debug('Accept a Aclling');
-            const remoteVideo: HTMLVideoElement = <HTMLVideoElement> document.getElementById('remoteVideo');
-            const localVideo: HTMLVideoElement = <HTMLVideoElement> document.getElementById('localVideo');
+            const remoteVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('remoteVideo');
+            const localVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('localVideo');
 
             this.session.once('trackAdded', () => {
                 // We need to check the peer connection to determine which track was added

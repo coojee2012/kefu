@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>设置</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list margin-top>
+    <button ion-item (click)="clearStorage()">清除缓存</button>
+  </ion-list>
+
+  <div padding-horizontal>
+    <button ion-button block round color="danger" (click)="signout()">登出</button>
+  </div>
+
+</ion-content>

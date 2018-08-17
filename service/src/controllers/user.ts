@@ -87,7 +87,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const user: any = await this.mongoDB.models.Users.findOne({ username, domain , status: '1' });
+            const user: any = await this.mongoDB.models.Users.findOne({ username, domain, status: '1' });
             if (!user) {
                 res.json({
                     'meta': {
@@ -95,6 +95,11 @@ export class UserController implements UserInterface {
                         'message': '用户不存在或用户已注销！'
                     }
                 });
+            }
+            let extpwd = '';
+            if (user.extension) {
+                const extenInfo = await this.mongoDB.models.PBXExtension.findOne({ accountCode: user.extension, tenantId: domain });
+                extpwd = extenInfo ? extenInfo.password : '';
             }
             user.comparePassword(req.body.password, (err, isMatch: boolean) => {
                 if (err) {
@@ -120,6 +125,9 @@ export class UserController implements UserInterface {
                                     'nickname': user.basic.nickname,
                                     'avatar': user.basic.avatar,
                                     'phone': user.phone,
+                                    'extension': user.extension,
+                                    extPwd: extpwd,
+                                    'role': user.role,
                                     'domain': user.domain,
                                     'state': user.state,
                                     'slug': user.slug
@@ -637,6 +645,23 @@ export class UserController implements UserInterface {
         }
     }
 
+
+    async safe(req: Request, res: Response, next: NextFunction) {
+        try {
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '验证安全通过!'
+                },
+                'data': {
+
+                }
+            });
+        } catch (ex) {
+            return next(ex);
+        }
+    }
+
     async del(req: Request, res: Response, next: NextFunction) {
         try {
             const opUser = (req as any).user;
@@ -659,7 +684,7 @@ export class UserController implements UserInterface {
                 }
 
                 const { tenantId } = req.params
-                if(opUser.domain !== tenantId){
+                if (opUser.domain !== tenantId) {
                     res.json({
                         'meta': {
                             'code': 424,

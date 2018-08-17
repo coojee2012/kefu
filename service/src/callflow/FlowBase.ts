@@ -419,7 +419,7 @@ export class FlowBase {
 
             const bLegCgrVars = `{${blegArgs.join(',')}}`;
             // let dialStr = `${bLegCgrVars}sofia/external/${number}@${tenantId}`;
-            let dialStr = `user/${number}@${tenantId}`;
+            let dialStr = `{sip_invite_domain='192.168.2.230'}user/${number}@${tenantId}`;
 
 
             await this.pbxExtensionController.setAgentLastCallId(tenantId, number, callId);
