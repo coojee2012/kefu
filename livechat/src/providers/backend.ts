@@ -172,7 +172,7 @@ export class BackEnd {
 
         // });
 
-        return this.init({exten:'1002',domain:'163.com',password:'123123'});
+        return this.init({ exten: '1002', domain: '163.com', password: '123123' });
 
     }
 
@@ -223,12 +223,12 @@ export class BackEnd {
                     resolve();
                 };
                 this.client.setMaxListeners(1000);
-                this.client.on('registered', onRegistered);
-                this.client.on('registrationFailed', onRegistionFailed);
-                this.client.on('invite', this.acceptACall.bind(this));
-                this.client.on('message', this.handleChatMsg.bind(this));
+                this.client.once('registered', onRegistered);
+                this.client.once('registrationFailed', onRegistionFailed);
                 this.client.start();
             });
+            this.client.on('invite', this.acceptACall.bind(this));
+            this.client.on('message', this.handleChatMsg.bind(this));
             return Promise.resolve();
         } catch (ex) {
             console.error('SIP INIT ERROR:', ex);

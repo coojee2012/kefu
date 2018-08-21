@@ -105,15 +105,19 @@ export class IndexPage {
                     this.userService.safe(token, ownId).subscribe(
                         res => {
                             this.backEnd.connect(token, ownId);
-                            shouldInitData && this.initData();
+                            shouldInitData && this.initData(token, ownId);
                         },
                         err => {
-                            if (err && err.$custom) {
-                                this.systemService.showToast(err.msg);
+                           
+                            if (err && err.status !== 200) {
+                                this.systemService.showToast(err.statusText);
                                 this.gotoLoginPage();
                                 return;
+                            }else{
+                                this.myHttp.handleError(err);
                             }
-                            this.myHttp.handleError(err);
+                          
+                            
                         }
                     )
 
@@ -132,9 +136,9 @@ export class IndexPage {
         return Promise.all([p1, p2])
     }
 
-    initData(): void {
-        this.userService.getSource();
-        this.msgService.getSource();
+    initData(token, useId): void {
+        this.userService.getSource(token);
+        this.msgService.getSource(token, useId);
     }
 
     destroyData(): void {

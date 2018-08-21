@@ -78,6 +78,20 @@ export class WebAPI {
         .catch(console.log)
     });
 
+    this.Router.get('/user/getOwn',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.get(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.get('/user/getRelationList',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.getRelationList(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    
+    
+
     this.Router.post('/user/:tenantId/del',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.del(req, res, next)
         .then()

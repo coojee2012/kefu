@@ -61,18 +61,18 @@ export class UserService {
 				return friendList;
 
 			}).subscribe(
-			friendList => {
-				this.friendListSubject.next(friendList)
-			}
+				friendList => {
+					this.friendListSubject.next(friendList)
+				}
 			);
 
 
 
 	}
 
-	getSource() {
-		this.getOwn();
-		this.getRelationList();
+	getSource(token) {
+		this.getOwn(token);
+		this.getRelationList(token);
 	}
 
 
@@ -83,29 +83,36 @@ export class UserService {
 	}
 
 
-	getOwn(): void {
-		this.myHttp.get(API_HOST + '/user/getOwn')
+	getOwn(token): void {
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${token}` })
+		}
+
+		this.myHttp.get(API_HOST + '/user/getOwn', options)
 			.subscribe(
-			res => {
-				this.ownSubject.next(res.data);
-			},
-			err => {
-				console.log(err);
-			}
+				res => {
+					this.ownSubject.next(res.data);
+				},
+				err => {
+					console.log(err);
+				}
 			);
 	}
 
 	//获取关系列表
-	getRelationList(): void {
-
-		this.myHttp.get(API_HOST + '/user/getRelationList')
+	getRelationList(token): void {
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${token}` })
+		}
+		this.myHttp.get(API_HOST + '/user/getRelationList',options)
 			.subscribe(
-			res => {
-				this.relationListSubject.next(res.data);
-			},
-			err => {
-				console.log(err);
-			}
+				res => {
+					console.log('getRelationList',res.data)
+					this.relationListSubject.next(res.data);
+				},
+				err => {
+					console.log(err);
+				}
 			);
 	}
 
@@ -183,12 +190,12 @@ export class UserService {
 
 		observable = this.myHttp.post(API_HOST + '/user/modAvatar', formData)
 			.subscribe(
-			res => {
-				this.ownSubject.next(res.data);
-			},
-			err => {
-				console.log(err);
-			}
+				res => {
+					this.ownSubject.next(res.data);
+				},
+				err => {
+					console.log(err);
+				}
 			);
 
 		return observable;

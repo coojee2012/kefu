@@ -180,10 +180,10 @@ var MyHttp = (function (_super) {
         this.systemService.showToast(defaultMsg);
     };
     return MyHttp;
-}(__WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]));
+}(__WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]));
 MyHttp = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */]) === "function" && _e || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* RequestOptions */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* RequestOptions */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */]) === "function" && _e || Object])
 ], MyHttp);
 
 var _a, _b, _c, _d, _e;
@@ -297,14 +297,16 @@ var IndexPage = (function () {
             if (token && ownId) {
                 _this.userService.safe(token, ownId).subscribe(function (res) {
                     _this.backEnd.connect(token, ownId);
-                    shouldInitData && _this.initData();
+                    shouldInitData && _this.initData(token, ownId);
                 }, function (err) {
-                    if (err && err.$custom) {
-                        _this.systemService.showToast(err.msg);
+                    if (err && err.status !== 200) {
+                        _this.systemService.showToast(err.statusText);
                         _this.gotoLoginPage();
                         return;
                     }
-                    _this.myHttp.handleError(err);
+                    else {
+                        _this.myHttp.handleError(err);
+                    }
                 });
             }
             else {
@@ -319,9 +321,9 @@ var IndexPage = (function () {
         var p2 = this.storage.get('ownId');
         return Promise.all([p1, p2]);
     };
-    IndexPage.prototype.initData = function () {
-        this.userService.getSource();
-        this.msgService.getSource();
+    IndexPage.prototype.initData = function (token, useId) {
+        this.userService.getSource(token);
+        this.msgService.getSource(token, useId);
     };
     IndexPage.prototype.destroyData = function () {
         this.backEnd.clearSource();
@@ -387,18 +389,10 @@ IndexPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'cy-index-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" [tabBadge]="chatUnread" tabBadgeStyle="danger" tabTitle="聊天" tabIcon="chatbubbles"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="通讯录" tabIcon="contacts"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="发现" tabIcon="compass"></ion-tab>\n  <ion-tab [root]="tab4Root" tabTitle="我的" tabIcon="contact"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
-        __WEBPACK_IMPORTED_MODULE_10__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_11__services_msg__["a" /* MsgService */],
-        __WEBPACK_IMPORTED_MODULE_12__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_10__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_10__services_user__["a" /* UserService */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_11__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_11__services_msg__["a" /* MsgService */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_12__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_12__services_system__["a" /* SystemService */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */]) === "function" && _k || Object])
 ], IndexPage);
 
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -1267,7 +1261,7 @@ var TimelineService = (function () {
     };
     // 点赞
     TimelineService.prototype.likeTimeline = function (timelineId, isLike) {
-        var search = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
+        var search = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["f" /* URLSearchParams */]();
         search.append('isLike', isLike);
         return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/timeline/likeTimeline/' + timelineId, { search: search });
     };
@@ -1427,15 +1421,16 @@ UserValidator = __decorate([
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_do__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_do__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__config_config__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__providers_my_http__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_backend__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_do__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_do__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__config_config__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_my_http__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_backend__ = __webpack_require__(31);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1452,16 +1447,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var UserService = (function () {
     function UserService(myHttp, backEnd) {
         this.myHttp = myHttp;
         this.backEnd = backEnd;
-        this.ownSubject = new __WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject__["BehaviorSubject"]({});
+        this.ownSubject = new __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__["BehaviorSubject"]({});
         this.own$ = this.ownSubject.asObservable();
-        this.relationListSubject = new __WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject__["BehaviorSubject"]([]);
+        this.relationListSubject = new __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__["BehaviorSubject"]([]);
         this.relationList$ = this.relationListSubject.asObservable();
         //source: relationListSubject
-        this.friendListSubject = new __WEBPACK_IMPORTED_MODULE_1_rxjs_BehaviorSubject__["BehaviorSubject"]([]);
+        this.friendListSubject = new __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__["BehaviorSubject"]([]);
         this.friendList$ = this.friendListSubject.asObservable();
         this._init();
     }
@@ -1492,18 +1488,21 @@ var UserService = (function () {
             _this.friendListSubject.next(friendList);
         });
     };
-    UserService.prototype.getSource = function () {
-        this.getOwn();
-        this.getRelationList();
+    UserService.prototype.getSource = function (token) {
+        this.getOwn(token);
+        this.getRelationList(token);
     };
     UserService.prototype.clearSource = function () {
         this.ownSubject.next({});
         this.relationListSubject.next([]);
         this.friendListSubject.next([]);
     };
-    UserService.prototype.getOwn = function () {
+    UserService.prototype.getOwn = function (token) {
         var _this = this;
-        this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getOwn')
+        var options = {
+            headers: new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ Authorization: "Bearer " + token })
+        };
+        this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getOwn', options)
             .subscribe(function (res) {
             _this.ownSubject.next(res.data);
         }, function (err) {
@@ -1511,10 +1510,14 @@ var UserService = (function () {
         });
     };
     //获取关系列表
-    UserService.prototype.getRelationList = function () {
+    UserService.prototype.getRelationList = function (token) {
         var _this = this;
-        this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getRelationList')
+        var options = {
+            headers: new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ Authorization: "Bearer " + token })
+        };
+        this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getRelationList', options)
             .subscribe(function (res) {
+            console.log('getRelationList', res.data);
             _this.relationListSubject.next(res.data);
         }, function (err) {
             console.log(err);
@@ -1522,54 +1525,54 @@ var UserService = (function () {
     };
     //通过手机通讯录查找好友
     UserService.prototype.getUserListByMobiles = function (mobiles) {
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getUserListByMobiles', { mobiles: mobiles });
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getUserListByMobiles', { mobiles: mobiles });
     };
     //登录
     UserService.prototype.login = function (postData) {
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/login', postData);
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/login', postData);
     };
     //登录
     UserService.prototype.safe = function (token, userId) {
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/safe', { token: token, userId: userId });
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/safe', { token: token, userId: userId });
     };
     //获取验证码
     UserService.prototype.getVerificationCode = function (mobile) {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getVerificationCode/' + mobile);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getVerificationCode/' + mobile);
     };
     //验证验证码
     UserService.prototype.checkVerificationCode = function (mobile, code) {
         var postData = { mobile: mobile, code: code };
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/checkVerificationCode', postData);
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/checkVerificationCode', postData);
     };
     //注册
     UserService.prototype.signup = function (mobileToken, username, password) {
         var postData = { mobileToken: mobileToken, username: username, password: password };
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/signup', postData);
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/signup', postData);
     };
     //完善资料
     UserService.prototype.setInfo = function (formData) {
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/setInfo', formData);
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/setInfo', formData);
     };
     //搜索用户
     UserService.prototype.searchUser = function (search) {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/searchUser/' + search);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/searchUser/' + search);
     };
     //获取用户资料
     UserService.prototype.getUser = function (userId) {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getUser/' + userId);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getUser/' + userId);
     };
     //申请好友
     UserService.prototype.makeFriend = function (userId, requestMsg) {
         if (requestMsg === void 0) { requestMsg = ''; }
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/makeFriend/' + userId + '?requestMsg=' + requestMsg);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/makeFriend/' + userId + '?requestMsg=' + requestMsg);
     };
     //确认好友
     UserService.prototype.confirmFriend = function (userId) {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/confirmFriend/' + userId);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/confirmFriend/' + userId);
     };
     //获取新好友列表
     UserService.prototype.getFriendNewList = function () {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/getFriendNewList');
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/getFriendNewList');
     };
     //修改头像
     UserService.prototype.modAvatar = function (file) {
@@ -1577,7 +1580,7 @@ var UserService = (function () {
         var formData = new FormData();
         var observable;
         formData.append('file', file);
-        observable = this.myHttp.post(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/modAvatar', formData)
+        observable = this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/modAvatar', formData)
             .subscribe(function (res) {
             _this.ownSubject.next(res.data);
         }, function (err) {
@@ -1588,7 +1591,7 @@ var UserService = (function () {
     //修改昵称
     UserService.prototype.modNickname = function (nickname) {
         var _this = this;
-        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/modNickname/' + nickname);
+        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/modNickname/' + nickname);
         observable.subscribe(function (res) {
             _this.ownSubject.next(res.data);
         }, function (err) {
@@ -1599,7 +1602,7 @@ var UserService = (function () {
     //修改性别
     UserService.prototype.modGender = function (gender) {
         var _this = this;
-        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/modGender/' + gender);
+        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/modGender/' + gender);
         observable.subscribe(function (res) {
             _this.ownSubject.next(res.data);
         }, function (err) {
@@ -1610,7 +1613,7 @@ var UserService = (function () {
     //修改个性签名
     UserService.prototype.modMotto = function (motto) {
         var _this = this;
-        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/modMotto/' + motto);
+        var observable = this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/modMotto/' + motto);
         observable.subscribe(function (res) {
             _this.ownSubject.next(res.data);
         }, function (err) {
@@ -1620,13 +1623,13 @@ var UserService = (function () {
     };
     //通过username查找是否存在帐号
     UserService.prototype.existsByUsername = function (username) {
-        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_4__config_config__["b" /* API_HOST */] + '/user/existsByUsername/' + username);
+        return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/existsByUsername/' + username);
     };
     return UserService;
 }());
 UserService = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_6__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__providers_backend__["a" /* BackEnd */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]) === "function" && _b || Object])
 ], UserService);
 
 var _a, _b;
@@ -3912,14 +3915,14 @@ var BackEnd = (function () {
                                     resolve();
                                 };
                                 _this.client.setMaxListeners(1000);
-                                _this.client.on('registered', onRegistered);
-                                _this.client.on('registrationFailed', onRegistionFailed);
-                                _this.client.on('invite', _this.acceptACall.bind(_this));
-                                _this.client.on('message', _this.handleChatMsg.bind(_this));
+                                _this.client.once('registered', onRegistered);
+                                _this.client.once('registrationFailed', onRegistionFailed);
                                 _this.client.start();
                             })];
                     case 1:
                         _a.sent();
+                        this.client.on('invite', this.acceptACall.bind(this));
+                        this.client.on('message', this.handleChatMsg.bind(this));
                         return [2 /*return*/, Promise.resolve()];
                     case 2:
                         ex_1 = _a.sent();
@@ -4503,7 +4506,7 @@ AppModule = __decorate([
         ],
         imports: [
             __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-            __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* HttpModule */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* HttpModule */],
             __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["g" /* IonicModule */].forRoot(__WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */], {
                 // activator:"highlight",     //activator:"ripple",
                 // tabsHideOnSubPages : true,
@@ -4577,7 +4580,7 @@ AppModule = __decorate([
             {
                 provide: __WEBPACK_IMPORTED_MODULE_58__providers_my_http__["a" /* MyHttp */],
                 useFactory: __WEBPACK_IMPORTED_MODULE_50__factorys__["a" /* myHttpFactory */],
-                deps: [__WEBPACK_IMPORTED_MODULE_2__angular_http__["f" /* XHRBackend */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* RequestOptions */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* LoadingController */], __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */], __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */]]
+                deps: [__WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* XHRBackend */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestOptions */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* LoadingController */], __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */], __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */]]
             },
             __WEBPACK_IMPORTED_MODULE_60__validators_user__["a" /* UserValidator */],
         ]
@@ -9713,7 +9716,7 @@ var MsgService = (function () {
         this.msgList$.subscribe(function (msgList) {
         });
     };
-    MsgService.prototype.getSource = function () {
+    MsgService.prototype.getSource = function (token, userId) {
         this.getMsgList();
         this.getChatList();
     };
@@ -9845,12 +9848,10 @@ var MsgService = (function () {
 }());
 MsgService = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */],
-        __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]) === "function" && _d || Object])
 ], MsgService);
 
+var _a, _b, _c, _d;
 //# sourceMappingURL=msg.js.map
 
 /***/ }),

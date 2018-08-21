@@ -662,6 +662,52 @@ export class UserController implements UserInterface {
         }
     }
 
+    async get(req: Request, res: Response, next: NextFunction) {
+        try {
+            const opUser = (req as any).user;
+            const { domain, username } = opUser;
+            console.log('get user:', opUser);
+            const user = await this.mongoDB.models.Users.findOne({ domain, username });
+            if (user) {
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': ''
+                    },
+                    'data': user
+                });
+            } else {
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': ''
+                    },
+                    'data': user
+                });
+            }
+
+        } catch (ex) {
+            return next(ex);
+        }
+    }
+
+
+    async getRelationList(req: Request, res: Response, next: NextFunction) {
+        try {
+            const opUser = (req as any).user;
+            const { domain, username } = opUser;
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': ''
+                },
+                'data': [{ _friend: { _id: 1 } }, { _friend: { _id: 2 } }]
+            });
+        } catch (ex) {
+            return next(ex);
+        }
+    }
+
     async del(req: Request, res: Response, next: NextFunction) {
         try {
             const opUser = (req as any).user;

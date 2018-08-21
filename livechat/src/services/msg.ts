@@ -192,7 +192,7 @@ export class MsgService {
 
 	}
 
-	getSource() {
+	getSource(token,userId) {
 		this.getMsgList();
 		this.getChatList();
 	}
