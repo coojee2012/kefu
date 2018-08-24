@@ -289,11 +289,15 @@ export class MsgService {
 
 	//发送文本消息
 	sendMsg(relationId, content): void {
-		this.myHttp.post(API_HOST + '/msg/sendMsg', { relationId, content })
-			.subscribe(
-			res => { this.newMsgSubject.next(res.data) },
-			err => { console.log(err) }
-			);
+
+
+        this.backEnd.sendMsg(content);
+
+		// this.myHttp.post(API_HOST + '/msg/sendMsg', { relationId, content })
+		// 	.subscribe(
+		// 	res => { this.newMsgSubject.next(res.data) },
+		// 	err => { console.log(err) }
+		// 	);
 	}
 
 	//发送语音消息
@@ -367,6 +371,8 @@ export class MsgService {
 
 	setInPrivateStorage(name, value): Promise<any> {
 		let ownId = this.backEnd.getOwnId();
+		console.log('addddddddddddd',name,ownId,value)
+		 // return Promise.resolve();
 		return this.storage.set(name + '/' + ownId, value);
 	}
 

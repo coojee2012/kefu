@@ -71,8 +71,8 @@ export class UserService {
 	}
 
 	getSource(token) {
-		this.getOwn(token);
-		this.getRelationList(token);
+		this.getOwn();
+		this.getRelationList();
 	}
 
 
@@ -83,7 +83,8 @@ export class UserService {
 	}
 
 
-	getOwn(token): void {
+	getOwn(): void {
+		const token = this.backEnd.getToken();
 		const options = {
 			headers: new Headers({ Authorization: `Bearer ${token}` })
 		}
@@ -100,7 +101,8 @@ export class UserService {
 	}
 
 	//获取关系列表
-	getRelationList(token): void {
+	getRelationList(): void {
+		const token = this.backEnd.getToken();
 		const options = {
 			headers: new Headers({ Authorization: `Bearer ${token}` })
 		}
@@ -162,7 +164,11 @@ export class UserService {
 
 	//获取用户资料
 	getUser(userId): Observable<any> {
-		return this.myHttp.get(API_HOST + '/user/getUser/' + userId);
+		const token = this.backEnd.getToken();
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${token}` })
+		}
+		return this.myHttp.get(API_HOST + '/user/getUser/' + userId,options);
 	}
 
 
@@ -178,7 +184,11 @@ export class UserService {
 
 	//获取新好友列表
 	getFriendNewList(): Observable<any> {
-		return this.myHttp.get(API_HOST + '/user/getFriendNewList');
+		const token = this.backEnd.getToken();
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${token}` })
+		}
+		return this.myHttp.get(API_HOST + '/user/getFriendNewList',options);
 	}
 
 	//修改头像

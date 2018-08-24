@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, AlertController } from 'ionic-angular';
+import { NavController, AlertController, IonicPage, NavParams } from 'ionic-angular';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
@@ -17,12 +17,14 @@ import { SystemService } from '../../services/system';
 
 import { MyHttp } from '../../providers/my-http';
 import { BackEnd } from '../../providers/backend';
-
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'cy-index-page',
     templateUrl: 'index.html'
+})
+@IonicPage({
+    segment: ':apikey'
 })
 export class IndexPage {
 
@@ -35,6 +37,7 @@ export class IndexPage {
 
     private subscriptions = new Subscription();
 
+    private apikey = '';
     constructor(
         private navCtrl: NavController,
         private vibration: Vibration,
@@ -46,10 +49,14 @@ export class IndexPage {
         private systemService: SystemService,
         private myHttp: MyHttp,
         private backEnd: BackEnd,
+        private navParams: NavParams,
     ) {
+        this.apikey = this.navParams.get('apikey');
+       console.log(this.navParams.data);
     }
 
     ngOnInit() {
+        
         this.connectServer();
 
         //强迫下线通知
@@ -97,6 +104,7 @@ export class IndexPage {
     }
 
     connectServer(shouldInitData = true) {
+        console.log('apikey11111111:',this.apikey);
         this.getToken()
             .then(all => {
                 let token = all[0];
@@ -108,16 +116,16 @@ export class IndexPage {
                             shouldInitData && this.initData(token, ownId);
                         },
                         err => {
-                           
+
                             if (err && err.status !== 200) {
                                 this.systemService.showToast(err.statusText);
                                 this.gotoLoginPage();
                                 return;
-                            }else{
+                            } else {
                                 this.myHttp.handleError(err);
                             }
-                          
-                            
+
+
                         }
                     )
 
@@ -173,9 +181,12 @@ export class IndexPage {
 
         //通知
         this.localNotifications.schedule({
-            id: msg._id,
-            title: msg._fromUser.nickname,
-            text: content,
+            // id: msg._id,
+            // title: msg._fromUser.nickname,
+            // text: content,
+            id: 1,
+            title: 'test',
+            text: msg
         });
 
         //震动

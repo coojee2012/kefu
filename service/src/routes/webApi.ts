@@ -89,6 +89,13 @@ export class WebAPI {
         .then()
         .catch(console.log)
     });
+
+    this.Router.get('/user/getUser/:id',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.userController.getUserById(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    
     
     
 

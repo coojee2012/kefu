@@ -269,44 +269,44 @@ export class BackEnd {
 
                 const pc = this.session.sessionDescriptionHandler.peerConnection;
 
-                // Gets remote tracks
-                const remoteStream = new MediaStream();
-                pc.getReceivers().forEach(function (receiver) {
-                    remoteStream.addTrack(receiver.track);
-                });
-                remoteVideo.srcObject = remoteStream;
-                const playPromise = remoteVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        // Automatic playback started!
-                        // Show playing UI.
-                        // We can now safely pause video...
-                        // remoteVideo.pause();
-                    })
-                        .catch(error => {
-                            // Auto-play was prevented
-                            // Show paused UI.
-                        });
-                }
-                // Gets local tracks
-                const localStream = new MediaStream();
-                pc.getSenders().forEach(function (sender) {
-                    localStream.addTrack(sender.track);
-                });
-                localVideo.srcObject = localStream;
-                const localeplayPromise = localVideo.play();
-                if (localeplayPromise !== undefined) {
-                    localeplayPromise.then(_ => {
-                        // Automatic playback started!
-                        // Show playing UI.
-                        // We can now safely pause video...
-                        // localeplayPromise.pause();
-                    })
-                        .catch(error => {
-                            // Auto-play was prevented
-                            // Show paused UI.
-                        });
-                }
+                // // Gets remote tracks
+                // const remoteStream = new MediaStream();
+                // pc.getReceivers().forEach(function (receiver) {
+                //     remoteStream.addTrack(receiver.track);
+                // });
+                // remoteVideo.srcObject = remoteStream;
+                // const playPromise = remoteVideo.play();
+                // if (playPromise !== undefined) {
+                //     playPromise.then(_ => {
+                //         // Automatic playback started!
+                //         // Show playing UI.
+                //         // We can now safely pause video...
+                //         // remoteVideo.pause();
+                //     })
+                //         .catch(error => {
+                //             // Auto-play was prevented
+                //             // Show paused UI.
+                //         });
+                // }
+                // // Gets local tracks
+                // const localStream = new MediaStream();
+                // pc.getSenders().forEach(function (sender) {
+                //     localStream.addTrack(sender.track);
+                // });
+                // localVideo.srcObject = localStream;
+                // const localeplayPromise = localVideo.play();
+                // if (localeplayPromise !== undefined) {
+                //     localeplayPromise.then(_ => {
+                //         // Automatic playback started!
+                //         // Show playing UI.
+                //         // We can now safely pause video...
+                //         // localeplayPromise.pause();
+                //     })
+                //         .catch(error => {
+                //             // Auto-play was prevented
+                //             // Show paused UI.
+                //         });
+                // }
             });
             this.session.accept();
         } catch (ex) {
@@ -339,7 +339,16 @@ export class BackEnd {
 
 
     handleChatMsg(msg: any) {
-        this.pushMsgSubject.next(msg);
+        this.pushMsgSubject.next({
+            _id: new Date().getTime(),
+            _fromUser: {
+                _id: 1,
+                avatarSrc: ''
+            },
+            timediff:new Date().getTime(),
+            type: 0,
+            content: 'nihao:' + new Date().getTime()
+        });
     }
 
     getChatMessage(): Observable<any> {

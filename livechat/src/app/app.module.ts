@@ -20,7 +20,7 @@ import { File as CordovaFile } from '@ionic-native/file';
 import { MyApp } from './app.component';
 
 /*pages*/
-import { IndexPage } from '../pages/index/index';
+// import { IndexPage } from '../pages/index/index';
 import { ChatPopoverPage } from '../pages/chat-popover/chat-popover';
 import { ChatPage } from '../pages/chat/chat';
 import { ChatContentPage } from '../pages/chat-content/chat-content';
@@ -74,13 +74,13 @@ import { BackEnd } from '../providers/backend';
 /*validators*/
 import { UserValidator } from '../validators/user';
 
-
+import { IndexPageModule } from '../pages/index/index.module'
 @NgModule({
 	declarations: [
 		MyApp,
 
 		/*pages*/
-		IndexPage,
+		// IndexPage,
 		ChatPage,
 		ChatContentPage,
 		ChatPopoverPage,
@@ -125,14 +125,15 @@ import { UserValidator } from '../validators/user';
 		}),
 		IonicStorageModule.forRoot(),
 		PipesModule,
-		ComponentsModule
+		ComponentsModule,
+		IndexPageModule
 	],
 	bootstrap: [IonicApp],
 	entryComponents: [
 		MyApp,
 
 		/*pages*/
-		IndexPage,
+		// IndexPage,
 		ChatPopoverPage,
 		ChatPage,
 		ChatContentPage,

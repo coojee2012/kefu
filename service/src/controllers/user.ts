@@ -692,6 +692,7 @@ export class UserController implements UserInterface {
     }
 
 
+    // TODO 调整成用户对提供服务的公司的关系
     async getRelationList(req: Request, res: Response, next: NextFunction) {
         try {
             const opUser = (req as any).user;
@@ -701,7 +702,24 @@ export class UserController implements UserInterface {
                     'code': 200,
                     'message': ''
                 },
-                'data': [{ _friend: { _id: 1 } }, { _friend: { _id: 2 } }]
+                'data': [{ _friend: { _id: 1, nickname: '张三' }, confirm: true }, { _friend: { _id: 2, nickname: '李四' }, confirm: true }]
+            });
+        } catch (ex) {
+            return next(ex);
+        }
+    }
+
+    async getUserById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const opUser = (req as any).user;
+            const { domain, username } = opUser;
+            const { id } = req.params;
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': ''
+                },
+                'data': { user: { username: '111111', nickname: '张三' }, isFriend: true, relationId: 1 }
             });
         } catch (ex) {
             return next(ex);
