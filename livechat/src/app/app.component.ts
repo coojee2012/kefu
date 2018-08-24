@@ -7,6 +7,7 @@ import { Storage } from '@ionic/storage';
 
 import { IndexPage } from '../pages/index/index';
 import { LoginPage } from '../pages/login/login';
+import { ChatContentPage } from '../pages/chat-content/chat-content'
 /*test*/
 // import { SignupPage } from '../pages/signup/signup';
 // import { SetInfoPage } from '../pages/set-info/set-info';
@@ -18,6 +19,7 @@ import { LoginPage } from '../pages/login/login';
 export class MyApp {
 
 	rootPage;
+	apikey;
 
 	constructor(
 		private platform: Platform,
@@ -27,22 +29,34 @@ export class MyApp {
 		private alertCtrl: AlertController,
 	) {
 
+		if (window) {
+			this.apikey = this.getParameterByName('apikey', window.location.href)
+		}
+	
+		if (this.apikey) {
+			// this.rootPage = ChatContentPage;
+			this.storage.set('apikey', this.apikey)
+				.then(() => {
+					this.rootPage = ChatContentPage;
+				})
+		} else {
+			//通过token判断是否登录过
+			storage.get('token').then(token => {
 
-		//通过token判断是否登录过
-		storage.get('token').then(token => {
+				if (token) {
+					this.rootPage = IndexPage;
+				} else {
+					this.rootPage = LoginPage;
+				}
+				// this.rootPage = SignupPage;
+				// this.rootPage = TimelineAddPage;
+				// this.rootPage = SetInfoPage;
 
-			if (token) {
-				this.rootPage = IndexPage;
-			} else {
-				this.rootPage = LoginPage;
-			}
-			// this.rootPage = SignupPage;
-			// this.rootPage = TimelineAddPage;
-			// this.rootPage = SetInfoPage;
 
-			
 
-		});
+			});
+		}
+
 
 		platform.ready().then(() => {
 			// Okay, so the platform is ready and our plugins are available.
@@ -55,6 +69,16 @@ export class MyApp {
 
 	ngOnInit() {
 
+	}
+
+	getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 
 	// 前往应用市场进行打分鼓励  

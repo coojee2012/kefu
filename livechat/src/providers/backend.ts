@@ -342,12 +342,13 @@ export class BackEnd {
         this.pushMsgSubject.next({
             _id: new Date().getTime(),
             _fromUser: {
-                _id: 1,
+                _id: '163.com',
                 avatarSrc: ''
             },
+            relationId:'163.com',
             timediff:new Date().getTime(),
             type: 0,
-            content: 'nihao:' + new Date().getTime()
+            content: `nihao:${msg.body}` + new Date().getTime()
         });
     }
 

@@ -1,16 +1,17 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, AlertController, IonicPage, NavParams } from 'ionic-angular';
+import { NavController, AlertController } from 'ionic-angular';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { Storage } from '@ionic/storage';
-
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/mergeMap';
 import { ChatPage } from '../chat/chat';
 import { FriendListPage } from '../friend-list/friend-list';
 import { DiscoverPage } from '../discover/discover';
 import { MePage } from '../me/me';
 import { LoginPage } from '../login/login';
-
+import {  ChatContentPage } from '../chat-content/chat-content'
 import { UserService } from '../../services/user';
 import { MsgService } from '../../services/msg';
 import { SystemService } from '../../services/system';
@@ -22,9 +23,6 @@ import { Subscription } from 'rxjs/Subscription';
 @Component({
     selector: 'cy-index-page',
     templateUrl: 'index.html'
-})
-@IonicPage({
-    segment: ':apikey'
 })
 export class IndexPage {
 
@@ -49,52 +47,112 @@ export class IndexPage {
         private systemService: SystemService,
         private myHttp: MyHttp,
         private backEnd: BackEnd,
-        private navParams: NavParams,
+
     ) {
-        this.apikey = this.navParams.get('apikey');
-       console.log(this.navParams.data);
+
+
     }
 
-    ngOnInit() {
-        
-        this.connectServer();
 
-        //强迫下线通知
-        this.subscriptions.add(
 
-            this.backEnd.onForceQuit.subscribe(() => {
-                this.forceQuit();
-            })
 
-        )
+    async ngOnInit() {
+        try {
 
-        //没读消息数
-        this.subscriptions.add(
+            this.apikey = await this.storage.get('apikey');
+            console.log('indexpage:', this.apikey);
+            const [token, ownId] = await this.getToken();
+            if (this.apikey) {
+                // 用token和apikey 验证用户是否以前联系过 否则将创建新的用户
+                if (token) {
+                    console.log('当前用户:', token, ownId);
+                }
+                else {
+                    await this.createNewVistor();
+                }
+            }
+            await this.connectServer();
+            if (this.apikey) {
+                this.navCtrl.push(ChatContentPage, { relationId: this.apikey, chatName: '163163' });
+            }
 
-            this.msgService.chatList$
-                .map(chatList => {
-                    var chatUnread = 0;
+            //强迫下线通知
+            this.subscriptions.add(
 
-                    chatList.forEach(chat => {
-                        chatUnread += chat.unread;
+                this.backEnd.onForceQuit.subscribe(() => {
+                    this.forceQuit();
+                })
+
+            )
+
+            //没读消息数
+            this.subscriptions.add(
+
+                this.msgService.chatList$
+                    .map(chatList => {
+                        var chatUnread = 0;
+
+                        chatList.forEach(chat => {
+                            chatUnread += chat.unread;
+                        })
+
+                        return chatUnread;
                     })
+                    .subscribe(chatUnread => {
+                        this.chatUnread = chatUnread;
+                    })
+            )
 
-                    return chatUnread;
-                })
-                .subscribe(chatUnread => {
-                    this.chatUnread = chatUnread;
-                })
-        )
+            //消息通知
+            this.subscriptions.add(
 
-        //消息通知
-        this.subscriptions.add(
+                this.msgService.newMsg$
+                    .subscribe(msg => {
+                        this.notify(msg);
+                    })
+            )
 
-            this.msgService.newMsg$
-                .subscribe(msg => {
-                    this.notify(msg);
-                })
-        )
+        } catch (ex) {
 
+        }
+
+
+    }
+
+    async createNewVistor() {
+        try {
+            let token, ownId;
+            await new Promise((resolve, reject) => {
+                this.userService.signVisitor(this.apikey)
+                    .mergeMap((res) => {
+                        //本地保存token
+                        token = res.data.token;
+                        ownId = res.data.username;
+
+                        return this.saveToken(token, ownId);
+                    })
+                    .subscribe(
+                        () => {
+                            //保存登录名，下次登录返显处来
+                            this.storage.set('latestUsername', ownId);
+
+                            resolve()
+                        },
+                        err => { this.myHttp.handleError(err, '登录失败'); reject(err) },
+                    );
+
+            });
+
+        } catch (ex) {
+
+        }
+    }
+
+    private saveToken(token: any, ownId: any) {
+        let p1 = this.storage.set('token', token);
+        let p2 = this.storage.set('ownId', ownId);
+        let pAll = Promise.all([p1, p2]);
+        return Observable.fromPromise(pAll);
     }
 
     ngOnDestroy() {
@@ -104,7 +162,7 @@ export class IndexPage {
     }
 
     connectServer(shouldInitData = true) {
-        console.log('apikey11111111:',this.apikey);
+
         this.getToken()
             .then(all => {
                 let token = all[0];

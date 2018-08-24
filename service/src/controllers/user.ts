@@ -9,6 +9,7 @@ import { LocalStrategyInfo } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
 import * as mongoose from 'mongoose';
 import { ArticleController } from './article';
+import { TenantController } from './tenant';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
 import redisClient from '../config/redis';
@@ -38,8 +39,11 @@ export interface UserInterface {
 @Injectable()
 export class UserController implements UserInterface {
     private articleController: ArticleController;
+    private tenantController: TenantController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
         this.articleController = injector.get(ArticleController);
+        this.tenantController = injector.get(TenantController);
+
     }
 
     /**
@@ -101,6 +105,7 @@ export class UserController implements UserInterface {
                 const extenInfo = await this.mongoDB.models.PBXExtension.findOne({ accountCode: user.extension, tenantId: domain });
                 extpwd = extenInfo ? extenInfo.password : '';
             }
+
             user.comparePassword(req.body.password, (err, isMatch: boolean) => {
                 if (err) {
                     return next(err);
@@ -340,6 +345,7 @@ export class UserController implements UserInterface {
             const token = jwt.sign({ username: req.body.username.username }, `kefu2018@abcf`, {
                 expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
+            await this.tenantController.create({ tenantId: req.body.domain })
             const newUser = new this.mongoDB.models.Users({
                 basic: {
                     nickname: req.body.nickname
@@ -349,7 +355,7 @@ export class UserController implements UserInterface {
                 password: req.body.password,
                 role: 'master',
                 status: 1,
-                pgone: req.body.username,
+                phone: req.body.username,
                 token: token
             });
             // 保存用户账号
@@ -383,6 +389,55 @@ export class UserController implements UserInterface {
 
     }
 
+    async registVisitor(req: Request, res: Response, next: NextFunction) {
+        try {
+            const tenant = (req as any).tenant;
+            const username = `visitor_${new Date().getTime()}`;
+            const token = jwt.sign({ username }, `kefu2018@abcf`, {
+                expiresIn: '30 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
+            });
+            const {apikey,tenantId} = tenant;
+            //TODO 验证apikey,并解析出domain
+            const newUser = new this.mongoDB.models.Users({
+                basic: {
+                    nickname: '访客'
+                },
+                domain: tenantId,
+                username,
+                password: '123456', // 设置成一个随机数
+                role: 'visitor',
+                status: 1,
+                phone: '',
+                token: token
+            });
+            // 保存用户账号
+            newUser.save((err, user: UserModel) => {
+                if (err) {
+                    return next(err);
+                }
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': '成功创建访客用户!'
+                    },
+                    'data': {
+                        token,
+                        username,
+                        'user': {
+                            'nickname': user.basic.nickname,
+                            'avatar': user.basic.avatar,
+                            'phone': user.phone,
+                            'domain': user.domain,
+                            'state': user.state,
+                            '_id': user._id
+                        }
+                    }
+                });
+            });
+        } catch (ex) {
+            return next(ex);
+        }
+    }
 
     /**
      * GET /logout

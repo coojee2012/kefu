@@ -102,7 +102,7 @@ const userSchema = new mongoose.Schema({
     role: {    // 角色身份  0 超级管理员 1 坐席 group 组长
         type: String,
         required: true,
-        enum: ['master', 'agent', 'group'],
+        enum: ['master', 'agent', 'group','visitor'],
         default: 'agent'
     },
     phone: { // 工作使用的电话

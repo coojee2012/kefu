@@ -106,10 +106,10 @@ export class UserService {
 		const options = {
 			headers: new Headers({ Authorization: `Bearer ${token}` })
 		}
-		this.myHttp.get(API_HOST + '/user/getRelationList',options)
+		this.myHttp.get(API_HOST + '/user/getRelationList', options)
 			.subscribe(
 				res => {
-					console.log('getRelationList',res.data)
+					console.log('getRelationList', res.data)
 					this.relationListSubject.next(res.data);
 				},
 				err => {
@@ -151,6 +151,12 @@ export class UserService {
 		var postData = { mobileToken, username, password };
 		return this.myHttp.post(API_HOST + '/user/signup', postData);
 	}
+	// 临时访客注册
+
+	signVisitor(apikey): Observable<any> {
+		var postData = { apikey };
+		return this.myHttp.post(API_HOST + '/user/signvisitor', postData);
+	}
 
 	//完善资料
 	setInfo(formData): Observable<any> {
@@ -168,7 +174,7 @@ export class UserService {
 		const options = {
 			headers: new Headers({ Authorization: `Bearer ${token}` })
 		}
-		return this.myHttp.get(API_HOST + '/user/getUser/' + userId,options);
+		return this.myHttp.get(API_HOST + '/user/getUser/' + userId, options);
 	}
 
 
@@ -188,7 +194,7 @@ export class UserService {
 		const options = {
 			headers: new Headers({ Authorization: `Bearer ${token}` })
 		}
-		return this.myHttp.get(API_HOST + '/user/getFriendNewList',options);
+		return this.myHttp.get(API_HOST + '/user/getFriendNewList', options);
 	}
 
 	//修改头像

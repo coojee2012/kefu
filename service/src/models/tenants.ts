@@ -15,6 +15,7 @@ export type TenantModel = mongoose.Document & {
     location: string; // 区域
     balance: number; // 账户余额
     consume: number;  // 消费总额
+    apikey: string;
     dids: string[];  // 呼叫中心电话号码
     telephones: string[]; // 公司联系电话
     webchatOpts: {        // 在线聊天配置
@@ -56,17 +57,17 @@ const tenantSchema = new mongoose.Schema({
     },
     companyName: {
         type: String,
-        required: true,
+
         default: ''
     },
     companyAddr: {
         type: String,
-        required: true,
+
         default: ''
     },
     dids: {
         type: Array,
-        required: true
+        default: []
     },
     balance: {
         type: Number,
@@ -76,6 +77,10 @@ const tenantSchema = new mongoose.Schema({
         type: Number,
         default: 0.00
     }, //总消费额
+    apikey: {
+        type: String,
+        default: ''
+    },
     webchatOpts: {
 
     },//web聊天配置

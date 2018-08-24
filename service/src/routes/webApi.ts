@@ -54,11 +54,21 @@ export class WebAPI {
         .catch(console.log)
     });
 
+    this.Router.post('/user/signvisitor', this.passport.getPassport().authenticate('apikey', { session: false }),(req, res, next) => {
+      this.userController.registVisitor(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    
+
     this.Router.post('/logout',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.logout(req, res, next)
         .then()
         .catch(console.log)
     });
+
+
 
     this.Router.post('/user/:tenantId/list', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.list(req, res, next)

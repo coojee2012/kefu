@@ -23,7 +23,7 @@ export class Passport {
             if (!decoded) {
                 return done(null, false);
             }
-            console.log('jwt decoded:',decoded);
+            console.log('jwt decoded:', decoded);
             self.mongoServer.models.Users.findOne({
                 username: decoded.username,
                 token: token
@@ -38,13 +38,37 @@ export class Passport {
             });
         });
     }
+
+    strategyApiKey(apikey, done) {
+        const self = this;
+        jwt.verify(apikey, 'kefu2018@abcf', (err, decoded) => {
+            if (!decoded) {
+                return done(null, false);
+            }
+            console.log('jwt decoded:', decoded);
+            self.mongoServer.models.Tenants.findOne({
+                tenantId: decoded.tenantId,
+                apikey: apikey
+            }).exec((error, tenant: any) => {
+                if (error) {
+                    return done(error);
+                }
+                if (!tenant) {
+                    return done(null, false, { message: '非法APIKEY' });
+                }
+                return done(null, tenant);
+            });
+        });
+    }
+
     init() {
         passport.use('user', new Strategy(this.strategy.bind(this)));
+        passport.use('apikey', new Strategy(this.strategyApiKey.bind(this)));
         passport.use(new passportHttp.BasicStrategy(
-            (username, password, done) => {           
-                if(username === 'freeswitch' && password == 'kf2018@liny'){
+            (username, password, done) => {
+                if (username === 'freeswitch' && password == 'kf2018@liny') {
                     return done(null, true);
-                } else{
+                } else {
                     return done(null, false);
                 }
             }

@@ -19,7 +19,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Keyboard } from '@ionic-native/keyboard';
 import { File as CordovaFile } from '@ionic-native/file';
-
+import { MyHttp } from '../../providers/my-http';
 
 @Component({
     selector: 'cy-chat-content-page',
@@ -45,6 +45,7 @@ export class ChatContentPage {
     private pageIndexSubject = new BehaviorSubject<number>(1);
 
     private pageTitle = '';
+    private apikey = '';
 
     //语音
     private recordFileSrc = 'record.mp3';
@@ -76,6 +77,7 @@ export class ChatContentPage {
         private userService: UserService,
         private msgService: MsgService,
         private systemService: SystemService,
+        private myHttp: MyHttp,
         private backEnd: BackEnd,
     ) {
 
@@ -91,92 +93,168 @@ export class ChatContentPage {
         //
     }
 
-    ngOnInit() {
-        for (var i = 100; i <= 219; i++) {
-            var suffix = i < 200 ? '.gif' : '.png';
-            this.faceItems.push({
-                src: './assets/img/face/wechat/' + i + suffix,
-                name: '表情' + i
-            });
+    async ngOnInit() {
+
+        try {
+
+            this.apikey = await this.storage.get('apikey');
+            console.log('indexpage:', this.apikey);
+            let [token, ownId] = await this.getToken();
+            if (this.apikey) {
+                // 用token和apikey 验证用户是否以前联系过 否则将创建新的用户
+                if (token) {
+                    console.log('当前用户:', token, ownId);
+                }
+                else {
+                    const rest = await this.createNewVistor();
+                    token = rest[0];
+                    ownId = rest[1];
+                }
+
+                await this.backEnd.connect(token, ownId);
+                this.ownId = ownId;
+
+                this.relationId = '163.com';
+                this.pageTitle = '中国人寿成都客服中心';
+                await this.msgService.getMsgList();
+
+            }
+
+
+
+            for (var i = 100; i <= 219; i++) {
+                var suffix = i < 200 ? '.gif' : '.png';
+                this.faceItems.push({
+                    src: './assets/img/face/wechat/' + i + suffix,
+                    name: '表情' + i
+                });
+            }
+
+
+            this.msgListSubscription =
+                Observable.combineLatest(
+                    this.msgService.msgList$,
+                    this.pageIndexSubject
+                )
+                    .subscribe(
+                        combine => {
+                            let msgList = combine[0];
+                            let pageIndex = combine[1];
+
+                            msgList = msgList.filter(msg => {
+                                return msg.relationId === this.relationId;
+                            });
+                            msgList = msgList.filter((msg, i) => {
+                                return i > (msgList.length - 1) - pageIndex * 10;
+                            });
+
+                            this.msgList = msgList;
+                            // let scrollHeight = this.contentComponent.scrollHeight;
+                            // this._ref.detectChanges();
+
+                            // if(first){
+                            //     this.scrollToBottom();
+                            //     first = false;
+                            // }
+
+                            this.updateDiff();
+
+                            // setTimeout(()=> {
+                            //     this.contentComponent.resize();
+                            //     this.contentComponent.scrollTo(null, this.contentComponent.scrollHeight- scrollHeight );
+                            //     this.isLoading = false;
+                            // }, 3000);
+
+                        }
+                    );
+
+            this.newMsgSubscription = this.msgService.newMsg$
+                .filter(msg => msg.relationId === this.relationId)
+                .subscribe((msg) => {
+                    if (msg.length === 0) return;
+                    this.scrollToBottom();
+                });
+
+
+            this.contentComponent.ionScrollStart.subscribe(
+                e => {
+                    this.hideFace();
+                },
+                err => {
+                    console.log(err);
+                }
+            );
+
+            this.contentComponent.ionScrollEnd.subscribe(
+                e => {
+                    var scrollTop = this.contentComponent.scrollTop;
+
+                    if (scrollTop < 10 && !this.isLoading) {
+                        this.isLoading = true;
+                        this.pageIndexSubject.next(this.pageIndexSubject.getValue() + 1);
+                    }
+                },
+                err => {
+                    console.log(err);
+                }
+            );
+
+
+            this.timer = setInterval(() => {
+                this.updateDiff();
+            }, 60000);
+
+        } catch (ex) {
+
         }
 
 
-        this.msgListSubscription =
-            Observable.combineLatest(
-                this.msgService.msgList$,
-                this.pageIndexSubject
-            )
-                .subscribe(
-                combine => {
-                    let msgList = combine[0];
-                    let pageIndex = combine[1];
 
-                    msgList = msgList.filter(msg => {
-                        return msg.relationId === this.relationId;
-                    });
-                    msgList = msgList.filter((msg, i) => {
-                        return i > (msgList.length - 1) - pageIndex * 10;
-                    });
 
-                    this.msgList = msgList;
-                    // let scrollHeight = this.contentComponent.scrollHeight;
-                    // this._ref.detectChanges();
 
-                    // if(first){
-                    //     this.scrollToBottom();
-                    //     first = false;
-                    // }
+    }
 
-                    this.updateDiff();
+    getToken(): Promise<any[]> {
+        let p1 = this.storage.get('token');
+        let p2 = this.storage.get('ownId');
 
-                    // setTimeout(()=> {
-                    //     this.contentComponent.resize();
-                    //     this.contentComponent.scrollTo(null, this.contentComponent.scrollHeight- scrollHeight );
-                    //     this.isLoading = false;
-                    // }, 3000);
+        return Promise.all([p1, p2])
+    }
 
-                }
-                );
+    async createNewVistor() {
+        try {
+            let token, ownId;
+            await new Promise((resolve, reject) => {
+                this.userService.signVisitor(this.apikey)
+                    .mergeMap((res) => {
+                        //本地保存token
+                        token = res.data.token;
+                        ownId = res.data.username;
 
-        this.newMsgSubscription = this.msgService.newMsg$
-            .filter(msg => msg.relationId === this.relationId)
-            .subscribe((msg) => {
-                if (msg.length === 0) return;
-                this.scrollToBottom();
+                        return this.saveToken(token, ownId);
+                    })
+                    .subscribe(
+                        () => {
+                            //保存登录名，下次登录返显处来
+                            this.storage.set('latestUsername', ownId);
+
+                            resolve([token, ownId])
+                        },
+                        err => { this.myHttp.handleError(err, '登录失败'); reject(err) },
+                    );
+
             });
 
+        } catch (ex) {
 
-        this.contentComponent.ionScrollStart.subscribe(
-            e => {
-                this.hideFace();
-            },
-            err => {
-                console.log(err);
-            }
-        );
+        }
+    }
 
-        this.contentComponent.ionScrollEnd.subscribe(
-            e => {
-                var scrollTop = this.contentComponent.scrollTop;
-
-                if (scrollTop < 10 && !this.isLoading) {
-                    this.isLoading = true;
-                    this.pageIndexSubject.next(this.pageIndexSubject.getValue() + 1);
-                }
-            },
-            err => {
-                console.log(err);
-            }
-        );
-
-
-        this.timer = setInterval(() => {
-            this.updateDiff();
-        }, 60000);
-
-
-
-
+    private saveToken(token: any, ownId: any) {
+        let p1 = this.storage.set('token', token);
+        let p2 = this.storage.set('ownId', ownId);
+        let pAll = Promise.all([p1, p2]);
+        return Observable.fromPromise(pAll);
     }
 
     // ngAfterViewInit() {
@@ -357,8 +435,8 @@ export class ChatContentPage {
     //上传图片
     presentActionSheet() {
         if (this.platform.is('cordova')) {
-        	let actionSheet = this.actionSheetCtrl.create({
-        		buttons: [
+            let actionSheet = this.actionSheetCtrl.create({
+                buttons: [
                     {
                         text: '拍照',
                         handler: () => {
@@ -368,20 +446,20 @@ export class ChatContentPage {
                         text: '从手机相册选择',
                         handler: () => {
                             this.setByAlbum();
-    
+
                         }
                     }, {
                         text: '取消',
                         role: 'cancel',
                         handler: () => {
-    
+
                         }
                     }
                 ]
-        	});
+            });
             actionSheet.present();
-            
-        }else{
+
+        } else {
             this.setByAlbum_html5();
         }
     }
