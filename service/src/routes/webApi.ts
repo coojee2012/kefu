@@ -60,6 +60,13 @@ export class WebAPI {
         .catch(console.log)
     });
 
+
+    
+    this.Router.post('/user/checkVisitorToken', this.passport.getPassport().authenticate('user', { session: false }),(req, res, next) => {
+      this.userController.checkVisitorToken(req, res, next)
+        .then()
+        .catch(console.log)
+    });
     
 
     this.Router.post('/logout',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {

@@ -98,26 +98,36 @@ export class ChatContentPage {
         try {
 
             this.apikey = await this.storage.get('apikey');
-            console.log('indexpage:', this.apikey);
+
             let [token, ownId] = await this.getToken();
+
             if (this.apikey) {
                 // 用token和apikey 验证用户是否以前联系过 否则将创建新的用户
+                let checkInfo = null;
                 if (token) {
-                    console.log('当前用户:', token, ownId);
+
+                    checkInfo = await this.checkVisitorToken(this.apikey, token);
+                }
+
+                if (checkInfo) {
+                    console.log('当前用户之前联系过我:', token, ownId);
+                    this.relationId = checkInfo.tenantId;
+                    this.pageTitle = checkInfo.companyName || checkInfo.tenantId;
                 }
                 else {
                     const rest = await this.createNewVistor();
+                    console.log('成功创建新访客:', rest);
                     token = rest[0];
                     ownId = rest[1];
+                    this.relationId = rest[2];
+                    this.pageTitle = rest[3];
+
                 }
 
+                console.log('indexpage:', this.relationId, this.pageTitle);
                 await this.backEnd.connect(token, ownId);
                 this.ownId = ownId;
-
-                this.relationId = '163.com';
-                this.pageTitle = '中国人寿成都客服中心';
                 await this.msgService.getMsgList();
-
             }
 
 
@@ -223,13 +233,15 @@ export class ChatContentPage {
 
     async createNewVistor() {
         try {
-            let token, ownId;
-            await new Promise((resolve, reject) => {
+            let token, ownId, tenantId, companyName;
+            const result = await new Promise((resolve, reject) => {
                 this.userService.signVisitor(this.apikey)
                     .mergeMap((res) => {
                         //本地保存token
                         token = res.data.token;
                         ownId = res.data.username;
+                        tenantId = res.data.tenantId;
+                        companyName = res.data.tenantName;
 
                         return this.saveToken(token, ownId);
                     })
@@ -238,15 +250,39 @@ export class ChatContentPage {
                             //保存登录名，下次登录返显处来
                             this.storage.set('latestUsername', ownId);
 
-                            resolve([token, ownId])
+                            resolve([token, ownId, tenantId, companyName])
                         },
                         err => { this.myHttp.handleError(err, '登录失败'); reject(err) },
                     );
 
             });
+            console.log('11111', token, ownId, tenantId, companyName)
+            return Promise.resolve(result);
 
         } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 
+    async checkVisitorToken(apikey, token) {
+        try {
+            await new Promise((resolve, reject) => {
+                this.userService.checkVisitorToken(apikey, token)
+                    .subscribe(
+                        (res) => {
+                            if (res.meta.code === 200 || res.meta.code === 435) {
+                                resolve(res.data)
+                            } else {
+                                reject(res.meta.message)
+                            }
+
+                        },
+                        err => { this.myHttp.handleError(err, '登录验证失败'); reject(err) },
+                    );
+            })
+
+        } catch (ex) {
+            return Promise.reject(ex);
         }
     }
 

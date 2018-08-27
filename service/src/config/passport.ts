@@ -21,6 +21,7 @@ export class Passport {
         const self = this;
         jwt.verify(token, 'kefu2018@abcf', (err, decoded) => {
             if (!decoded) {
+                console.log('errr',token,err);
                 return done(null, false);
             }
             console.log('jwt decoded:', decoded);

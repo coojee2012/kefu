@@ -6,7 +6,7 @@ webpackJsonp([0],{
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyHttp; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__);
@@ -194,7 +194,7 @@ MyHttp = __decorate([
 
 /***/ }),
 
-/***/ 145:
+/***/ 147:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -206,16 +206,16 @@ MyHttp = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_storage__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_Observable__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_rxjs_Observable__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_mergeMap__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_mergeMap__ = __webpack_require__(92);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_mergeMap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_mergeMap__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__chat_chat__ = __webpack_require__(262);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__chat_chat__ = __webpack_require__(263);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__friend_list_friend_list__ = __webpack_require__(296);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__discover_discover__ = __webpack_require__(298);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__me_me__ = __webpack_require__(302);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__login_login__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__chat_content_chat_content__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__login_login__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__chat_content_chat_content__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__services_user__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_msg__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_msg__ = __webpack_require__(93);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__providers_backend__ = __webpack_require__(31);
@@ -513,547 +513,19 @@ IndexPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'cy-index-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" [tabBadge]="chatUnread" tabBadgeStyle="danger" tabTitle="聊天" tabIcon="chatbubbles"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="通讯录" tabIcon="contacts"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="发现" tabIcon="compass"></ion-tab>\n  <ion-tab [root]="tab4Root" tabTitle="我的" tabIcon="contact"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]) === "function" && _k || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+        __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */],
+        __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */],
+        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
+        __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */],
+        __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */],
+        __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */],
+        __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */],
+        __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]])
 ], IndexPage);
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 //# sourceMappingURL=index.js.map
-
-/***/ }),
-
-/***/ 146:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatContentPage; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__ = __webpack_require__(256);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_msg__ = __webpack_require__(91);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_system__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_backend__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_storage__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__ = __webpack_require__(271);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__config_config__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__ = __webpack_require__(66);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__reorder_reorder__ = __webpack_require__(273);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__utils_utils__ = __webpack_require__(65);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__utils_file_utils__ = __webpack_require__(274);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__ = __webpack_require__(144);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__ = __webpack_require__(90);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__providers_my_http__ = __webpack_require__(11);
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var ChatContentPage = (function () {
-    function ChatContentPage(_ngZone, _ref, navCtrl, actionSheetCtrl, params, fb, renderer, platform, storage, media, keyboard, cordovaFile, userService, msgService, systemService, myHttp, backEnd) {
-        this._ngZone = _ngZone;
-        this._ref = _ref;
-        this.navCtrl = navCtrl;
-        this.actionSheetCtrl = actionSheetCtrl;
-        this.params = params;
-        this.fb = fb;
-        this.renderer = renderer;
-        this.platform = platform;
-        this.storage = storage;
-        this.media = media;
-        this.keyboard = keyboard;
-        this.cordovaFile = cordovaFile;
-        this.userService = userService;
-        this.msgService = msgService;
-        this.systemService = systemService;
-        this.myHttp = myHttp;
-        this.backEnd = backEnd;
-        this.isAudio = false;
-        this.isLoading = false;
-        this.isShowFace = false;
-        this.msgList = [];
-        this.faceItems = [];
-        this.pageIndexSubject = new __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__["BehaviorSubject"](1);
-        this.pageTitle = '';
-        this.apikey = '';
-        //语音
-        this.recordFileSrc = 'record.mp3';
-        this.recording = false;
-        this.recordDuration = 0;
-        this.relationId = params.data.relationId;
-        this.pageTitle = params.data.chatName;
-        this.ownId = backEnd.getOwnId();
-        // 
-        this.form = fb.group({
-            content: ['', __WEBPACK_IMPORTED_MODULE_1__angular_forms__["f" /* Validators */].required]
-        });
-        //
-    }
-    ChatContentPage.prototype.ngOnInit = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var _a, _b, token, ownId, rest, i, suffix, ex_1;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        _c.trys.push([0, 9, , 10]);
-                        _a = this;
-                        return [4 /*yield*/, this.storage.get('apikey')];
-                    case 1:
-                        _a.apikey = _c.sent();
-                        console.log('indexpage:', this.apikey);
-                        return [4 /*yield*/, this.getToken()];
-                    case 2:
-                        _b = _c.sent(), token = _b[0], ownId = _b[1];
-                        if (!this.apikey) return [3 /*break*/, 8];
-                        if (!token) return [3 /*break*/, 3];
-                        console.log('当前用户:', token, ownId);
-                        return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, this.createNewVistor()];
-                    case 4:
-                        rest = _c.sent();
-                        token = rest[0];
-                        ownId = rest[1];
-                        _c.label = 5;
-                    case 5: return [4 /*yield*/, this.backEnd.connect(token, ownId)];
-                    case 6:
-                        _c.sent();
-                        this.ownId = ownId;
-                        this.relationId = '163.com';
-                        this.pageTitle = '中国人寿成都客服中心';
-                        return [4 /*yield*/, this.msgService.getMsgList()];
-                    case 7:
-                        _c.sent();
-                        _c.label = 8;
-                    case 8:
-                        for (i = 100; i <= 219; i++) {
-                            suffix = i < 200 ? '.gif' : '.png';
-                            this.faceItems.push({
-                                src: './assets/img/face/wechat/' + i + suffix,
-                                name: '表情' + i
-                            });
-                        }
-                        this.msgListSubscription =
-                            __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__["Observable"].combineLatest(this.msgService.msgList$, this.pageIndexSubject)
-                                .subscribe(function (combine) {
-                                var msgList = combine[0];
-                                var pageIndex = combine[1];
-                                msgList = msgList.filter(function (msg) {
-                                    return msg.relationId === _this.relationId;
-                                });
-                                msgList = msgList.filter(function (msg, i) {
-                                    return i > (msgList.length - 1) - pageIndex * 10;
-                                });
-                                _this.msgList = msgList;
-                                // let scrollHeight = this.contentComponent.scrollHeight;
-                                // this._ref.detectChanges();
-                                // if(first){
-                                //     this.scrollToBottom();
-                                //     first = false;
-                                // }
-                                _this.updateDiff();
-                                // setTimeout(()=> {
-                                //     this.contentComponent.resize();
-                                //     this.contentComponent.scrollTo(null, this.contentComponent.scrollHeight- scrollHeight );
-                                //     this.isLoading = false;
-                                // }, 3000);
-                            });
-                        this.newMsgSubscription = this.msgService.newMsg$
-                            .filter(function (msg) { return msg.relationId === _this.relationId; })
-                            .subscribe(function (msg) {
-                            if (msg.length === 0)
-                                return;
-                            _this.scrollToBottom();
-                        });
-                        this.contentComponent.ionScrollStart.subscribe(function (e) {
-                            _this.hideFace();
-                        }, function (err) {
-                            console.log(err);
-                        });
-                        this.contentComponent.ionScrollEnd.subscribe(function (e) {
-                            var scrollTop = _this.contentComponent.scrollTop;
-                            if (scrollTop < 10 && !_this.isLoading) {
-                                _this.isLoading = true;
-                                _this.pageIndexSubject.next(_this.pageIndexSubject.getValue() + 1);
-                            }
-                        }, function (err) {
-                            console.log(err);
-                        });
-                        this.timer = setInterval(function () {
-                            _this.updateDiff();
-                        }, 60000);
-                        return [3 /*break*/, 10];
-                    case 9:
-                        ex_1 = _c.sent();
-                        return [3 /*break*/, 10];
-                    case 10: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    ChatContentPage.prototype.getToken = function () {
-        var p1 = this.storage.get('token');
-        var p2 = this.storage.get('ownId');
-        return Promise.all([p1, p2]);
-    };
-    ChatContentPage.prototype.createNewVistor = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var token_1, ownId_1, ex_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                _this.userService.signVisitor(_this.apikey)
-                                    .mergeMap(function (res) {
-                                    //本地保存token
-                                    token_1 = res.data.token;
-                                    ownId_1 = res.data.username;
-                                    return _this.saveToken(token_1, ownId_1);
-                                })
-                                    .subscribe(function () {
-                                    //保存登录名，下次登录返显处来
-                                    _this.storage.set('latestUsername', ownId_1);
-                                    resolve([token_1, ownId_1]);
-                                }, function (err) { _this.myHttp.handleError(err, '登录失败'); reject(err); });
-                            })];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        ex_2 = _a.sent();
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    ChatContentPage.prototype.saveToken = function (token, ownId) {
-        var p1 = this.storage.set('token', token);
-        var p2 = this.storage.set('ownId', ownId);
-        var pAll = Promise.all([p1, p2]);
-        return __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__["Observable"].fromPromise(pAll);
-    };
-    // ngAfterViewInit() {
-    //     //input自动得焦
-    //     setTimeout(() => {
-    //         this.renderer.setElementAttribute(this.input.input.nativeElement, 'autofocus','autofocus');
-    //         this.renderer.invokeElementMethod(this.input.input.nativeElement, 'focus');
-    //     }, 1000);
-    // }
-    ChatContentPage.prototype.ngOnDestroy = function () {
-        this.msgListSubscription.unsubscribe();
-        this.newMsgSubscription.unsubscribe();
-        clearInterval(this.timer);
-    };
-    ChatContentPage.prototype.ionViewWillEnter = function () {
-        //读取消息
-        this.msgService.readChat(this.relationId);
-    };
-    ChatContentPage.prototype.ionViewWillLeave = function () {
-        //取消已读
-        this.msgService.stopReadChat();
-    };
-    ChatContentPage.prototype.updateDiff = function () {
-        this.msgList.forEach(function (item) {
-            item['timediff'] = Object(__WEBPACK_IMPORTED_MODULE_13__utils_utils__["d" /* getDiff */])(item.sendTime);
-            return item;
-        });
-    };
-    //语音
-    ChatContentPage.prototype.recordToggle = function () {
-        var _this = this;
-        var supportCordova = this.platform.is('cordova');
-        if (!supportCordova)
-            return this.systemService.showToast('该功能暂不支持浏览器，请下载APP体验');
-        //语音
-        if (!this.recording) {
-            this.cordovaFile.createFile(this.cordovaFile.dataDirectory, this.recordFileSrc, true).then(function () {
-                _this.recording = true;
-                _this.recordFile = _this.media.create(_this.cordovaFile.dataDirectory.replace(/^file:\/\//, '') + _this.recordFileSrc);
-                _this.recordFile.startRecord();
-                _this.startTime();
-                _this.setVolumeImgSrc(0);
-                _this.media_timer = setInterval(function () {
-                    // get media amplitude
-                    _this.recordFile.getCurrentAmplitude()
-                        .then(function (amp) {
-                        console.log(amp * 100);
-                        _this.setVolumeImgSrc(amp * 100);
-                    })
-                        .catch(function (err) {
-                        console.log("Error getting amp=" + err);
-                    });
-                }, 200);
-            });
-        }
-        else {
-            clearInterval(this.media_timer);
-            this.recording = false;
-            this.recordFile.stopRecord();
-            this.stopTime();
-            this.msgService.sendAudioMsg(this.relationId, this.cordovaFile.dataDirectory.replace(/^file:\/\//, '') + this.recordFileSrc, this.recordDuration);
-            //释放内存
-            this.recordFile.release();
-            this.cordovaFile.removeFile(this.cordovaFile.dataDirectory, this.recordFileSrc);
-            this.recordFile = null;
-        }
-    };
-    //取消录音
-    ChatContentPage.prototype.cancelRecord = function () {
-        if (this.recordFile && this.recording) {
-            this.recording = false;
-            this.recordFile.stopRecord();
-            this.stopTime();
-            this.recordFile.release();
-        }
-    };
-    ChatContentPage.prototype.playRecord = function (audioSrc) {
-        this.audio.nativeElement.src = __WEBPACK_IMPORTED_MODULE_10__config_config__["c" /* UPLOAD_HOST */] + audioSrc;
-    };
-    ChatContentPage.prototype.setVolumeImgSrc = function (persents) {
-        persents = persents * 4; //优化点
-        persents = Math.max(0, Math.min(persents, 100));
-        var i = Math.ceil(persents * 0.6 / 60 * 6);
-        this.volumeImgSrc = "assets/img/volume" + i + ".png";
-    };
-    //录音计时
-    ChatContentPage.prototype.startTime = function () {
-        var _this = this;
-        this.recordDuration = 0;
-        this.recordDuration_timer = setInterval(function () {
-            _this.recordDuration++;
-        }, 1000);
-    };
-    //录音停止计时
-    ChatContentPage.prototype.stopTime = function () {
-        clearInterval(this.recordDuration_timer);
-    };
-    //切换语音或文本
-    ChatContentPage.prototype.switchInput = function () {
-        this.isAudio = !this.isAudio;
-        this.cancelRecord();
-        this.hideFace();
-    };
-    ChatContentPage.prototype.scrollToBottom = function () {
-        this.contentComponent.scrollToBottom();
-    };
-    ChatContentPage.prototype.onInputFocus = function () {
-        // this.scrollToBottom();
-        var _this = this;
-        //解决手机键盘弹出后遮挡住输入框
-        if (this.platform.is('mobileweb')) {
-            setTimeout(function () {
-                _this.input.input.nativeElement.scrollIntoView(true);
-                _this.input.input.nativeElement.scrollIntoViewIfNeeded();
-            }, 200);
-        }
-    };
-    ChatContentPage.prototype.sendMsg = function () {
-        var _this = this;
-        if (this.form.invalid)
-            return;
-        var content = this.form.value.content;
-        if (/^\s+$/g.test(content))
-            return this.systemService.showToast('不能发送空白消息');
-        this.msgService.sendMsg(this.relationId, this.encodeMsgContent(content));
-        this.form.controls['content'].setValue('');
-        // this.scrollToBottom();
-        //得焦
-        setTimeout(function () {
-            _this.renderer.invokeElementMethod(_this.input.input.nativeElement, 'focus');
-        }, 0);
-    };
-    ChatContentPage.prototype.gotoReorderPage = function () {
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_12__reorder_reorder__["a" /* ReorderPage */]);
-    };
-    ChatContentPage.prototype.gotoUserDetailPage = function (userId) {
-        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__["a" /* UserDetailPage */], { userId: userId });
-    };
-    //上传图片
-    ChatContentPage.prototype.presentActionSheet = function () {
-        var _this = this;
-        if (this.platform.is('cordova')) {
-            var actionSheet = this.actionSheetCtrl.create({
-                buttons: [
-                    {
-                        text: '拍照',
-                        handler: function () {
-                            _this.setByPhotograph();
-                        }
-                    }, {
-                        text: '从手机相册选择',
-                        handler: function () {
-                            _this.setByAlbum();
-                        }
-                    }, {
-                        text: '取消',
-                        role: 'cancel',
-                        handler: function () {
-                        }
-                    }
-                ]
-            });
-            actionSheet.present();
-        }
-        else {
-            this.setByAlbum_html5();
-        }
-    };
-    //通过拍照设置头像
-    ChatContentPage.prototype.setByPhotograph = function () {
-    };
-    //通过手机相册设置头像
-    ChatContentPage.prototype.setByAlbum = function () {
-    };
-    ChatContentPage.prototype.setByAlbum_html5 = function () {
-        var _this = this;
-        __WEBPACK_IMPORTED_MODULE_14__utils_file_utils__["a" /* fileUtils */].openAlbum()
-            .then(function (file) {
-            _this.msgService.sendImgMsg(_this.relationId, file);
-        });
-    };
-    ChatContentPage.prototype.showFace = function () {
-        this.isShowFace = true;
-        this.contentComponent.resize();
-    };
-    ChatContentPage.prototype.hideFace = function () {
-        this.isShowFace = false;
-        this.contentComponent.resize();
-    };
-    ChatContentPage.prototype.toggleFace = function () {
-        this.isShowFace = !this.isShowFace;
-        this.contentComponent.resize();
-    };
-    ChatContentPage.prototype.insertFace = function (src) {
-        this.input.insertImg(src);
-    };
-    ChatContentPage.prototype.encodeMsgContent = function (content) {
-        var _this = this;
-        if (content === void 0) { content = ''; }
-        content = content.replace(/<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*["']?[\s\t\r\n]*([^\s\t\r\n"'<>]*)[^<>]*?\/?[\s\t\r\n]*>/gi, function (match, src) {
-            var faceItem = _this.faceItems.filter(function (item) { return item.src == src; })[0];
-            if (faceItem) {
-                return '[' + faceItem.name + ']';
-            }
-            else {
-                return match;
-            }
-        });
-        content = content.replace(/&nbsp;?/gi, function (match) {
-            return ' ';
-        });
-        return content;
-    };
-    ChatContentPage.prototype.decodeMsgContent = function (content) {
-        var _this = this;
-        if (content === void 0) { content = ''; }
-        content = content.replace(/\s/gi, function (match) {
-            return '&nbsp;';
-        });
-        content = content.replace(/\[([^\]]*)\]/gi, function (match, name) {
-            var faceItem = _this.faceItems.filter(function (item) { return item.name == name; })[0];
-            if (faceItem) {
-                return '<img src="' + faceItem.src + '" />';
-            }
-            else {
-                return match;
-            }
-        });
-        return content;
-    };
-    return ChatContentPage;
-}());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "contentComponent", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('header'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "header", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "input", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('audio'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "audio", void 0);
-ChatContentPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-chat-content-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/'<ion-header #header>\n\n  <ion-navbar>\n    <ion-title>{{pageTitle}}</ion-title>\n    <!--<ion-buttons end>\n      <button ion-button icon-only (click)="gotoReorderPage()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>-->\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding-vertical>\n\n\n  <div *ngFor="let msg of msgList">\n    <!--发送时间-->\n    <div class="send-time-wrap"><span class="send-time">{{msg.timediff | timediff}}</span></div>\n    <!--消息-->\n    <div class="msg-wrap {{ msg.fromUserId === ownId?\'me-msg\':\'other-msg\' }}">\n      <!--头像-->\n\n      <ion-thumbnail>\n        <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(msg._fromUser._id)"  style="width:56px;height:56px;"></cy-img>\n        <!-- <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc"  style="width:56px;"></cy-img> -->\n      </ion-thumbnail>\n\n      <!--文本消息-->\n      <p class="msg-content" *ngIf="msg.type===0" [innerHTML]="decodeMsgContent(msg.content)"></p>\n\n      <!--图片消息-->\n      <p *ngIf="msg.type===1" style="padding: 0 10px;">\n        <cy-img [src]="msg.content | imgSrc:200" [zoom]="true" style="max-width:100px;max-height:100px;"></cy-img>\n      </p>\n\n      <!--语音消息-->\n      <p class="msg-content" *ngIf="msg.type===3" (click)="playRecord(msg.content)">\n        <ion-icon class="audio-icon" name="wifi"></ion-icon>\n      </p>\n\n      <span class="audio-duartion" *ngIf="msg.type===3">{{msg.audioDuration}}"</span>\n\n      <ion-spinner *ngIf="msg.fromUserId === ownId && msg.pending"></ion-spinner>\n\n    </div>\n  </div>\n  <div class="record-volume-wrap" *ngIf="recording">\n    <div class="title">开始说话</div>\n    <img class="volume-img" [src]="volumeImgSrc" />\n    <div class="">{{recordDuration}}s</div>\n  </div>\n  <audio #audio autoplay="autoplay"></audio>\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <div class="foot-wrapper">\n      <!--切换按钮-->\n      <a ion-button icon-only outline small (click)="switchInput()">\n        <ion-icon *ngIf="!isAudio" name="wifi" class="switch-toggle"></ion-icon>\n        <ion-icon *ngIf="isAudio" name="barcode"></ion-icon>\n      </a>\n      <!--文本-->\n      <div *ngIf="!isAudio" class="msg-input-wrapper">\n        <form [formGroup]="form" (ngSubmit)="sendMsg()">\n          <!-- <input #input type="text" formControlName="content" (focus)="onInputFocus()" /> -->\n          <cy-content-input #input formControlName="content" (focus)="onInputFocus()"></cy-content-input>\n          <a ion-button icon-only clear small (click)="presentActionSheet()">        \n            <ion-icon name="image-outline"></ion-icon>\n          </a>\n          <a ion-button icon-only clear small (click)="toggleFace()">        \n              <ion-icon [name]="isShowFace?\'happy\':\'happy-outline\'"></ion-icon>\n            </a>\n          <button type="submit" ion-button outline [disabled]="form.invalid">发送</button>\n        </form>\n      </div>\n      <!--语音-->\n      <div *ngIf="isAudio" class="audio-msg-wrapper">\n        <a ion-button block outline small (click)="recordToggle()">{{recording? \'停止录音\':\'开始录音\'}}</a>\n      </div>\n\n      <!--<button ion-button icon-only outline small><ion-icon name="add-outline"></ion-icon></button>-->\n    </div>\n  </ion-toolbar>\n    <!-- 表情栏 -->\n    <div class="face-wrap" [hidden]="!isShowFace">\n      <div class="face-item" *ngFor="let item of faceItems;" (click)="insertFace(item.src)">\n        <img src="{{item.src}}" />\n      </div>\n    </div>\n</ion-footer>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/,
-    }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */]) === "function" && _k || Object, typeof (_l = typeof __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */]) === "function" && _l || Object, typeof (_m = typeof __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */]) === "function" && _m || Object, typeof (_o = typeof __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */]) === "function" && _o || Object, typeof (_p = typeof __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */]) === "function" && _p || Object, typeof (_q = typeof __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */]) === "function" && _q || Object, typeof (_r = typeof __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */]) === "function" && _r || Object, typeof (_s = typeof __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]) === "function" && _s || Object])
-], ChatContentPage);
-
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
-//# sourceMappingURL=chat-content.js.map
 
 /***/ }),
 
@@ -1210,10 +682,10 @@ FriendRequestPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__ = __webpack_require__(89);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__ionic_native_file__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__ionic_native_file__ = __webpack_require__(91);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_timeline__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__providers_my_http__ = __webpack_require__(11);
@@ -1445,7 +917,7 @@ var MediaFile = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TimelineService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_Subject__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_Subject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_Subject__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(53);
@@ -1657,7 +1129,7 @@ UserValidator = __decorate([
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__(53);
@@ -1790,7 +1262,18 @@ var UserService = (function () {
     // 临时访客注册
     UserService.prototype.signVisitor = function (apikey) {
         var postData = { apikey: apikey };
-        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/signvisitor', postData);
+        var options = {
+            headers: new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ Authorization: "Bearer " + apikey })
+        };
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/signvisitor', postData, options);
+    };
+    //验证访客apikey
+    UserService.prototype.checkVisitorToken = function (apikey, token) {
+        var options = {
+            headers: new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ Authorization: "Bearer " + token })
+        };
+        var postData = { apikey: apikey };
+        return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/checkVisitorToken', postData, options);
     };
     //完善资料
     UserService.prototype.setInfo = function (formData) {
@@ -1922,21 +1405,21 @@ webpackEmptyAsyncContext.id = 211;
 
 /***/ }),
 
-/***/ 262:
+/***/ 263:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat_content_chat_content__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat_content_chat_content__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__chat_popover_chat_popover__ = __webpack_require__(275);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__friend_add_friend_add__ = __webpack_require__(93);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_msg__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__friend_add_friend_add__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_msg__ = __webpack_require__(93);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_backend__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs__ = __webpack_require__(376);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_rxjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_utils__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_utils__ = __webpack_require__(66);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2033,12 +1516,12 @@ ChatPage = __decorate([
 
 /***/ }),
 
-/***/ 263:
+/***/ 264:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyReplaySubject; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -2196,7 +1679,7 @@ var fileUtils = {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatPopoverPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__friend_add_friend_add__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__friend_add_friend_add__ = __webpack_require__(95);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__timeline_add_timeline_add__ = __webpack_require__(151);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -2369,9 +1852,9 @@ FriendByContactPage = __decorate([
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FriendListPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__friend_add_friend_add__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__friend_add_friend_add__ = __webpack_require__(95);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__friend_new_friend_new__ = __webpack_require__(297);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_detail_user_detail__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_detail_user_detail__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user__ = __webpack_require__(16);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -2545,16 +2028,16 @@ DiscoverPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_detail_user_detail__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_detail_user_detail__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__timeline_add_timeline_add__ = __webpack_require__(151);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__providers_backend__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_timeline__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_system__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_keyboard__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_keyboard__ = __webpack_require__(146);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_utils__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_utils__ = __webpack_require__(66);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3090,7 +2573,7 @@ DownloadPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_storage__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__login_login__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__login_login__ = __webpack_require__(69);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3144,9 +2627,9 @@ SettingPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__providers_my_http__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__validators_index__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__validators_index__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__signup_signup__ = __webpack_require__(306);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__login_login__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__login_login__ = __webpack_require__(69);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3310,7 +2793,7 @@ VerifyMobilePage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__validators_user__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__patterns__ = __webpack_require__(627);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__providers_my_http__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__validators_index__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__validators_index__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__set_info_set_info__ = __webpack_require__(307);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -3412,14 +2895,14 @@ SignupPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__ = __webpack_require__(90);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__validators_user__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__providers_my_http__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__validators_index__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__validators_index__ = __webpack_require__(99);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3717,9 +3200,9 @@ MeDetailPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_platform_browser__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_image_picker__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_camera__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_crop__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_image_picker__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_camera__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_crop__ = __webpack_require__(90);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ionic_storage__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_system__ = __webpack_require__(15);
@@ -3727,7 +3210,7 @@ MeDetailPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_toPromise__ = __webpack_require__(291);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_toPromise__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_file_utils__ = __webpack_require__(274);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_file__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_file__ = __webpack_require__(91);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3943,7 +3426,7 @@ ModAvatarPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_Subject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rxjs_Subject__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_BehaviorSubject__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_MyRelaySubject__ = __webpack_require__(263);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_MyRelaySubject__ = __webpack_require__(264);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__my_http__ = __webpack_require__(11);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -4306,7 +3789,7 @@ var BackEnd = (function () {
             relationId: '163.com',
             timediff: new Date().getTime(),
             type: 0,
-            content: "nihao:" + new Date().getTime()
+            content: "nihao:" + msg.body + new Date().getTime()
         });
     };
     BackEnd.prototype.getChatMessage = function () {
@@ -4316,10 +3799,9 @@ var BackEnd = (function () {
 }());
 BackEnd = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]) === "function" && _a || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]])
 ], BackEnd);
 
-var _a;
 //# sourceMappingURL=backend.js.map
 
 /***/ }),
@@ -4592,7 +4074,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_storage__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_native_splash_screen__ = __webpack_require__(251);
@@ -4602,17 +4084,17 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ionic_native_vibration__ = __webpack_require__(258);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_native_local_notifications__ = __webpack_require__(259);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__ionic_native_barcode_scanner__ = __webpack_require__(260);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_image_picker__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_camera__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__ionic_native_crop__ = __webpack_require__(89);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_keyboard__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_image_picker__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ionic_native_camera__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__ionic_native_crop__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_keyboard__ = __webpack_require__(146);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__ = __webpack_require__(261);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_native_file__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_native_file__ = __webpack_require__(91);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__app_component__ = __webpack_require__(365);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__pages_index_index__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__pages_index_index__ = __webpack_require__(147);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__ = __webpack_require__(275);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__ = __webpack_require__(262);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__ = __webpack_require__(263);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__ = __webpack_require__(628);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__ = __webpack_require__(298);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__pages_me_me__ = __webpack_require__(302);
@@ -4622,12 +4104,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__pages_mod_gender_mod_gender__ = __webpack_require__(311);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__ = __webpack_require__(312);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__ = __webpack_require__(629);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__ = __webpack_require__(93);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__ = __webpack_require__(305);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__ = __webpack_require__(306);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__ = __webpack_require__(307);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_login_login__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_login_login__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__ = __webpack_require__(296);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__ = __webpack_require__(297);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__ = __webpack_require__(150);
@@ -4644,7 +4126,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_51__components_components_module__ = __webpack_require__(631);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_52__pipes_pipes_module__ = __webpack_require__(638);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_53__services_user__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__services_msg__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__services_msg__ = __webpack_require__(93);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__services_timeline__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__services_joke__ = __webpack_require__(156);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_57__services_system__ = __webpack_require__(15);
@@ -4863,9 +4345,9 @@ AppModule = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__ = __webpack_require__(255);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__ = __webpack_require__(251);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_storage__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_index_index__ = __webpack_require__(145);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_login_login__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_chat_content_chat_content__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_index_index__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_login_login__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_chat_content_chat_content__ = __webpack_require__(61);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4943,7 +4425,11 @@ var MyApp = (function () {
 MyApp = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/app/app.html"*/,
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]) === "function" && _e || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
+        __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */],
+        __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */],
+        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]])
 ], MyApp);
 
 // window.onerror = function (msg, url, line) {
@@ -4963,7 +4449,6 @@ document.addEventListener("resize", function () {
 document.addEventListener("pause", function () {
     console.log("应用进入到后台！");
 }, false);
-var _a, _b, _c, _d, _e;
 //# sourceMappingURL=app.component.js.map
 
 /***/ }),
@@ -7173,6 +6658,586 @@ var UPLOAD_HOST = HOST + '';
 //apk地址
 var ANDROID_DOWNLOAD_URL = HOST + '/ionic-uuchat.apk';
 //# sourceMappingURL=config.js.map
+
+/***/ }),
+
+/***/ 61:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatContentPage; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__ = __webpack_require__(256);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_msg__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_system__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_backend__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_storage__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__ = __webpack_require__(271);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__config_config__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__reorder_reorder__ = __webpack_require__(273);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__utils_file_utils__ = __webpack_require__(274);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__providers_my_http__ = __webpack_require__(11);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var ChatContentPage = (function () {
+    function ChatContentPage(_ngZone, _ref, navCtrl, actionSheetCtrl, params, fb, renderer, platform, storage, media, keyboard, cordovaFile, userService, msgService, systemService, myHttp, backEnd) {
+        this._ngZone = _ngZone;
+        this._ref = _ref;
+        this.navCtrl = navCtrl;
+        this.actionSheetCtrl = actionSheetCtrl;
+        this.params = params;
+        this.fb = fb;
+        this.renderer = renderer;
+        this.platform = platform;
+        this.storage = storage;
+        this.media = media;
+        this.keyboard = keyboard;
+        this.cordovaFile = cordovaFile;
+        this.userService = userService;
+        this.msgService = msgService;
+        this.systemService = systemService;
+        this.myHttp = myHttp;
+        this.backEnd = backEnd;
+        this.isAudio = false;
+        this.isLoading = false;
+        this.isShowFace = false;
+        this.msgList = [];
+        this.faceItems = [];
+        this.pageIndexSubject = new __WEBPACK_IMPORTED_MODULE_16_rxjs_BehaviorSubject__["BehaviorSubject"](1);
+        this.pageTitle = '';
+        this.apikey = '';
+        //语音
+        this.recordFileSrc = 'record.mp3';
+        this.recording = false;
+        this.recordDuration = 0;
+        this.relationId = params.data.relationId;
+        this.pageTitle = params.data.chatName;
+        this.ownId = backEnd.getOwnId();
+        // 
+        this.form = fb.group({
+            content: ['', __WEBPACK_IMPORTED_MODULE_1__angular_forms__["f" /* Validators */].required]
+        });
+        //
+    }
+    ChatContentPage.prototype.ngOnInit = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var _a, _b, token, ownId, checkInfo, rest, i, suffix, ex_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _c.trys.push([0, 11, , 12]);
+                        _a = this;
+                        return [4 /*yield*/, this.storage.get('apikey')];
+                    case 1:
+                        _a.apikey = _c.sent();
+                        return [4 /*yield*/, this.getToken()];
+                    case 2:
+                        _b = _c.sent(), token = _b[0], ownId = _b[1];
+                        if (!this.apikey) return [3 /*break*/, 10];
+                        checkInfo = null;
+                        if (!token) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.checkVisitorToken(this.apikey, token)];
+                    case 3:
+                        checkInfo = _c.sent();
+                        _c.label = 4;
+                    case 4:
+                        if (!checkInfo) return [3 /*break*/, 5];
+                        console.log('当前用户之前联系过我:', token, ownId);
+                        this.relationId = checkInfo.tenantId;
+                        this.pageTitle = checkInfo.companyName || checkInfo.tenantId;
+                        return [3 /*break*/, 7];
+                    case 5: return [4 /*yield*/, this.createNewVistor()];
+                    case 6:
+                        rest = _c.sent();
+                        console.log('成功创建新访客:', rest);
+                        token = rest;
+                        ownId = rest[1];
+                        this.relationId = rest[2];
+                        this.pageTitle = rest[3];
+                        _c.label = 7;
+                    case 7:
+                        console.log('indexpage:', this.relationId, this.pageTitle);
+                        return [4 /*yield*/, this.backEnd.connect(token, ownId)];
+                    case 8:
+                        _c.sent();
+                        this.ownId = ownId;
+                        return [4 /*yield*/, this.msgService.getMsgList()];
+                    case 9:
+                        _c.sent();
+                        _c.label = 10;
+                    case 10:
+                        for (i = 100; i <= 219; i++) {
+                            suffix = i < 200 ? '.gif' : '.png';
+                            this.faceItems.push({
+                                src: './assets/img/face/wechat/' + i + suffix,
+                                name: '表情' + i
+                            });
+                        }
+                        this.msgListSubscription =
+                            __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__["Observable"].combineLatest(this.msgService.msgList$, this.pageIndexSubject)
+                                .subscribe(function (combine) {
+                                var msgList = combine[0];
+                                var pageIndex = combine[1];
+                                msgList = msgList.filter(function (msg) {
+                                    return msg.relationId === _this.relationId;
+                                });
+                                msgList = msgList.filter(function (msg, i) {
+                                    return i > (msgList.length - 1) - pageIndex * 10;
+                                });
+                                _this.msgList = msgList;
+                                // let scrollHeight = this.contentComponent.scrollHeight;
+                                // this._ref.detectChanges();
+                                // if(first){
+                                //     this.scrollToBottom();
+                                //     first = false;
+                                // }
+                                _this.updateDiff();
+                                // setTimeout(()=> {
+                                //     this.contentComponent.resize();
+                                //     this.contentComponent.scrollTo(null, this.contentComponent.scrollHeight- scrollHeight );
+                                //     this.isLoading = false;
+                                // }, 3000);
+                            });
+                        this.newMsgSubscription = this.msgService.newMsg$
+                            .filter(function (msg) { return msg.relationId === _this.relationId; })
+                            .subscribe(function (msg) {
+                            if (msg.length === 0)
+                                return;
+                            _this.scrollToBottom();
+                        });
+                        this.contentComponent.ionScrollStart.subscribe(function (e) {
+                            _this.hideFace();
+                        }, function (err) {
+                            console.log(err);
+                        });
+                        this.contentComponent.ionScrollEnd.subscribe(function (e) {
+                            var scrollTop = _this.contentComponent.scrollTop;
+                            if (scrollTop < 10 && !_this.isLoading) {
+                                _this.isLoading = true;
+                                _this.pageIndexSubject.next(_this.pageIndexSubject.getValue() + 1);
+                            }
+                        }, function (err) {
+                            console.log(err);
+                        });
+                        this.timer = setInterval(function () {
+                            _this.updateDiff();
+                        }, 60000);
+                        return [3 /*break*/, 12];
+                    case 11:
+                        ex_1 = _c.sent();
+                        return [3 /*break*/, 12];
+                    case 12: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ChatContentPage.prototype.getToken = function () {
+        var p1 = this.storage.get('token');
+        var p2 = this.storage.get('ownId');
+        return Promise.all([p1, p2]);
+    };
+    ChatContentPage.prototype.createNewVistor = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var token_1, ownId_1, tenantId_1, companyName_1, result, ex_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                _this.userService.signVisitor(_this.apikey)
+                                    .mergeMap(function (res) {
+                                    //本地保存token
+                                    token_1 = res.data.token;
+                                    ownId_1 = res.data.username;
+                                    tenantId_1 = res.data.tenantId;
+                                    companyName_1 = res.data.tenantName;
+                                    return _this.saveToken(token_1, ownId_1);
+                                })
+                                    .subscribe(function () {
+                                    //保存登录名，下次登录返显处来
+                                    _this.storage.set('latestUsername', ownId_1);
+                                    resolve([token_1, ownId_1, tenantId_1, companyName_1]);
+                                }, function (err) { _this.myHttp.handleError(err, '登录失败'); reject(err); });
+                            })];
+                    case 1:
+                        result = _a.sent();
+                        console.log('11111', token_1, ownId_1, tenantId_1, companyName_1);
+                        return [2 /*return*/, Promise.resolve(result)];
+                    case 2:
+                        ex_2 = _a.sent();
+                        return [2 /*return*/, Promise.reject(ex_2)];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ChatContentPage.prototype.checkVisitorToken = function (apikey, token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var ex_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                _this.userService.checkVisitorToken(apikey, token)
+                                    .subscribe(function (res) {
+                                    if (res.meta.code === 200 || res.meta.code === 435) {
+                                        resolve(res.data);
+                                    }
+                                    else {
+                                        reject(res.meta.message);
+                                    }
+                                }, function (err) { _this.myHttp.handleError(err, '登录验证失败'); reject(err); });
+                            })];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        ex_3 = _a.sent();
+                        return [2 /*return*/, Promise.reject(ex_3)];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ChatContentPage.prototype.saveToken = function (token, ownId) {
+        var p1 = this.storage.set('token', token);
+        var p2 = this.storage.set('ownId', ownId);
+        var pAll = Promise.all([p1, p2]);
+        return __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__["Observable"].fromPromise(pAll);
+    };
+    // ngAfterViewInit() {
+    //     //input自动得焦
+    //     setTimeout(() => {
+    //         this.renderer.setElementAttribute(this.input.input.nativeElement, 'autofocus','autofocus');
+    //         this.renderer.invokeElementMethod(this.input.input.nativeElement, 'focus');
+    //     }, 1000);
+    // }
+    ChatContentPage.prototype.ngOnDestroy = function () {
+        this.msgListSubscription.unsubscribe();
+        this.newMsgSubscription.unsubscribe();
+        clearInterval(this.timer);
+    };
+    ChatContentPage.prototype.ionViewWillEnter = function () {
+        //读取消息
+        this.msgService.readChat(this.relationId);
+    };
+    ChatContentPage.prototype.ionViewWillLeave = function () {
+        //取消已读
+        this.msgService.stopReadChat();
+    };
+    ChatContentPage.prototype.updateDiff = function () {
+        this.msgList.forEach(function (item) {
+            item['timediff'] = Object(__WEBPACK_IMPORTED_MODULE_13__utils_utils__["d" /* getDiff */])(item.sendTime);
+            return item;
+        });
+    };
+    //语音
+    ChatContentPage.prototype.recordToggle = function () {
+        var _this = this;
+        var supportCordova = this.platform.is('cordova');
+        if (!supportCordova)
+            return this.systemService.showToast('该功能暂不支持浏览器，请下载APP体验');
+        //语音
+        if (!this.recording) {
+            this.cordovaFile.createFile(this.cordovaFile.dataDirectory, this.recordFileSrc, true).then(function () {
+                _this.recording = true;
+                _this.recordFile = _this.media.create(_this.cordovaFile.dataDirectory.replace(/^file:\/\//, '') + _this.recordFileSrc);
+                _this.recordFile.startRecord();
+                _this.startTime();
+                _this.setVolumeImgSrc(0);
+                _this.media_timer = setInterval(function () {
+                    // get media amplitude
+                    _this.recordFile.getCurrentAmplitude()
+                        .then(function (amp) {
+                        console.log(amp * 100);
+                        _this.setVolumeImgSrc(amp * 100);
+                    })
+                        .catch(function (err) {
+                        console.log("Error getting amp=" + err);
+                    });
+                }, 200);
+            });
+        }
+        else {
+            clearInterval(this.media_timer);
+            this.recording = false;
+            this.recordFile.stopRecord();
+            this.stopTime();
+            this.msgService.sendAudioMsg(this.relationId, this.cordovaFile.dataDirectory.replace(/^file:\/\//, '') + this.recordFileSrc, this.recordDuration);
+            //释放内存
+            this.recordFile.release();
+            this.cordovaFile.removeFile(this.cordovaFile.dataDirectory, this.recordFileSrc);
+            this.recordFile = null;
+        }
+    };
+    //取消录音
+    ChatContentPage.prototype.cancelRecord = function () {
+        if (this.recordFile && this.recording) {
+            this.recording = false;
+            this.recordFile.stopRecord();
+            this.stopTime();
+            this.recordFile.release();
+        }
+    };
+    ChatContentPage.prototype.playRecord = function (audioSrc) {
+        this.audio.nativeElement.src = __WEBPACK_IMPORTED_MODULE_10__config_config__["c" /* UPLOAD_HOST */] + audioSrc;
+    };
+    ChatContentPage.prototype.setVolumeImgSrc = function (persents) {
+        persents = persents * 4; //优化点
+        persents = Math.max(0, Math.min(persents, 100));
+        var i = Math.ceil(persents * 0.6 / 60 * 6);
+        this.volumeImgSrc = "assets/img/volume" + i + ".png";
+    };
+    //录音计时
+    ChatContentPage.prototype.startTime = function () {
+        var _this = this;
+        this.recordDuration = 0;
+        this.recordDuration_timer = setInterval(function () {
+            _this.recordDuration++;
+        }, 1000);
+    };
+    //录音停止计时
+    ChatContentPage.prototype.stopTime = function () {
+        clearInterval(this.recordDuration_timer);
+    };
+    //切换语音或文本
+    ChatContentPage.prototype.switchInput = function () {
+        this.isAudio = !this.isAudio;
+        this.cancelRecord();
+        this.hideFace();
+    };
+    ChatContentPage.prototype.scrollToBottom = function () {
+        this.contentComponent.scrollToBottom();
+    };
+    ChatContentPage.prototype.onInputFocus = function () {
+        // this.scrollToBottom();
+        var _this = this;
+        //解决手机键盘弹出后遮挡住输入框
+        if (this.platform.is('mobileweb')) {
+            setTimeout(function () {
+                _this.input.input.nativeElement.scrollIntoView(true);
+                _this.input.input.nativeElement.scrollIntoViewIfNeeded();
+            }, 200);
+        }
+    };
+    ChatContentPage.prototype.sendMsg = function () {
+        var _this = this;
+        if (this.form.invalid)
+            return;
+        var content = this.form.value.content;
+        if (/^\s+$/g.test(content))
+            return this.systemService.showToast('不能发送空白消息');
+        this.msgService.sendMsg(this.relationId, this.encodeMsgContent(content));
+        this.form.controls['content'].setValue('');
+        // this.scrollToBottom();
+        //得焦
+        setTimeout(function () {
+            _this.renderer.invokeElementMethod(_this.input.input.nativeElement, 'focus');
+        }, 0);
+    };
+    ChatContentPage.prototype.gotoReorderPage = function () {
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_12__reorder_reorder__["a" /* ReorderPage */]);
+    };
+    ChatContentPage.prototype.gotoUserDetailPage = function (userId) {
+        this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__["a" /* UserDetailPage */], { userId: userId });
+    };
+    //上传图片
+    ChatContentPage.prototype.presentActionSheet = function () {
+        var _this = this;
+        if (this.platform.is('cordova')) {
+            var actionSheet = this.actionSheetCtrl.create({
+                buttons: [
+                    {
+                        text: '拍照',
+                        handler: function () {
+                            _this.setByPhotograph();
+                        }
+                    }, {
+                        text: '从手机相册选择',
+                        handler: function () {
+                            _this.setByAlbum();
+                        }
+                    }, {
+                        text: '取消',
+                        role: 'cancel',
+                        handler: function () {
+                        }
+                    }
+                ]
+            });
+            actionSheet.present();
+        }
+        else {
+            this.setByAlbum_html5();
+        }
+    };
+    //通过拍照设置头像
+    ChatContentPage.prototype.setByPhotograph = function () {
+    };
+    //通过手机相册设置头像
+    ChatContentPage.prototype.setByAlbum = function () {
+    };
+    ChatContentPage.prototype.setByAlbum_html5 = function () {
+        var _this = this;
+        __WEBPACK_IMPORTED_MODULE_14__utils_file_utils__["a" /* fileUtils */].openAlbum()
+            .then(function (file) {
+            _this.msgService.sendImgMsg(_this.relationId, file);
+        });
+    };
+    ChatContentPage.prototype.showFace = function () {
+        this.isShowFace = true;
+        this.contentComponent.resize();
+    };
+    ChatContentPage.prototype.hideFace = function () {
+        this.isShowFace = false;
+        this.contentComponent.resize();
+    };
+    ChatContentPage.prototype.toggleFace = function () {
+        this.isShowFace = !this.isShowFace;
+        this.contentComponent.resize();
+    };
+    ChatContentPage.prototype.insertFace = function (src) {
+        this.input.insertImg(src);
+    };
+    ChatContentPage.prototype.encodeMsgContent = function (content) {
+        var _this = this;
+        if (content === void 0) { content = ''; }
+        content = content.replace(/<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*["']?[\s\t\r\n]*([^\s\t\r\n"'<>]*)[^<>]*?\/?[\s\t\r\n]*>/gi, function (match, src) {
+            var faceItem = _this.faceItems.filter(function (item) { return item.src == src; })[0];
+            if (faceItem) {
+                return '[' + faceItem.name + ']';
+            }
+            else {
+                return match;
+            }
+        });
+        content = content.replace(/&nbsp;?/gi, function (match) {
+            return ' ';
+        });
+        return content;
+    };
+    ChatContentPage.prototype.decodeMsgContent = function (content) {
+        var _this = this;
+        if (content === void 0) { content = ''; }
+        content = content.replace(/\s/gi, function (match) {
+            return '&nbsp;';
+        });
+        content = content.replace(/\[([^\]]*)\]/gi, function (match, name) {
+            var faceItem = _this.faceItems.filter(function (item) { return item.name == name; })[0];
+            if (faceItem) {
+                return '<img src="' + faceItem.src + '" />';
+            }
+            else {
+                return match;
+            }
+        });
+        return content;
+    };
+    return ChatContentPage;
+}());
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
+    __metadata("design:type", Object)
+], ChatContentPage.prototype, "contentComponent", void 0);
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('header'),
+    __metadata("design:type", Object)
+], ChatContentPage.prototype, "header", void 0);
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
+    __metadata("design:type", Object)
+], ChatContentPage.prototype, "input", void 0);
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('audio'),
+    __metadata("design:type", Object)
+], ChatContentPage.prototype, "audio", void 0);
+ChatContentPage = __decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+        selector: 'cy-chat-content-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/'<ion-header #header>\n\n  <ion-navbar>\n    <ion-title>{{pageTitle}}</ion-title>\n    <!--<ion-buttons end>\n      <button ion-button icon-only (click)="gotoReorderPage()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>-->\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding-vertical>\n\n\n  <div *ngFor="let msg of msgList">\n    <!--发送时间-->\n    <div class="send-time-wrap"><span class="send-time">{{msg.timediff | timediff}}</span></div>\n    <!--消息-->\n    <div class="msg-wrap {{ msg.fromUserId === ownId?\'me-msg\':\'other-msg\' }}">\n      <!--头像-->\n\n      <ion-thumbnail>\n        <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(msg._fromUser._id)"  style="width:56px;height:56px;"></cy-img>\n        <!-- <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc"  style="width:56px;"></cy-img> -->\n      </ion-thumbnail>\n\n      <!--文本消息-->\n      <p class="msg-content" *ngIf="msg.type===0" [innerHTML]="decodeMsgContent(msg.content)"></p>\n\n      <!--图片消息-->\n      <p *ngIf="msg.type===1" style="padding: 0 10px;">\n        <cy-img [src]="msg.content | imgSrc:200" [zoom]="true" style="max-width:100px;max-height:100px;"></cy-img>\n      </p>\n\n      <!--语音消息-->\n      <p class="msg-content" *ngIf="msg.type===3" (click)="playRecord(msg.content)">\n        <ion-icon class="audio-icon" name="wifi"></ion-icon>\n      </p>\n\n      <span class="audio-duartion" *ngIf="msg.type===3">{{msg.audioDuration}}"</span>\n\n      <ion-spinner *ngIf="msg.fromUserId === ownId && msg.pending"></ion-spinner>\n\n    </div>\n  </div>\n  <div class="record-volume-wrap" *ngIf="recording">\n    <div class="title">开始说话</div>\n    <img class="volume-img" [src]="volumeImgSrc" />\n    <div class="">{{recordDuration}}s</div>\n  </div>\n  <audio #audio autoplay="autoplay"></audio>\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <div class="foot-wrapper">\n      <!--切换按钮-->\n      <a ion-button icon-only outline small (click)="switchInput()">\n        <ion-icon *ngIf="!isAudio" name="wifi" class="switch-toggle"></ion-icon>\n        <ion-icon *ngIf="isAudio" name="barcode"></ion-icon>\n      </a>\n      <!--文本-->\n      <div *ngIf="!isAudio" class="msg-input-wrapper">\n        <form [formGroup]="form" (ngSubmit)="sendMsg()">\n          <!-- <input #input type="text" formControlName="content" (focus)="onInputFocus()" /> -->\n          <cy-content-input #input formControlName="content" (focus)="onInputFocus()"></cy-content-input>\n          <a ion-button icon-only clear small (click)="presentActionSheet()">        \n            <ion-icon name="image-outline"></ion-icon>\n          </a>\n          <a ion-button icon-only clear small (click)="toggleFace()">        \n              <ion-icon [name]="isShowFace?\'happy\':\'happy-outline\'"></ion-icon>\n            </a>\n          <button type="submit" ion-button outline [disabled]="form.invalid">发送</button>\n        </form>\n      </div>\n      <!--语音-->\n      <div *ngIf="isAudio" class="audio-msg-wrapper">\n        <a ion-button block outline small (click)="recordToggle()">{{recording? \'停止录音\':\'开始录音\'}}</a>\n      </div>\n\n      <!--<button ion-button icon-only outline small><ion-icon name="add-outline"></ion-icon></button>-->\n    </div>\n  </ion-toolbar>\n    <!-- 表情栏 -->\n    <div class="face-wrap" [hidden]="!isShowFace">\n      <div class="face-item" *ngFor="let item of faceItems;" (click)="insertFace(item.src)">\n        <img src="{{item.src}}" />\n      </div>\n    </div>\n</ion-footer>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/,
+    }),
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */]) === "function" && _k || Object, typeof (_l = typeof __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */]) === "function" && _l || Object, typeof (_m = typeof __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */]) === "function" && _m || Object, typeof (_o = typeof __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */]) === "function" && _o || Object, typeof (_p = typeof __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */]) === "function" && _p || Object, typeof (_q = typeof __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */]) === "function" && _q || Object, typeof (_r = typeof __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */]) === "function" && _r || Object, typeof (_s = typeof __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]) === "function" && _s || Object])
+], ChatContentPage);
+
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+//# sourceMappingURL=chat-content.js.map
 
 /***/ }),
 
@@ -9467,7 +9532,7 @@ ImgSrcPipe = __decorate([
 
 /***/ }),
 
-/***/ 65:
+/***/ 66:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9601,7 +9666,7 @@ function formatDate(date, fmt) {
 
 /***/ }),
 
-/***/ 66:
+/***/ 67:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9611,7 +9676,7 @@ function formatDate(date, fmt) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__friend_request_friend_request__ = __webpack_require__(150);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__chat_content_chat_content__ = __webpack_require__(146);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__chat_content_chat_content__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_backend__ = __webpack_require__(31);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -9683,7 +9748,7 @@ UserDetailPage = __decorate([
 
 /***/ }),
 
-/***/ 68:
+/***/ 69:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9693,14 +9758,14 @@ UserDetailPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_mergeMap__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_mergeMap__ = __webpack_require__(92);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_mergeMap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_mergeMap__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ionic_storage__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__index_index__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__index_index__ = __webpack_require__(147);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__verifymobile_verifymobile__ = __webpack_require__(305);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_system__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__validators_index__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__validators_index__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__providers_my_http__ = __webpack_require__(11);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -9831,7 +9896,7 @@ LoginPage = __decorate([
 
 /***/ }),
 
-/***/ 91:
+/***/ 93:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9844,10 +9909,10 @@ LoginPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_Subject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_Subject__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_BehaviorSubject__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_BehaviorSubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_BehaviorSubject__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_MyRelaySubject__ = __webpack_require__(263);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_observable_of__ = __webpack_require__(265);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_MyRelaySubject__ = __webpack_require__(264);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_observable_of__ = __webpack_require__(266);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_observable_of___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_rxjs_add_observable_of__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs_add_operator_mergeMap__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs_add_operator_mergeMap__ = __webpack_require__(92);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs_add_operator_mergeMap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_rxjs_add_operator_mergeMap__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_rxjs_add_operator_map__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_rxjs_add_operator_map__);
@@ -9861,7 +9926,7 @@ LoginPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__providers_backend__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_user__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__utils_utils__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__utils_utils__ = __webpack_require__(66);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10153,14 +10218,14 @@ MsgService = __decorate([
 
 /***/ }),
 
-/***/ 93:
+/***/ 95:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FriendAddPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_detail_user_detail__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_detail_user_detail__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__friend_by_contact_friend_by_contact__ = __webpack_require__(276);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_system__ = __webpack_require__(15);
@@ -10220,7 +10285,7 @@ FriendAddPage = __decorate([
 
 /***/ }),
 
-/***/ 97:
+/***/ 99:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10228,7 +10293,7 @@ FriendAddPage = __decorate([
 /* harmony export (immutable) */ __webpack_exports__["a"] = getErrorMsgByFormControl;
 /* harmony export (immutable) */ __webpack_exports__["b"] = getErrorMsgByFormGroup;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_utils__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_utils__ = __webpack_require__(66);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);

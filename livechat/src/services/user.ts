@@ -155,7 +155,19 @@ export class UserService {
 
 	signVisitor(apikey): Observable<any> {
 		var postData = { apikey };
-		return this.myHttp.post(API_HOST + '/user/signvisitor', postData);
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${apikey}` })
+		}
+		return this.myHttp.post(API_HOST + '/user/signvisitor', postData,options);
+	}
+	//验证访客apikey
+	checkVisitorToken(apikey,token): Observable<any> {
+	
+		const options = {
+			headers: new Headers({ Authorization: `Bearer ${token}` })
+		}
+		var postData = { apikey };
+		return this.myHttp.post(API_HOST + '/user/checkVisitorToken', postData, options);
 	}
 
 	//完善资料

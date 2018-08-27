@@ -359,7 +359,7 @@ export class UserController implements UserInterface {
                 token: token
             });
             // 保存用户账号
-            newUser.save((err, users: UserModel) => {
+            newUser.save((err, user: UserModel) => {
                 if (err) {
                     return next(err);
                 }
@@ -371,12 +371,12 @@ export class UserController implements UserInterface {
                     'data': {
                         token,
                         'user': {
-                            'nickname': users.basic.nickname,
-                            'avatar': users.basic.avatar,
+                            'nickname': user.basic.nickname,
+                            'avatar': user.basic.avatar,
                             'phone': user.phone,
                             'domain': user.domain,
                             'state': user.state,
-                            '_id': users._id
+                            '_id': user._id
                         }
                     }
                 });
@@ -391,12 +391,13 @@ export class UserController implements UserInterface {
 
     async registVisitor(req: Request, res: Response, next: NextFunction) {
         try {
-            const tenant = (req as any).tenant;
+            const tenant = (req as any).user;
             const username = `visitor_${new Date().getTime()}`;
             const token = jwt.sign({ username }, `kefu2018@abcf`, {
                 expiresIn: '30 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
-            const {apikey,tenantId} = tenant;
+            const { apikey, tenantId } = tenant;
+            const tenatInfo = await this.tenantController.getTenantByDomain(tenantId);
             //TODO 验证apikey,并解析出domain
             const newUser = new this.mongoDB.models.Users({
                 basic: {
@@ -404,7 +405,7 @@ export class UserController implements UserInterface {
                 },
                 domain: tenantId,
                 username,
-                password: '123456', // 设置成一个随机数
+                password: '123456', //TODO 设置成一个随机数
                 role: 'visitor',
                 status: 1,
                 phone: '',
@@ -423,6 +424,8 @@ export class UserController implements UserInterface {
                     'data': {
                         token,
                         username,
+                        tenantId,
+                        tenantName:tenatInfo.companyName,
                         'user': {
                             'nickname': user.basic.nickname,
                             'avatar': user.basic.avatar,
@@ -436,6 +439,76 @@ export class UserController implements UserInterface {
             });
         } catch (ex) {
             return next(ex);
+        }
+    }
+
+    async checkVisitorToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = (req as any).user;
+
+
+            req.checkBody({
+                'apikey': {
+                    notEmpty: true,
+                    errorMessage: '需要验证的apikey不能为空'
+                }
+            });
+            const result = await req.getValidationResult();
+
+
+            if (!result.isEmpty()) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '需要验证的apikey不能为空'
+                    }
+                });
+                return;
+            }
+
+            let tenant;
+
+            jwt.verify(req.body.apikey, 'kefu2018@abcf', (err, decoded) => {
+                if (!decoded) {
+                    res.json({
+                        'meta': {
+                            'code': 434,
+                            'message': 'APIKEY验证失败'
+                        }
+                    });
+                    return;
+
+                } else {
+
+                    tenant = decoded;
+                }
+            })
+
+            if (tenant && tenant.tenantId === user.domain) {
+                const tenatInfo = await this.tenantController.getTenantByDomain(tenant.tenantId);
+
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': 'apikey验证成功'
+                    },
+                    data: {
+                        tenantId: tenant.tenantId,
+                        companyName: tenatInfo.companyName,
+                    }
+                });
+                return;
+            } else {
+                res.json({
+                    'meta': {
+                        'code': 435,
+                        'message': '访客不是该租户合法访客'
+                    }
+                });
+                return;
+            }
+        } catch (error) {
+            return next(error);
         }
     }
 
