@@ -61,10 +61,10 @@ export class MsgService {
 			let user = combine[0];
 			let relationList = combine[1];
 			//根据userId查找所有的relationIds
-			let ids = ((userId)=>{
+			let ids = ((userId) => {
 				var ids = [];
-				relationList.forEach(relation=>{
-					if(relation._friend._id === userId ){
+				relationList.forEach(relation => {
+					if (relation._friend._id === userId) {
 						ids.push(relation['_id']);
 					}
 				});
@@ -76,8 +76,8 @@ export class MsgService {
 			let chatList = this.chatListSubject.getValue();
 
 			chatList.forEach(chat => {
-				
-				if (ids.indexOf(chat.relationId) !== -1 ) {
+
+				if (ids.indexOf(chat.relationId) !== -1) {
 					chat['avatarSrc'] = user['avatarSrc'];
 					chat['name'] = user['nickname'];
 				}
@@ -88,13 +88,13 @@ export class MsgService {
 
 			//消息列表
 			let msgList = this.msgListSubject.getValue();
-			
+
 			msgList.forEach(msg => {
 				if (msg._fromUser._id === user['_id']) {
 					msg._fromUser = user;
 				}
 			});
-			
+
 			this.storageMsgList(msgList);
 			this.msgListSubject.next(msgList);
 
@@ -192,7 +192,7 @@ export class MsgService {
 
 	}
 
-	getSource(token,userId) {
+	getSource(token, userId) {
 		this.getMsgList();
 		this.getChatList();
 	}
@@ -290,8 +290,21 @@ export class MsgService {
 	//发送文本消息
 	sendMsg(relationId, content): void {
 
+		let ownId = this.backEnd.getOwnId();
+		this.backEnd.sendMsg(relationId, content);
 
-        this.backEnd.sendMsg(content);
+		this.newMsgSubject.next({
+			_id: new Date().getTime(),
+			_fromUser: {
+				_id: ownId,
+				avatarSrc: ''
+			},
+			fromUserId: ownId,
+			relationId: relationId,
+			timediff: new Date().getTime(),
+			type: 0,
+			content: `${content}`
+		});
 
 		// this.myHttp.post(API_HOST + '/msg/sendMsg', { relationId, content })
 		// 	.subscribe(
@@ -301,15 +314,15 @@ export class MsgService {
 	}
 
 	//发送语音消息
-	sendImgMsg(relationId, imgFile:File): void {
-		var formData = createFormData({relationId, imgFile});
+	sendImgMsg(relationId, imgFile: File): void {
+		var formData = createFormData({ relationId, imgFile });
 
 		this.myHttp.post(API_HOST + '/msg/sendImgMsg', formData)
 			.subscribe(
-			res => { this.newMsgSubject.next(res.data) },
-			err => { console.log(err) }
+				res => { this.newMsgSubject.next(res.data) },
+				err => { console.log(err) }
 			);
-			
+
 	}
 
 	//发送语音
@@ -318,10 +331,10 @@ export class MsgService {
 			.subscribe(res => {
 				this.newMsgSubject.next(res.data);
 			},
-			err => {
-				console.log(err)
-			});
-			
+				err => {
+					console.log(err)
+				});
+
 	}
 
 	readChat(relationId) {
@@ -371,8 +384,8 @@ export class MsgService {
 
 	setInPrivateStorage(name, value): Promise<any> {
 		let ownId = this.backEnd.getOwnId();
-		console.log('addddddddddddd',name,ownId,value)
-		 // return Promise.resolve();
+		console.log('addddddddddddd', name, ownId, value)
+		// return Promise.resolve();
 		return this.storage.set(name + '/' + ownId, value);
 	}
 

@@ -125,7 +125,7 @@ export class ChatContentPage {
                 }
 
                 console.log('indexpage:', this.relationId, this.pageTitle);
-                await this.backEnd.connect(token, ownId);
+                await this.backEnd.connect(token, ownId,this.relationId);
                 this.ownId = ownId;
                 await this.msgService.getMsgList();
             }

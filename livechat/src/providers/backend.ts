@@ -18,6 +18,7 @@ export class BackEnd {
 
     private token;
     private ownId;
+    private tenantId;
 
     //连接完触发
     // private onStatusChangedSubject = new ReplaySubject(1);
@@ -48,9 +49,10 @@ export class BackEnd {
 
 
     //连接
-    connect(token, ownId) {
+    connect(token, ownId, tenantId) {
         this.token = token;
         this.ownId = ownId;
+        this.tenantId = tenantId;
         this.myhttp.setToken(token);
         this.connectSocket(token);
     }
@@ -80,6 +82,10 @@ export class BackEnd {
 
     getOwnId() {
         return this.ownId;
+    }
+
+    getTenantId() {
+        return this.tenantId;
     }
 
     private connectSocket(token): Promise<any> {
@@ -172,7 +178,7 @@ export class BackEnd {
 
         // });
 
-        return this.init({ exten: '1002', domain: '163.com', password: '123123' });
+        return this.init({ exten: this.ownId, domain: this.tenantId, password: '123456' });
 
     }
 
@@ -315,20 +321,20 @@ export class BackEnd {
     }
 
 
-    async sendMsg(msg: string) {
+    async sendMsg(relationId: string, msg: string) {
         try {
 
-            this.session = this.client.message('1001', msg);
-            this.session.on('progress', (response, cause) => {
+            this.session = this.client.message('livecat', msg);
+            this.session.once('progress', (response, cause) => {
                 console.debug('send msg progress', cause);
             });
-            this.session.on('accepted', (response, cause) => {
+            this.session.once('accepted', (response, cause) => {
                 console.debug('send msg accepted', cause);
             });
-            this.session.on('rejected', (response, cause) => {
+            this.session.once('rejected', (response, cause) => {
                 console.debug('send msg rejected', cause);
             });
-            this.session.on('failed', (response, cause) => {
+            this.session.once('failed', (response, cause) => {
                 console.debug('send msg failed', cause);
             });
 
@@ -339,16 +345,24 @@ export class BackEnd {
 
 
     handleChatMsg(msg: any) {
+        const { ua, method, body, request, localIdentity, remoteIdentity } = msg;
+        const { uri, displayName } = remoteIdentity;
+        const { scheme, user } = uri;
+
+
+        console.log('handler msg', { scheme, user, displayName, uri, localIdentity });
+
         this.pushMsgSubject.next({
             _id: new Date().getTime(),
             _fromUser: {
-                _id: '163.com',
+                _id: user,
                 avatarSrc: ''
             },
-            relationId:'163.com',
-            timediff:new Date().getTime(),
+            fromUserId: user,
+            relationId: this.tenantId,
+            timediff: new Date().getTime(),
             type: 0,
-            content: `nihao:${msg.body}` + new Date().getTime()
+            content: `${msg.body}`
         });
     }
 

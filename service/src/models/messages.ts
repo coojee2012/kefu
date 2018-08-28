@@ -15,7 +15,6 @@ export type MessageModel = mongoose.Document & {
 const messageSchema = new mongoose.Schema({ 
     rid : {
         type: String,
-        unique: true,
         required: true
     }, 
     msg : {

@@ -16,6 +16,7 @@ import { RedisService } from './service/RedisService';
 import { EventService } from './service/EventService';
 import { QueueWorkerService } from './callflow/QueueWorkerService';
 import { FreeSwitchCallFlow } from './callflow';
+import { FreeSwitchChat } from './callflow/Chat';
 import { ESLEventNames } from './service/ESLEventNames';
 import { resolve, reject } from 'bluebird';
 import { Key } from 'selenium-webdriver';
@@ -37,6 +38,7 @@ export class ESLServer extends EventEmitter2 {
         private eslEventNames: ESLEventNames,
         private config: ConfigService,
         private redisService: RedisService,
+        private fsChat: FreeSwitchChat,
         private mongoDB: MongoService) {
         super();
 
@@ -127,19 +129,14 @@ export class ESLServer extends EventEmitter2 {
             const conn = await this.eslServer.createInboundServer();
             const calls: string[] = [];
             conn.on('esl::event::MESSAGE::**', (evt) => {
-                const from_user = evt.getHeader('from_user');
-                const to_user = evt.getHeader('to_user');
-                const from_host = evt.getHeader('from_host');
-                const to_host = evt.getHeader('to_host');
-                const msg = evt.getBody();
-                conn.message({
-                    from: to_user + '@' + to_host,
-                    to: from_user + '@' + from_host,
-                    subject: 'aaa',
-                    profile: 'internal',//'external'
-                    body: 'dsdsdReply'
-                }, (e) => { console.log(e.headers) })
-                console.log(`${from_user} TO ${to_user}:${msg}`);
+
+                this.fsChat.inboundHandleMsg(conn,evt)
+                .then()
+                .catch(err=>{
+
+                })
+                
+
             })
 
             conn.on('esl::event::CHANNEL_PARK::**', (evt) => {
@@ -234,6 +231,8 @@ export class ESLServer extends EventEmitter2 {
         }
     }
 
+   
+
     handleAgentEvents(fsCallFlow: FreeSwitchCallFlow) {
         try {
             const agentEvents = this.eslEventNames.ESLUserEvents;
@@ -244,7 +243,7 @@ export class ESLServer extends EventEmitter2 {
                     })
                 })
         } catch (ex) {
-
+            this.logger.error('handle agent events error:', ex);
         }
     }
 }

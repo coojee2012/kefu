@@ -7,6 +7,7 @@ import { DeepStreamService } from './service/DeepStreamService';
 import { MongoService } from './service/MongoService';
 import { RedisService } from './service/RedisService';
 import { QueueWorkerService } from './callflow/QueueWorkerService';
+import { FreeSwitchChat } from './callflow/Chat';
 import { EventService } from './service/EventService';
 import { ESLServer } from './ESLServer';
 const TITLE = new InjectionToken<string>('title');
@@ -26,6 +27,7 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
     RedisService,
     EventService,
     QueueWorkerService,
+    FreeSwitchChat,
     ESLServer,
 ]);
 

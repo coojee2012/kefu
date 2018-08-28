@@ -3497,9 +3497,10 @@ var BackEnd = (function () {
         this.session = null;
     }
     //连接
-    BackEnd.prototype.connect = function (token, ownId) {
+    BackEnd.prototype.connect = function (token, ownId, tenantId) {
         this.token = token;
         this.ownId = ownId;
+        this.tenantId = tenantId;
         this.myhttp.setToken(token);
         this.connectSocket(token);
     };
@@ -3524,6 +3525,9 @@ var BackEnd = (function () {
     };
     BackEnd.prototype.getOwnId = function () {
         return this.ownId;
+    };
+    BackEnd.prototype.getTenantId = function () {
+        return this.tenantId;
     };
     BackEnd.prototype.connectSocket = function (token) {
         // return new Promise((resolve, reject) => {
@@ -3595,7 +3599,7 @@ var BackEnd = (function () {
         //         resolve();
         //     });
         // });
-        return this.init({ exten: '1002', domain: '163.com', password: '123123' });
+        return this.init({ exten: this.ownId, domain: this.tenantId, password: '123456' });
     };
     BackEnd.prototype.disconnectSocket = function () {
         if (this.socket) {
@@ -3754,21 +3758,21 @@ var BackEnd = (function () {
             });
         });
     };
-    BackEnd.prototype.sendMsg = function (msg) {
+    BackEnd.prototype.sendMsg = function (relationId, msg) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 try {
-                    this.session = this.client.message('1001', msg);
-                    this.session.on('progress', function (response, cause) {
+                    this.session = this.client.message('livecat', msg);
+                    this.session.once('progress', function (response, cause) {
                         console.debug('send msg progress', cause);
                     });
-                    this.session.on('accepted', function (response, cause) {
+                    this.session.once('accepted', function (response, cause) {
                         console.debug('send msg accepted', cause);
                     });
-                    this.session.on('rejected', function (response, cause) {
+                    this.session.once('rejected', function (response, cause) {
                         console.debug('send msg rejected', cause);
                     });
-                    this.session.on('failed', function (response, cause) {
+                    this.session.once('failed', function (response, cause) {
                         console.debug('send msg failed', cause);
                     });
                 }
@@ -3780,16 +3784,20 @@ var BackEnd = (function () {
         });
     };
     BackEnd.prototype.handleChatMsg = function (msg) {
+        var ua = msg.ua, method = msg.method, body = msg.body, request = msg.request, localIdentity = msg.localIdentity, remoteIdentity = msg.remoteIdentity;
+        var uri = remoteIdentity.uri, displayName = remoteIdentity.displayName;
+        var scheme = uri.scheme, user = uri.user;
+        console.log('handler msg', { scheme: scheme, user: user, displayName: displayName, uri: uri, localIdentity: localIdentity });
         this.pushMsgSubject.next({
             _id: new Date().getTime(),
             _fromUser: {
-                _id: '163.com',
+                _id: user,
                 avatarSrc: ''
             },
-            relationId: '163.com',
+            relationId: this.tenantId,
             timediff: new Date().getTime(),
             type: 0,
-            content: "nihao:" + msg.body + new Date().getTime()
+            content: "" + msg.body
         });
     };
     BackEnd.prototype.getChatMessage = function () {
@@ -3799,9 +3807,10 @@ var BackEnd = (function () {
 }());
 BackEnd = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]) === "function" && _a || Object])
 ], BackEnd);
 
+var _a;
 //# sourceMappingURL=backend.js.map
 
 /***/ }),
@@ -6825,14 +6834,14 @@ var ChatContentPage = (function () {
                     case 6:
                         rest = _c.sent();
                         console.log('成功创建新访客:', rest);
-                        token = rest;
+                        token = rest[0];
                         ownId = rest[1];
                         this.relationId = rest[2];
                         this.pageTitle = rest[3];
                         _c.label = 7;
                     case 7:
                         console.log('indexpage:', this.relationId, this.pageTitle);
-                        return [4 /*yield*/, this.backEnd.connect(token, ownId)];
+                        return [4 /*yield*/, this.backEnd.connect(token, ownId, this.relationId)];
                     case 8:
                         _c.sent();
                         this.ownId = ownId;
@@ -10142,7 +10151,20 @@ var MsgService = (function () {
     };
     //发送文本消息
     MsgService.prototype.sendMsg = function (relationId, content) {
-        this.backEnd.sendMsg(content);
+        var ownId = this.backEnd.getOwnId();
+        this.backEnd.sendMsg(relationId, content);
+        this.newMsgSubject.next({
+            _id: new Date().getTime(),
+            _fromUser: {
+                _id: ownId,
+                avatarSrc: ''
+            },
+            fromUserId: ownId,
+            relationId: relationId,
+            timediff: new Date().getTime(),
+            type: 0,
+            content: "" + content
+        });
         // this.myHttp.post(API_HOST + '/msg/sendMsg', { relationId, content })
         // 	.subscribe(
         // 	res => { this.newMsgSubject.next(res.data) },
@@ -10208,12 +10230,10 @@ var MsgService = (function () {
 }());
 MsgService = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */],
-        __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]) === "function" && _d || Object])
 ], MsgService);
 
+var _a, _b, _c, _d;
 //# sourceMappingURL=msg.js.map
 
 /***/ }),

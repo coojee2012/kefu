@@ -144,20 +144,20 @@ export class SIPService {
     }
 
 
-    async sendMsg(msg: string) {
+    async sendMsg(sendTo: string, msg: string) {
         try {
 
-            this.session = this.client.message('1001', msg);
-            this.session.on('progress', (response, cause) => {
+            this.session = this.client.message(sendTo, msg);
+            this.session.once('progress', (response, cause) => {
                 this.logger.debug('send msg progress', cause);
             });
-            this.session.on('accepted', (response, cause) => {
+            this.session.once('accepted', (response, cause) => {
                 this.logger.debug('send msg accepted', cause);
             });
-            this.session.on('rejected', (response, cause) => {
+            this.session.once('rejected', (response, cause) => {
                 this.logger.debug('send msg rejected', cause);
             });
-            this.session.on('failed', (response, cause) => {
+            this.session.once('failed', (response, cause) => {
                 this.logger.debug('send msg failed', cause);
             });
 

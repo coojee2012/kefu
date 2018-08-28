@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+const Schema = mongoose.Schema;
 /**
  * 定义接口
  */
@@ -6,7 +7,7 @@ export type PBXExtensionModel = mongoose.Document & {
   tenantId:string;
   accountCode:string;
   password:string;
-  agentId:string;
+  agentId?:string;
   deviceProto:string;
   deviceNumber:string;
   status:string;
@@ -38,8 +39,8 @@ const pbxExtensionSchema = new mongoose.Schema({
         required: true,
       },//注册密码
       agentId: {  //agent 账号
-        type: String,
-        default: ()=>''
+        type: Schema.Types.ObjectId,    // 引用类型
+        ref: 'User'                     // 关联用户表
       },
       deviceProto: {
         type: String,

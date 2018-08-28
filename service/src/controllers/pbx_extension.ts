@@ -298,7 +298,11 @@ export class PBXExtensionController {
                     const extenInfo = await this.getExtenByNumber(tenantId, user);
                     if (EventName === 'REQUEST_PARAMS') {
                         if (action === 'sip_auth' && EventCallingFunction === 'sofia_reg_parse_auth') {
-                            if (!extenInfo) {
+                            if (/^visitor_\d+/.test(user)) {
+                                this.logger.debug('访客注册');
+                                xmlStr = this.fsWriteAuthorizationResponse(user, tenantId, '123456');
+                            }
+                            else if (!extenInfo) {
                                 xmlStr = this.fsWriteNotFoundResponse();
                                 this.logger.debug('not fond user');
                             } else {
@@ -317,7 +321,14 @@ export class PBXExtensionController {
                             xmlStr = this.fsWriteNotFoundResponse();
                         }
                     } else if (EventName === 'GENERAL' && (EventCallingFunction === 'resolve_id' || EventCallingFunction === 'voicemail_check_main')) {
-                        xmlStr = this.fsWriteAuthorizationResponse(user, domain[0], extenInfo.password);
+
+                        if (/^visitor_\d+/.test(user)) {
+                            this.logger.debug('访客注册');
+                            xmlStr = this.fsWriteAuthorizationResponse(user, domain[0], '123456');
+                        } else {
+                            xmlStr = this.fsWriteAuthorizationResponse(user, domain[0], extenInfo.password);
+                        }
+
                     }
 
                     else {
@@ -833,6 +844,27 @@ export class PBXExtensionController {
         catch (ex) {
             this.logger.error('extension  list  error', ex);
             return next(ex);
+        }
+    }
+
+
+    async findMsgAgent(tenantId: string) {
+        try {
+            const query = {
+                tenantId,
+                status: 'Login'
+            }
+            const fields = {
+                accountCode: 1,
+                agentId: 1
+            }
+            const options = {
+                lean: true,
+            }
+            const doc = await this.mongoDB.models.PBXExtension.findOne(query, fields, options);
+            return doc;
+        } catch (error) {
+            return Promise.reject(error);
         }
     }
 
