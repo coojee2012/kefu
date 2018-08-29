@@ -170,7 +170,7 @@ export class IndexPage {
                 if (token && ownId) {
                     this.userService.safe(token, ownId).subscribe(
                         res => {
-                            this.backEnd.connect(token, ownId);
+                            this.backEnd.connect(token, ownId,'tenantId');
                             shouldInitData && this.initData(token, ownId);
                         },
                         err => {

@@ -76,7 +76,7 @@ export class FreeSwitchChat extends EventEmitter2 {
             const to_host = evt.getHeader('to_host');
             const msg = evt.getBody();
 
-            console.log(`${from_user} TO ${to_user}:${msg}`);
+            console.log(`${from_user} TO ${to_user}:${msg}`,evt);
 
             if (to_user === 'livecat') {
                 this.logger.debug('livecat');
@@ -84,7 +84,24 @@ export class FreeSwitchChat extends EventEmitter2 {
             }
             else if (to_user === 'system') {
 
-            } else {
+            }
+            else if(to_user==='relivechat'){
+                const d = msg.split('::');
+                const visitor = d.shift();
+                let remsg = d.join('').replace(/(^\s+)|(\s+$)/g, '');
+                if(!remsg) {
+                    remsg = '无语(^_^)';
+                }
+                
+                conn.message({
+                    to: visitor + '@' + to_host,
+                    from: from_user + '@' + from_host,
+                    subject: 'livechat',
+                    profile: 'internal',//'external'
+                    body: remsg
+                }, (e) => { console.log(e.headers) })
+            }
+            else {
                 conn.message({
                     from: to_user + '@' + to_host,
                     to: from_user + '@' + from_host,

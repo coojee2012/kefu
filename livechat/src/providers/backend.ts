@@ -321,22 +321,30 @@ export class BackEnd {
     }
 
 
-    async sendMsg(relationId: string, msg: string) {
+    async sendMsg(relationId: string, msg: string): Promise<string> {
         try {
-
-            this.session = this.client.message('livecat', msg);
-            this.session.once('progress', (response, cause) => {
-                console.debug('send msg progress', cause);
+            const remsg = await new Promise<string>((resolve, reject) => {
+                msg = msg.replace(/(^\s+)|(\s+$)/g, '');
+                if (!msg) {
+                    msg = '无言以对(^_^)';
+                }
+                this.session = this.client.message('livecat', msg);
+                this.session.once('progress', (response, cause) => {
+                    console.debug('send msg progress', cause);
+                });
+                this.session.once('accepted', (response, cause) => {
+                    console.debug('send msg accepted', cause);
+                    resolve(msg);
+                });
+                this.session.once('rejected', (response, cause) => {
+                    console.debug('send msg rejected', cause);
+                    reject(cause);
+                });
+                this.session.once('failed', (response, cause) => {
+                    console.debug('send msg failed', cause);
+                });
             });
-            this.session.once('accepted', (response, cause) => {
-                console.debug('send msg accepted', cause);
-            });
-            this.session.once('rejected', (response, cause) => {
-                console.debug('send msg rejected', cause);
-            });
-            this.session.once('failed', (response, cause) => {
-                console.debug('send msg failed', cause);
-            });
+            return remsg;
 
         } catch (ex) {
             console.error('Send A Message Error:', ex);

@@ -118,7 +118,7 @@ export class MongoService {
             this.models.Rooms = this.conn.model('Rooms', roomSchema);
             //TODO 测试情况下用pbx_tenants
             this.models.Tenants = this.conn.model('pbx_Tenants', tenantSchema); 
-            this.models.Messages = this.conn.model('Messages', messageSchema);
+            this.models.Messages = this.conn.model('pbx_Messages', messageSchema);
             // PBX相关表
             this.models.PBXRouters = this.conn.model('PBX_Routers', pbxRouterSchema);
             this.models.PBXCallProcess = this.conn.model('PBX_CallProcess', pbxCallProcessSchema);

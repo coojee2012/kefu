@@ -1,17 +1,18 @@
 import { Injectable, Injector } from '@angular/core';
 import { LoggerService } from './LogService';
 import { environment } from '../../environments/environment';
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { MyReplaySubject } from '../utils/MyRelaySubject';
 @Injectable()
 export class SIPService {
     public client: any;
     private session: any;
-    private chatMessageSource: Subject<any>;
+    private chatMessageSource: MyReplaySubject<any>;
     private chatMessage$: Observable<any>;
     constructor(private logger: LoggerService) {
         this.client = null;
         this.session = null;
-        this.chatMessageSource = new Subject<any>();
+        this.chatMessageSource = new MyReplaySubject<any>();
         this.chatMessage$ = this.chatMessageSource.asObservable();
     }
 
@@ -144,22 +145,31 @@ export class SIPService {
     }
 
 
-    async sendMsg(sendTo: string, msg: string) {
+    async sendMsg(sendTo: string, msg: string): Promise<string> {
         try {
-
-            this.session = this.client.message(sendTo, msg);
-            this.session.once('progress', (response, cause) => {
-                this.logger.debug('send msg progress', cause);
+            const remsg = await new Promise<string>((resolve, reject) => {
+                msg = msg.replace(/(^\s+)|(\s+$)/g, '');
+                if (!msg) {
+                    msg = '无言以对(^_^)';
+                }
+                this.session = this.client.message('relivechat', `${sendTo}::${msg}`,
+                    { contentType: 'text/plain', extraHeaders: [`livechat-visitor:${sendTo}`] });
+                this.session.once('progress', (response, cause) => {
+                    this.logger.debug('send msg progress', cause);
+                });
+                this.session.once('accepted', (response, cause) => {
+                    this.logger.debug('send msg accepted', cause);
+                    resolve(msg);
+                });
+                this.session.once('rejected', (response, cause) => {
+                    this.logger.debug('send msg rejected', cause);
+                });
+                this.session.once('failed', (response, cause) => {
+                    this.logger.debug('send msg failed', cause);
+                    reject(cause);
+                });
             });
-            this.session.once('accepted', (response, cause) => {
-                this.logger.debug('send msg accepted', cause);
-            });
-            this.session.once('rejected', (response, cause) => {
-                this.logger.debug('send msg rejected', cause);
-            });
-            this.session.once('failed', (response, cause) => {
-                this.logger.debug('send msg failed', cause);
-            });
+            return remsg;
 
         } catch (ex) {
             this.logger.error('Send A Message Error:', ex);

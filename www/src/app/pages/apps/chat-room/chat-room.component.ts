@@ -43,7 +43,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       .subscribe(id => {
         this.logger.info(`路由变化，重新加载数据`);
         this.roomId = id;
-        this.messages = this.MSGs[`${roomId}`];
+        const index = this.roomIds.indexOf(id);
+        if (index < 0) {
+          this.roomIds.push(id);
+          this.MSGs[`${id}`] = [];
+        }
+        this.messages = this.MSGs[`${id}`];
       });
 
     this.chatMessageSub = this.sipClient.getChatMessage().subscribe(this.handleChatMsg.bind(this));
@@ -67,8 +72,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     const { ua, method, body, request, localIdentity, remoteIdentity } = msg;
     const { uri, displayName } = remoteIdentity;
     const { scheme, user } = uri;
+    console.log('msg:', msg);
 
-    const roomId = this.roomId;
+    const roomId = user; // user是唯一的
     const index = this.roomIds.indexOf(roomId);
     if (index < 0) {
       this.roomIds.push(roomId);
@@ -77,9 +83,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     const message = new ChatMessage('', body);
     message.from = user;
     this.MSGs[`${roomId}`].push(message);
-    if (roomId === user) {
+    if (this.roomId === user) {
       this.logger.info(`Chat Room 接收消息:${body}`);
-       this.messages = this.MSGs[`${roomId}`];
+      this.messages = this.MSGs[`${roomId}`];
     }
 
   }
@@ -97,8 +103,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   async sendMsg() {
     try {
-      await this.sipClient.sendMsg(this.roomId, this.inputMsg);
-      const message = new ChatMessage('', this.inputMsg);
+      const remsg = await this.sipClient.sendMsg(this.roomId, this.inputMsg);
+      const message = new ChatMessage('', remsg);
       message.from = 'me';
       this.messages.push(message);
       this.inputMsg = '';
