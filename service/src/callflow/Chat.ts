@@ -5,7 +5,7 @@ import { ESLEventNames } from '../service/ESLEventNames';
 import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 import { EventEmitter2 } from 'eventemitter2';
-
+import generateUuid = require('node-uuid');
 
 import { PBXRouterController } from '../controllers/pbx_router';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
@@ -76,7 +76,7 @@ export class FreeSwitchChat extends EventEmitter2 {
             const to_host = evt.getHeader('to_host');
             const msg = evt.getBody();
 
-            console.log(`${from_user} TO ${to_user}:${msg}`,evt);
+            console.log(`${from_user} TO ${to_user}:${msg}`, evt);
 
             if (to_user === 'livecat') {
                 this.logger.debug('livecat');
@@ -85,15 +85,18 @@ export class FreeSwitchChat extends EventEmitter2 {
             else if (to_user === 'system') {
 
             }
-            else if(to_user==='relivechat'){
+            else if (to_user === 'relivechat') {
                 const d = msg.split('::');
                 const visitor = d.shift();
                 let remsg = d.join('').replace(/(^\s+)|(\s+$)/g, '');
-                if(!remsg) {
+                if (!remsg) {
                     remsg = '无语(^_^)';
                 }
-                
+                const roomId = evt.getHeader('sip_h_X-Session-Id');
+
                 conn.message({
+                    sessionId: roomId,
+                    msgType: 'livechat',
                     to: visitor + '@' + to_host,
                     from: from_user + '@' + from_host,
                     subject: 'livechat',
@@ -126,17 +129,17 @@ export class FreeSwitchChat extends EventEmitter2 {
             const from_host = evt.getHeader('from_host');
             const to_host = evt.getHeader('to_host');
             const msg = evt.getBody();
+            const roomId = evt.getHeader('sip_h_X-Session-Id');
+            console.log(`${from_user}@${from_host} TO ${to_user}@${to_host} : ${msg} roomid:${roomId}`);
 
-            console.log(`${from_user}@${from_host} TO ${to_user}@${to_host} : ${msg}`);
-
-            const chatIndex = this.liveChatVisitorList.indexOf(from_user);
+            const chatIndex = this.liveChatVisitorList.indexOf(roomId);
             // 已经有过回话
             if (chatIndex > -1 && !this.liveChatServeList[chatIndex].isEnd) {
-
-
                 const server = this.liveChatServeList[chatIndex];
                 this.logger.debug(`访客正在和坐席${server.agentNumber}聊天`)
                 conn.message({
+                    sessionId: roomId,
+                    msgType: 'livechat',
                     from: from_user + '@' + from_host,
                     to: server.agentNumber + '@' + from_host,
                     subject: 'chat',
@@ -147,23 +150,25 @@ export class FreeSwitchChat extends EventEmitter2 {
             }
             // 新的会话
             else {
-
-                this.logger.debug(`新访客`)
+                const sessionId = generateUuid.v4();
+                this.logger.debug(`新访客:${sessionId}`)
+                // TODO 需要先用机器人吗
                 // 随机从exntension表 找到活跃的分机联系
                 const serverAgent = await this.extensionCtr.findMsgAgent(to_host);
-                // 需要机器人吗
                 if (serverAgent) {
-                    this.liveChatVisitorList.push(from_user);
+                    this.liveChatVisitorList.push(sessionId);
                     this.liveChatServeList.push({
                         agentId: serverAgent.agentId,
                         ts: new Date().getTime(),
                         agentNumber: serverAgent.accountCode,
                         isEnd: false,
-                        sessionId: ''
+                        sessionId: sessionId
                     })
                     // 是否启用欢迎语
                     // 向访客发送欢迎语
                     conn.message({
+                        sessionId: sessionId,
+                        msgType: 'livechat',
                         from: serverAgent.accountCode + '@' + from_host,
                         to: from_user + '@' + from_host,
                         subject: 'welcome',
@@ -173,6 +178,8 @@ export class FreeSwitchChat extends EventEmitter2 {
 
                     // 向选定的坐席发送访客的内容
                     conn.message({
+                        sessionId: sessionId,
+                        msgType: 'livechat',
                         from: from_user + '@' + from_host,
                         to: serverAgent.accountCode + '@' + from_host,
                         subject: 'chat',

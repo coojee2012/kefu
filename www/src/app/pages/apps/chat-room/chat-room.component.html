@@ -1,15 +1,15 @@
 <section class="content-header">
-    <h1>
-      我的服务
-      <small>WebChat</small>
-    </h1>
-    <ol class="breadcrumb">
-      <!-- <li>
+  <h1>
+    我的服务
+    <small>WebChat</small>
+  </h1>
+  <ol class="breadcrumb">
+    <!-- <li>
         <a href="#">
           <i class="fa fa-refresh"></i> 刷新</a>
       </li> -->
-    </ol>
-  </section>
+  </ol>
+</section>
 <!-- Main content -->
 <section class="content">
   <!-- Small boxes (Stat box) -->
@@ -18,7 +18,7 @@
       <!-- Custom Tabs -->
       <ngb-tabset class="nav-tabs-custom">
         <ngb-tab title="联系人" class="nav nav-tabs active">
-          <ng-template ngbTabContent >
+          <ng-template ngbTabContent>
             <div class="box box-info">
               <div class="box-header">
                 <h3 class="box-title"></h3>
@@ -102,13 +102,13 @@
                   </div>
                   <div class="col-lg-4  col-md-12">
                     <div class="form-group">
-                        <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
-                        <div class="col-md-4 col-sm-4 col-xs-4">
-                            <button type="submit" class="btn btn-warning pull-right">重置</button>
-                        </div>
-                        <div class="col-md-4 col-sm-4 col-xs-4">                        
-                            <button type="submit" class="btn btn-info pull-left">保存</button>
-                        </div>                    
+                      <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
+                      <div class="col-md-4 col-sm-4 col-xs-4">
+                        <button type="submit" class="btn btn-warning pull-right">重置</button>
+                      </div>
+                      <div class="col-md-4 col-sm-4 col-xs-4">
+                        <button type="submit" class="btn btn-info pull-left">保存</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -223,7 +223,7 @@
               <img class="direct-chat-img" src="../assets/img/user1-128x128.jpg" alt="message user image">
               <!-- /.direct-chat-img -->
               <div class="direct-chat-text">
-                {{ message.content }}
+                {{ message.msg }}
               </div>
               <!-- /.direct-chat-text -->
             </div>
@@ -333,7 +333,8 @@
         <div class="box-footer">
           <form #msgForm="ngForm">
             <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg" (keyup.enter)="onEnter()">
+              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg"
+                (keyup.enter)="onEnter()">
               <span class="input-group-btn">
                 <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">Send</button>
               </span>
@@ -354,88 +355,88 @@
         </div>
         <!-- /.box-header -->
         <form #customOrderForm="ngForm" class="form-horizontal">
-            <div class="box-body">
-              <div class="col-lg-4 col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">主题</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="主题">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">类型</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">状态</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="状态">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">优先级</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="优先级">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">分组</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="分组">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">服务坐席</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="服务坐席">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">内容</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="内容">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-md-4 control-label">备注</label>
-                  <div class="col-md-8">
-                    <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4  col-md-12">
-                <div class="form-group">
-                    <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
-                    <div class="col-md-4 col-sm-4 col-xs-4">
-                        <button type="submit" class="btn btn-warning pull-right">重置</button>
-                    </div>
-                    <div class="col-md-4 col-sm-4 col-xs-4">                        
-                        <button type="submit" class="btn btn-info pull-left">保存</button>
-                    </div>                    
+          <div class="box-body">
+            <div class="col-lg-4 col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">主题</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="主题">
                 </div>
               </div>
             </div>
-          </form>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">类型</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">状态</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="状态">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">优先级</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="优先级">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">分组</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="分组">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">服务坐席</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="服务坐席">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">内容</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="内容">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-6">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-md-4 control-label">备注</label>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4  col-md-12">
+              <div class="form-group">
+                <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
+                <div class="col-md-4 col-sm-4 col-xs-4">
+                  <button type="submit" class="btn btn-warning pull-right">重置</button>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-4">
+                  <button type="submit" class="btn btn-info pull-left">保存</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
         <!-- /.box-body -->
         <div class="box-footer text-center">
-          
+
         </div>
         <!-- /.box-footer -->
       </div>

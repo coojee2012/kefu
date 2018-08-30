@@ -52,11 +52,11 @@ export class Connection extends EventEmitter2 {
   reqEvents: string[];
   listeningEvents: any[];
   private _inbound: boolean;
-  private parser:Parser;
+  private parser: Parser;
   socket: net.Socket;
   private password: string;
-  usingFilters:boolean;
-  logger:ESLLogger;
+  usingFilters: boolean;
+  logger: ESLLogger;
   constructor() {
     super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
     //reasonable defaults for values
@@ -126,7 +126,7 @@ export class Connection extends EventEmitter2 {
     this.handleEvent();
   }
 
-  isInBound():boolean{
+  isInBound(): boolean {
     return this._inbound;
   }
 
@@ -150,10 +150,10 @@ export class Connection extends EventEmitter2 {
 
         var fn = self.cmdCallbackQueue.shift();
 
-        if (fn && typeof fn === 'function'){
+        if (fn && typeof fn === 'function') {
           fn.apply(self, arguments);
         }
-          
+
       });
 
       //handle api response callbacks
@@ -166,11 +166,11 @@ export class Connection extends EventEmitter2 {
           fn.apply(self, arguments);
       });
     }
-    catch(ex) {
-      console.log('[handleEvent]Error:',ex);
+    catch (ex) {
+      console.log('[handleEvent]Error:', ex);
     }
   }
-  
+
 
 
 
@@ -213,7 +213,7 @@ export class Connection extends EventEmitter2 {
   //To automatically wait for the reply event, use sendRecv() instead of send().
   //
   //NOTE: This is a FAF method of sending a command
-  send(command, args?:any) {
+  send(command, args?: any) {
     var self = this;
 
     //write raw command to socket
@@ -243,7 +243,7 @@ export class Connection extends EventEmitter2 {
   //
   //NOTE: This listens for a response when calling `.send()` doing recvEvent() in a loop
   //  doesn't make sense in the contet of Node.
-  sendRecv(command, args, cb?:any) {
+  sendRecv(command, args, cb?: any) {
     if (typeof args === 'function') {
       cb = args;
       args = null;
@@ -304,7 +304,7 @@ export class Connection extends EventEmitter2 {
 
     var self = this,
       params = {},
-      addToFilter = (cb?:any) => {
+      addToFilter = (cb?: any) => {
         if (cb) cb();
       },
       removeFromFilter = addToFilter,
@@ -598,7 +598,7 @@ export class Connection extends EventEmitter2 {
     format = format || 'json';
 
     this.bgapi('show ' + item + ' as ' + format, function (e) {
-      var data = e.getBody(), parsed:any = {};
+      var data = e.getBody(), parsed: any = {};
 
       //if error send them that
       if (data.indexOf('-ERR') !== -1) {
@@ -716,6 +716,8 @@ export class Connection extends EventEmitter2 {
     options.profile = options.profile || '';
     options.body = options.body || '';
     options.subject = options.subject || '';
+    options.sessionId = options.sessionId || '';
+    options.msgType = options.msgType || '';
     options.deliveryConfirmation = options.deliveryConfirmation || '';
 
     var event = new Event('custom', 'SMS::SEND_MESSAGE');
@@ -729,6 +731,9 @@ export class Connection extends EventEmitter2 {
     event.addHeader('to', options.to);
     event.addHeader('sip_profile', options.profile);
     event.addHeader('subject', options.subject);
+    event.addHeader('sip_h_X-session-id', options.sessionId);
+    event.addHeader('sip_h_X-message-type', options.msgType);
+    //event.addHeader('hint','hint_hint');
 
     if (options.deliveryConfirmation) {
       event.addHeader('blocking', 'true');
@@ -848,7 +853,7 @@ export class Connection extends EventEmitter2 {
       case 'text/event-json':
       case 'text/event-plain':
       case 'text/event-xml':
-        const evtname = event.getHeader('Event-Name') 
+        const evtname = event.getHeader('Event-Name')
         emit += '::' + evtname + (!!uuid ? '::' + uuid : '');
         break;
 

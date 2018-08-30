@@ -1,19 +1,18 @@
 <div class="wrapper" style="height: 100vh;">
 
-    <app-apps-header>
-    </app-apps-header>
- 
-  
-    <app-apps-sidebar [rooms]="chatRoomIds">
-    </app-apps-sidebar>
+  <app-apps-header>
+  </app-apps-header>
 
-  
-    <div class="content-wrapper">
-        <router-outlet></router-outlet>
-    </div>
- 
-  
-    <app-apps-footer>
-    </app-apps-footer>
+
+  <app-apps-sidebar>
+  </app-apps-sidebar>
+
+
+  <div class="content-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+
+
+  <app-apps-footer>
+  </app-apps-footer>
 </div>
-

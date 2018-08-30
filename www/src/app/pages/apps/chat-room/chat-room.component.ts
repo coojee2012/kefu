@@ -7,6 +7,7 @@ import { switchMap } from 'rxjs/operators';
 import { LoggerService } from '../../../services/LogService';
 
 import { SIPService } from '../../../services/SIPService';
+import { DataService, LiveChatMessage, Room } from '../../../services/DataService';
 import { ChatMessage } from '../ChatMessage';
 import { ChatRoomService } from './chat-room.service';
 @Component({
@@ -15,15 +16,17 @@ import { ChatRoomService } from './chat-room.service';
   styleUrls: ['./chat-room.component.css']
 })
 export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
-  private messages: ChatMessage[];
+  private messages: LiveChatMessage[];
   private chatMessageSub: Subscription;
   private inputMsg: string;
   private roomId: string;
   private roomIds: string[];
   private MSGs: any;
-  private room$: Subscription;
+  private roomId$: Subscription;
+  private room: Room;
+  private roomSub: Subscription;
   constructor(private el: ElementRef, private renderer: Renderer2, private route: ActivatedRoute,
-    private chatRoomService: ChatRoomService,
+    private chatRoomService: ChatRoomService, private dataService: DataService,
     private router: Router, private logger: LoggerService, private sipClient: SIPService) {
     this.messages = [];
     this.inputMsg = '';
@@ -34,8 +37,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnInit() {
     const roomId = this.route.snapshot.paramMap.get('id');
     this.roomId = roomId;
-    this.messages = this.MSGs[`${roomId}`];
-    this.room$ = this.route.paramMap.pipe(
+    this.chatMessageSub = this.dataService.LiveChatMsg$
+      .pipe()
+      .subscribe(this.handleChatMsg.bind(this));
+
+    this.roomSub = this.dataService.LiveChatMsg$
+      .pipe()
+      .subscribe(this.handleRoomChange.bind(this));
+
+    this.roomId$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
         of(params.get('id'))
       )
@@ -43,22 +53,26 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       .subscribe(id => {
         this.logger.info(`路由变化，重新加载数据`);
         this.roomId = id;
-        const index = this.roomIds.indexOf(id);
-        if (index < 0) {
-          this.roomIds.push(id);
-          this.MSGs[`${id}`] = [];
-        }
-        this.messages = this.MSGs[`${id}`];
-      });
+        this.messages = [];
+        this.chatMessageSub.unsubscribe();
+        this.roomSub.unsubscribe();
 
-    this.chatMessageSub = this.sipClient.getChatMessage().subscribe(this.handleChatMsg.bind(this));
+        this.roomSub = this.dataService.Room$
+          .pipe()
+          .subscribe(this.handleRoomChange.bind(this));
+
+        this.chatMessageSub = this.dataService.LiveChatMsg$
+          .pipe()
+          .subscribe(this.handleChatMsg.bind(this));
+      });
   }
 
   ngOnDestroy() {
     // ...
     this.logger.debug('组件销毁chat-room');
-    this.room$.unsubscribe();
+    this.roomId$.unsubscribe();
     this.chatMessageSub.unsubscribe();
+    this.roomSub.unsubscribe();
   }
   ngAfterViewChecked() {
     // this.logger.debug('ngAfterViewChecked');
@@ -68,26 +82,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     // console.log(el.nativeElement.scrollTop, el.nativeElement.scrollHeight);
     // el.nativeElement.scrollIntoView();
   }
-  handleChatMsg(msg) {
-    const { ua, method, body, request, localIdentity, remoteIdentity } = msg;
-    const { uri, displayName } = remoteIdentity;
-    const { scheme, user } = uri;
-    console.log('msg:', msg);
-
-    const roomId = user; // user是唯一的
-    const index = this.roomIds.indexOf(roomId);
-    if (index < 0) {
-      this.roomIds.push(roomId);
-      this.MSGs[`${roomId}`] = [];
-    }
-    const message = new ChatMessage('', body);
-    message.from = user;
-    this.MSGs[`${roomId}`].push(message);
-    if (this.roomId === user) {
-      this.logger.info(`Chat Room 接收消息:${body}`);
-      this.messages = this.MSGs[`${roomId}`];
+  handleChatMsg(msg: LiveChatMessage) {
+    this.logger.debug('handle chat msg ', msg.rid, this.roomId);
+    if (msg.rid === this.roomId) {
+      this.messages.push(msg);
     }
 
+  }
+
+  handleRoomChange(room: Room) {
+    this.logger.debug('handle room  change ', room.id, this.roomId);
+    if (room.id === this.roomId) {
+      this.room = room;
+    }
   }
   onKey(event: any) { // without type info
     this.inputMsg += event.target.value + ' | ';
@@ -103,9 +110,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   async sendMsg() {
     try {
-      const remsg = await this.sipClient.sendMsg(this.roomId, this.inputMsg);
-      const message = new ChatMessage('', remsg);
-      message.from = 'me';
+      const remsg = await this.sipClient.sendMsg(this.roomId, this.room.user, this.inputMsg);
+      const message = {
+        rid: this.roomId,
+        from: 'me',
+        msg: remsg,
+        ts: new Date().getTime(),
+        t: 'text'
+      };
       this.messages.push(message);
       this.inputMsg = '';
 

@@ -1,23 +1,36 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { LoggerService } from '../../../services/LogService';
+import { DataService, Room, LiveChatMessage } from '../../../services/DataService';
+
 import { Router } from '@angular/router';
 import { LoginService } from '../../login/login.service';
+import { Subscriber, Subscription } from 'rxjs';
 @Component({
   selector: 'app-apps-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   private isActive: boolean[];
-  @Input() rooms: string[];
-  constructor(private logger: LoggerService, private router: Router, private loginService: LoginService) {
+  private roomSub: Subscription;
+  private rooms: Room[];
+  constructor(private logger: LoggerService, private router: Router,
+    private dataService: DataService,
+    private loginService: LoginService) {
+    this.rooms = [];
     this.isActive = [false, false, false];
   }
 
   ngOnInit() {
-    // this.dsClient.eventSub('room/username', data => {
-    //   this.logger.debug('======', data);
-    // });
+    this.roomSub = this.dataService.Room$.subscribe(this.onRoomSub.bind(this));
+  }
+
+  ngOnDestroy() {
+    this.roomSub.unsubscribe();
+  }
+
+  onRoomSub(room: Room) {
+    this.rooms.push(room);
   }
 
   loginOut() {

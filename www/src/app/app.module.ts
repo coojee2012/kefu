@@ -20,6 +20,7 @@ import { APPRequestInterceptor, APPResponseInterceptor, TimingInterceptor } from
 import { LoggerService } from './services/LogService';
 import { DeepStreamService } from './services/DeepStreamService';
 import { SIPService } from './services/SIPService';
+import { DataService } from './services/DataService';
 import { AuthGuard } from './auth-guard';
 // Application wide providers
 const APP_PROVIDERS = [
@@ -30,6 +31,7 @@ const APP_PROVIDERS = [
     { provide: DeepStreamService, useClass: DeepStreamService },
     { provide: SIPService, useClass: SIPService },
     { provide: AuthGuard, useClass: AuthGuard },
+    { provide: DataService, useClass: DataService },
 ];
 
 @NgModule({

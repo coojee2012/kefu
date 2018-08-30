@@ -145,7 +145,7 @@ export class SIPService {
     }
 
 
-    async sendMsg(sendTo: string, msg: string): Promise<string> {
+    async sendMsg(livechatSessionId: string, sendTo: string, msg: string): Promise<string> {
         try {
             const remsg = await new Promise<string>((resolve, reject) => {
                 msg = msg.replace(/(^\s+)|(\s+$)/g, '');
@@ -153,7 +153,10 @@ export class SIPService {
                     msg = '无言以对(^_^)';
                 }
                 this.session = this.client.message('relivechat', `${sendTo}::${msg}`,
-                    { contentType: 'text/plain', extraHeaders: [`livechat-visitor:${sendTo}`] });
+                    {
+                        contentType: 'text/plain', extraHeaders: [`X-Livechat-Visitor:${sendTo}`,
+                        `X-Session-Id:${livechatSessionId}`]
+                    });
                 this.session.once('progress', (response, cause) => {
                     this.logger.debug('send msg progress', cause);
                 });
@@ -178,6 +181,7 @@ export class SIPService {
 
 
     handleChatMsg(msg: any) {
+        this.logger.debug('新消息来了:', msg);
         this.chatMessageSource.next(msg);
     }
 

@@ -38,6 +38,7 @@ export class BackEnd {
 
     public client: any;
     private session: any;
+    private livechatSessionId: string;
     constructor(
         private myhttp: MyHttp,
         // private userService: UserService,
@@ -45,6 +46,7 @@ export class BackEnd {
     ) {
         this.client = null;
         this.session = null;
+        this.livechatSessionId = '';
     }
 
 
@@ -328,7 +330,8 @@ export class BackEnd {
                 if (!msg) {
                     msg = '无言以对(^_^)';
                 }
-                this.session = this.client.message('livecat', msg);
+                this.session = this.client.message('livecat', msg,
+                    { contentType: 'text/plain', extraHeaders: [`X-Session-Id:${this.livechatSessionId}`] });
                 this.session.once('progress', (response, cause) => {
                     console.debug('send msg progress', cause);
                 });
@@ -356,7 +359,7 @@ export class BackEnd {
         const { ua, method, body, request, localIdentity, remoteIdentity } = msg;
         const { uri, displayName } = remoteIdentity;
         const { scheme, user } = uri;
-
+        this.livechatSessionId = request.getHeader('X-Session-Id') || '';
 
         console.log('handler msg', { scheme, user, displayName, uri, localIdentity });
 

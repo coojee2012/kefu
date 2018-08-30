@@ -37,13 +37,10 @@
         </a>
         <ul class="treeview-menu">
           <li *ngFor="let room of rooms">
-            <a routerLink="chat/{{room}}">
-              <i class="fa fa-circle-o"></i> {{ room }}</a>
+            <a routerLink="chat/{{ room.id }}">
+              <i class="fa fa-circle-o"></i> {{ room.userName }}</a>
           </li>
-          <li>
-            <a routerLink="chat/1000">
-              <i class="fa fa-circle-o"></i> 1000</a>
-          </li>
+
         </ul>
       </li>
       <li>
@@ -210,10 +207,10 @@
         </ul>
       </li>
       <li>
-          <a routerLink="userma/user/1000">
-            <i class="fa  fa-cog"></i>
-            <span>个人设置</span>
-          </a>
+        <a routerLink="userma/user/1000">
+          <i class="fa  fa-cog"></i>
+          <span>个人设置</span>
+        </a>
       </li>
       <li>
         <a href="javascript:void(0);" (click)="loginOut()">
