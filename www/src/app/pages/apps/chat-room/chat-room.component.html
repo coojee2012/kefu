@@ -14,194 +14,11 @@
 <section class="content">
   <!-- Small boxes (Stat box) -->
   <div class="row">
-    <div class="col-md-12">
-      <!-- Custom Tabs -->
-      <ngb-tabset class="nav-tabs-custom">
-        <ngb-tab title="联系人" class="nav nav-tabs active">
-          <ng-template ngbTabContent>
-            <div class="box box-info">
-              <div class="box-header">
-                <h3 class="box-title"></h3>
-                <div class="box-tools">
-                  <div class="input-group input-group-sm" style="width: 250px;">
-                    <input type="text" name="table_search" class="form-control pull-right" placeholder="绑定已有联系人">
-                    <div class="input-group-btn">
-                      <button type="submit" class="btn btn-default">
-                        <i class="fa fa-search"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <form #customInfoForm="ngForm" class="form-horizontal">
-                <div class="box-body">
-                  <div class="col-lg-4 col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">姓名</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="姓名">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">邮件</label>
-                      <div class="col-md-8">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="email@domain.com">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">类型</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">手机</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="手机">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">电话</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="电话">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">电话1</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="电话1">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">地址</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="地址">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-6">
-                    <div class="form-group">
-                      <label for="inputEmail3" class="col-md-4 control-label">备注</label>
-                      <div class="col-md-8">
-                        <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-4  col-md-12">
-                    <div class="form-group">
-                      <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
-                      <div class="col-md-4 col-sm-4 col-xs-4">
-                        <button type="submit" class="btn btn-warning pull-right">重置</button>
-                      </div>
-                      <div class="col-md-4 col-sm-4 col-xs-4">
-                        <button type="submit" class="btn btn-info pull-left">保存</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-              <!-- /.box-body -->
-            </div>
-          </ng-template>
-        </ngb-tab>
-        <ngb-tab title="最近联络" class="nav nav-tabs">
-          <ng-template ngbTabContent>
-            <div class="row">
-              <div class="col-xs-12">
-                <div class="box">
-                  <div class="box-header">
-                    <h3 class="box-title"></h3>
-
-                    <div class="box-tools">
-                      <div class="input-group input-group-sm" style="width: 250px;">
-                        <input type="text" name="table_search" class="form-control pull-right" placeholder="搜索">
-                        <div class="input-group-btn">
-                          <button type="submit" class="btn btn-default">
-                            <i class="fa fa-search"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- /.box-header -->
-                  <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                      <tr>
-                        <th>服务时间</th>
-                        <th>服务方式</th>
-                        <th>服务坐席</th>
-                        <th>服务状态</th>
-                        <th>工单内容</th>
-                      </tr>
-                      <tr>
-                        <td>11-7-2014</td>
-                        <td>webchat</td>
-                        <td>John Doe</td>
-                        <td>
-                          <span class="label label-success">Approved</span>
-                        </td>
-                        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                      </tr>
-                      <tr>
-                        <td>219</td>
-                        <td>Alexander Pierce</td>
-                        <td>11-7-2014</td>
-                        <td>
-                          <span class="label label-warning">Pending</span>
-                        </td>
-                        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                      </tr>
-                      <tr>
-                        <td>657</td>
-                        <td>Bob Doe</td>
-                        <td>11-7-2014</td>
-                        <td>
-                          <span class="label label-primary">Approved</span>
-                        </td>
-                        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                      </tr>
-                      <tr>
-                        <td>175</td>
-                        <td>Mike Doe</td>
-                        <td>11-7-2014</td>
-                        <td>
-                          <span class="label label-danger">Denied</span>
-                        </td>
-                        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!-- /.box-body -->
-                </div>
-                <!-- /.box -->
-              </div>
-            </div>
-          </ng-template>
-        </ngb-tab>
-
-        <!-- /.tab-content -->
-      </ngb-tabset>
-      <!-- nav-tabs-custom -->
-    </div>
     <div class="col-md-5">
       <!-- DIRECT CHAT -->
       <div class="box box-warning direct-chat direct-chat-warning">
         <div class="box-header with-border">
           <h3 class="box-title">在线聊天</h3>
-
           <div class="box-tools pull-right">
             <span data-toggle="tooltip" title="3 New Messages" class="badge bg-yellow">3</span>
             <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
@@ -210,13 +27,13 @@
           </div>
         </div>
         <!-- /.box-header -->
-        <div class="box-body">
+        <div class="box-body" style="height:600px;">
           <!-- Conversations are loaded here -->
           <div class="direct-chat-messages">
             <!-- Message. Default to the left -->
             <div *ngFor="let message of messages" class="direct-chat-msg {{ message.from === 'me'? 'right':'left'}}">
               <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name {{ message.from === 'me'? 'pull-right':'pull-left'}}">Alexander Pierce</span>
+                <span class="direct-chat-name {{ message.from === 'me'? 'pull-right':'pull-left'}}">我</span>
                 <span class="direct-chat-timestamp {{ message.from === 'me'? 'pull-left':'pull-right'}}">23 Jan 2:00 pm</span>
               </div>
               <!-- /.direct-chat-info -->
@@ -333,10 +150,10 @@
         <div class="box-footer">
           <form #msgForm="ngForm">
             <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control" [(ngModel)]="inputMsg"
+              <input type="text" name="message" placeholder="输入聊天内容..." class="form-control" [(ngModel)]="inputMsg"
                 (keyup.enter)="onEnter()">
               <span class="input-group-btn">
-                <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">Send</button>
+                <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">发送</button>
               </span>
             </div>
           </form>
@@ -345,104 +162,340 @@
       </div>
       <!--/.direct-chat -->
     </div>
-    <!-- /.col -->
-
     <div class="col-md-7">
-      <!-- USERS LIST -->
-      <div class="box box-danger">
-        <div class="box-header with-border">
-          <h3 class="box-title">业务处理</h3>
-        </div>
-        <!-- /.box-header -->
-        <form #customOrderForm="ngForm" class="form-horizontal">
-          <div class="box-body">
-            <div class="col-lg-4 col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">主题</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="主题">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">类型</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">状态</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="状态">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">优先级</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="优先级">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">分组</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="分组">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">服务坐席</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="服务坐席">
-                </div>
-              </div>
-            </div>
 
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">内容</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="内容">
-                </div>
-              </div>
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">业务办理</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group">
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='basic','btn-default':memu!=='basic'}"
+                routerLink="/app/set/pbx">工单处理</a>
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='extension','btn-default':memu!=='extension'}"
+                routerLink="/app/set/pbx/extension">会话详情</a>
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='queue','btn-default':memu!=='queue'}"
+                routerLink="/app/set/pbx/queue">知识库</a>
             </div>
-            <div class="col-lg-4  col-md-6">
-              <div class="form-group">
-                <label for="inputEmail3" class="col-md-4 control-label">备注</label>
-                <div class="col-md-8">
-                  <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4  col-md-12">
-              <div class="form-group">
-                <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  <button type="submit" class="btn btn-warning pull-right">重置</button>
-                </div>
-                <div class="col-md-4 col-sm-4 col-xs-4">
-                  <button type="submit" class="btn btn-info pull-left">保存</button>
+          </div>
+        </div>
+
+        <!-- Custom Tabs -->
+
+        <div class="box">
+          <div class="box-header with-border">
+            <h1 class="box-title" style="font-size:14px;">联系人信息</h1>
+            <div class="box-tools">
+              <div class="input-group input-group-sm" style="width: 250px;">
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="绑定已有联系人">
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default">
+                    <i class="fa fa-search"></i>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </form>
-        <!-- /.box-body -->
-        <div class="box-footer text-center">
+          <form #customInfoForm="ngForm" class="form-horizontal">
+            <div class="box-body">
+              <div class="col-lg-4 col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">姓名</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="姓名">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">邮件</label>
+                  <div class="col-md-8">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="email@domain.com">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">类型</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">手机</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="手机">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">电话</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="电话">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">电话1</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="电话1">
+                  </div>
+                </div>
+              </div>
 
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">地址</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="地址">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">备注</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-12">
+                <div class="form-group">
+                  <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <button type="submit" class="btn btn-warning pull-right">重置</button>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <button type="submit" class="btn btn-info pull-left">保存</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
-        <!-- /.box-footer -->
+
+        <div class="box box-warning">
+          <div class="box-header">
+            <h3 class="box-title" style="font-size:14px;">工单历史</h3>
+            <div class="box-tools">
+              <div class="input-group input-group-sm" style="width: 250px;">
+                <input type="text" name="table_search" class="form-control pull-right" placeholder="搜索工单">
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="box-body table-responsive no-padding">
+            <table class="table table-hover">
+              <tr>
+                <th>服务时间</th>
+                <th>服务方式</th>
+                <th>服务坐席</th>
+                <th>服务状态</th>
+                <th>工单内容</th>
+              </tr>
+              <tr>
+                <td>11-7-2014</td>
+                <td>webchat</td>
+                <td>John Doe</td>
+                <td>
+                  <span class="label label-success">Approved</span>
+                </td>
+                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+              </tr>
+              <tr>
+                <td>219</td>
+                <td>Alexander Pierce</td>
+                <td>11-7-2014</td>
+                <td>
+                  <span class="label label-warning">Pending</span>
+                </td>
+                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+              </tr>
+              <tr>
+                <td>657</td>
+                <td>Bob Doe</td>
+                <td>11-7-2014</td>
+                <td>
+                  <span class="label label-primary">Approved</span>
+                </td>
+                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+              </tr>
+              <tr>
+                <td>175</td>
+                <td>Mike Doe</td>
+                <td>11-7-2014</td>
+                <td>
+                  <span class="label label-danger">Denied</span>
+                </td>
+                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+              </tr>
+            </table>
+          </div>
+
+          <form #customOrderForm="ngForm" class="form-horizontal">
+            <div class="box-body">
+              <div class="col-lg-4 col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">主题</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="主题">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">类型</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="类型">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">状态</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="状态">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">优先级</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="优先级">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">分组</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="分组">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">服务坐席</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="服务坐席">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">内容</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="内容">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-6">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-md-4 control-label">备注</label>
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="备注">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4  col-md-12">
+                <div class="form-group">
+                  <div class="col-md-4 col-sm-4 col-xs-4">&nbsp;</div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <button type="submit" class="btn btn-warning pull-right">重置</button>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <button type="submit" class="btn btn-info pull-left">保存</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <!-- /.box-body -->
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title"></h3>
+
+                <div class="box-tools">
+                  <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" name="table_search" class="form-control pull-right" placeholder="搜索">
+                    <div class="input-group-btn">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                  <tr>
+                    <th>服务时间</th>
+                    <th>服务方式</th>
+                    <th>服务坐席</th>
+                    <th>服务状态</th>
+                    <th>工单内容</th>
+                  </tr>
+                  <tr>
+                    <td>11-7-2014</td>
+                    <td>webchat</td>
+                    <td>John Doe</td>
+                    <td>
+                      <span class="label label-success">Approved</span>
+                    </td>
+                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                  </tr>
+                  <tr>
+                    <td>219</td>
+                    <td>Alexander Pierce</td>
+                    <td>11-7-2014</td>
+                    <td>
+                      <span class="label label-warning">Pending</span>
+                    </td>
+                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                  </tr>
+                  <tr>
+                    <td>657</td>
+                    <td>Bob Doe</td>
+                    <td>11-7-2014</td>
+                    <td>
+                      <span class="label label-primary">Approved</span>
+                    </td>
+                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                  </tr>
+                  <tr>
+                    <td>175</td>
+                    <td>Mike Doe</td>
+                    <td>11-7-2014</td>
+                    <td>
+                      <span class="label label-danger">Denied</span>
+                    </td>
+                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                  </tr>
+                </table>
+              </div>
+              <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+          </div>
+        </div>
+
       </div>
-      <!--/.box -->
     </div>
-    <!-- /.col -->
+
   </div>
 
 </section>

@@ -861,7 +861,8 @@ export class PBXExtensionController {
             const options = {
                 lean: true,
             }
-            const doc = await this.mongoDB.models.PBXExtension.findOne(query, fields, options);
+            const doc = await this.mongoDB.models.PBXExtension.findOne(query, fields, options).populate('agentId');
+
             return doc;
         } catch (error) {
             return Promise.reject(error);

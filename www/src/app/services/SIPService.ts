@@ -152,7 +152,7 @@ export class SIPService {
                 if (!msg) {
                     msg = '无言以对(^_^)';
                 }
-                this.session = this.client.message('relivechat', `${sendTo}::${msg}`,
+                this.session = this.client.message('relivechat', msg,
                     {
                         contentType: 'text/plain', extraHeaders: [`X-Livechat-Visitor:${sendTo}`,
                         `X-Session-Id:${livechatSessionId}`]

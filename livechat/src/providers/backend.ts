@@ -19,6 +19,7 @@ export class BackEnd {
     private token;
     private ownId;
     private tenantId;
+    private username;
 
     //连接完触发
     // private onStatusChangedSubject = new ReplaySubject(1);
@@ -51,10 +52,11 @@ export class BackEnd {
 
 
     //连接
-    connect(token, ownId, tenantId) {
+    connect(token, ownId, tenantId, username) {
         this.token = token;
         this.ownId = ownId;
         this.tenantId = tenantId;
+        this.username = username;
         this.myhttp.setToken(token);
         this.connectSocket(token);
     }
@@ -63,6 +65,7 @@ export class BackEnd {
     disconnect() {
         this.token = null;
         this.ownId = null;
+        this.username = null;
         this.myhttp.removeToken();
         this.disconnectSocket();
     }
@@ -180,7 +183,7 @@ export class BackEnd {
 
         // });
 
-        return this.init({ exten: this.ownId, domain: this.tenantId, password: '123456' });
+        return this.init({ exten: this.username, domain: this.tenantId, password: '123456' });
 
     }
 
@@ -331,7 +334,13 @@ export class BackEnd {
                     msg = '无言以对(^_^)';
                 }
                 this.session = this.client.message('livecat', msg,
-                    { contentType: 'text/plain', extraHeaders: [`X-Session-Id:${this.livechatSessionId}`] });
+                    {
+                        contentType: 'text/plain',
+                        extraHeaders: [
+                            `X-Session-Id:${this.livechatSessionId}`,
+                            `X-Visitor-Id:${this.ownId}`,
+                        ]
+                    });
                 this.session.once('progress', (response, cause) => {
                     console.debug('send msg progress', cause);
                 });

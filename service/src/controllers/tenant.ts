@@ -22,12 +22,10 @@ export class TenantController {
     private pbxTrunkController: PBXTrunkController;
     private pbxCdrController: PBXCDRController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
-
         this.redisService = this.injector.get(RedisService);
         this.redLockClient = this.redisService.getClientByName('RedLock');
         this.pbxTrunkController = this.injector.get(PBXTrunkController);
         this.pbxCdrController = this.injector.get(PBXCDRController);
-
     }
     async create(data) {
         try {

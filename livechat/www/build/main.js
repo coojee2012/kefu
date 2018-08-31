@@ -3498,10 +3498,11 @@ var BackEnd = (function () {
         this.livechatSessionId = '';
     }
     //连接
-    BackEnd.prototype.connect = function (token, ownId, tenantId) {
+    BackEnd.prototype.connect = function (token, ownId, tenantId, username) {
         this.token = token;
         this.ownId = ownId;
         this.tenantId = tenantId;
+        this.username = username;
         this.myhttp.setToken(token);
         this.connectSocket(token);
     };
@@ -3509,6 +3510,7 @@ var BackEnd = (function () {
     BackEnd.prototype.disconnect = function () {
         this.token = null;
         this.ownId = null;
+        this.username = null;
         this.myhttp.removeToken();
         this.disconnectSocket();
     };
@@ -3600,7 +3602,7 @@ var BackEnd = (function () {
         //         resolve();
         //     });
         // });
-        return this.init({ exten: this.ownId, domain: this.tenantId, password: '123456' });
+        return this.init({ exten: this.username, domain: this.tenantId, password: '123456' });
     };
     BackEnd.prototype.disconnectSocket = function () {
         if (this.socket) {
@@ -3772,7 +3774,13 @@ var BackEnd = (function () {
                                 if (!msg) {
                                     msg = '无言以对(^_^)';
                                 }
-                                _this.session = _this.client.message('livecat', msg, { contentType: 'text/plain', extraHeaders: ["X-Session-Id:" + _this.livechatSessionId] });
+                                _this.session = _this.client.message('livecat', msg, {
+                                    contentType: 'text/plain',
+                                    extraHeaders: [
+                                        "X-Session-Id:" + _this.livechatSessionId,
+                                        "X-Visitor-Id:" + _this.ownId,
+                                    ]
+                                });
                                 _this.session.once('progress', function (response, cause) {
                                     console.debug('send msg progress', cause);
                                 });
@@ -6824,7 +6832,7 @@ var ChatContentPage = (function () {
     ChatContentPage.prototype.ngOnInit = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var _a, _b, token, ownId, checkInfo, rest, i, suffix, ex_1;
+            var _a, _b, token, ownId, username, checkInfo, rest, i, suffix, ex_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -6835,7 +6843,7 @@ var ChatContentPage = (function () {
                         _a.apikey = _c.sent();
                         return [4 /*yield*/, this.getToken()];
                     case 2:
-                        _b = _c.sent(), token = _b[0], ownId = _b[1];
+                        _b = _c.sent(), token = _b[0], ownId = _b[1], username = _b[2];
                         if (!this.apikey) return [3 /*break*/, 10];
                         checkInfo = null;
                         if (!token) return [3 /*break*/, 4];
@@ -6857,10 +6865,11 @@ var ChatContentPage = (function () {
                         ownId = rest[1];
                         this.relationId = rest[2];
                         this.pageTitle = rest[3];
+                        username = rest[4];
                         _c.label = 7;
                     case 7:
                         console.log('indexpage:', this.relationId, this.pageTitle);
-                        return [4 /*yield*/, this.backEnd.connect(token, ownId, this.relationId)];
+                        return [4 /*yield*/, this.backEnd.connect(token, ownId, this.relationId, username)];
                     case 8:
                         _c.sent();
                         this.ownId = ownId;
@@ -6937,12 +6946,13 @@ var ChatContentPage = (function () {
     ChatContentPage.prototype.getToken = function () {
         var p1 = this.storage.get('token');
         var p2 = this.storage.get('ownId');
-        return Promise.all([p1, p2]);
+        var p3 = this.storage.get('username');
+        return Promise.all([p1, p2, p3]);
     };
     ChatContentPage.prototype.createNewVistor = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var token_1, ownId_1, tenantId_1, companyName_1, result, ex_2;
+            var token_1, ownId_1, tenantId_1, companyName_1, username_1, result, ex_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -6952,20 +6962,21 @@ var ChatContentPage = (function () {
                                     .mergeMap(function (res) {
                                     //本地保存token
                                     token_1 = res.data.token;
-                                    ownId_1 = res.data.username;
+                                    username_1 = res.data.username;
                                     tenantId_1 = res.data.tenantId;
                                     companyName_1 = res.data.tenantName;
-                                    return _this.saveToken(token_1, ownId_1);
+                                    ownId_1 = res.data.user._id;
+                                    return _this.saveToken(token_1, ownId_1, username_1);
                                 })
                                     .subscribe(function () {
                                     //保存登录名，下次登录返显处来
                                     _this.storage.set('latestUsername', ownId_1);
-                                    resolve([token_1, ownId_1, tenantId_1, companyName_1]);
+                                    resolve([token_1, ownId_1, tenantId_1, companyName_1, username_1]);
                                 }, function (err) { _this.myHttp.handleError(err, '登录失败'); reject(err); });
                             })];
                     case 1:
                         result = _a.sent();
-                        console.log('11111', token_1, ownId_1, tenantId_1, companyName_1);
+                        console.log('11111', token_1, ownId_1, username_1, tenantId_1, companyName_1);
                         return [2 /*return*/, Promise.resolve(result)];
                     case 2:
                         ex_2 = _a.sent();
@@ -7005,10 +7016,11 @@ var ChatContentPage = (function () {
             });
         });
     };
-    ChatContentPage.prototype.saveToken = function (token, ownId) {
+    ChatContentPage.prototype.saveToken = function (token, ownId, username) {
         var p1 = this.storage.set('token', token);
         var p2 = this.storage.set('ownId', ownId);
-        var pAll = Promise.all([p1, p2]);
+        var p3 = this.storage.set('username', username);
+        var pAll = Promise.all([p1, p2, p3]);
         return __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__["Observable"].fromPromise(pAll);
     };
     // ngAfterViewInit() {
@@ -7261,25 +7273,10 @@ ChatContentPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'cy-chat-content-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/'<ion-header #header>\n\n  <ion-navbar>\n    <ion-title>{{pageTitle}}</ion-title>\n    <!--<ion-buttons end>\n      <button ion-button icon-only (click)="gotoReorderPage()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>-->\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding-vertical>\n\n\n  <div *ngFor="let msg of msgList">\n    <!--发送时间-->\n    <div class="send-time-wrap"><span class="send-time">{{msg.timediff | timediff}}</span></div>\n    <!--消息-->\n    <div class="msg-wrap {{ msg.fromUserId === ownId?\'me-msg\':\'other-msg\' }}">\n      <!--头像-->\n\n      <ion-thumbnail>\n        <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(msg._fromUser._id)"  style="width:56px;height:56px;"></cy-img>\n        <!-- <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc"  style="width:56px;"></cy-img> -->\n      </ion-thumbnail>\n\n      <!--文本消息-->\n      <p class="msg-content" *ngIf="msg.type===0" [innerHTML]="decodeMsgContent(msg.content)"></p>\n\n      <!--图片消息-->\n      <p *ngIf="msg.type===1" style="padding: 0 10px;">\n        <cy-img [src]="msg.content | imgSrc:200" [zoom]="true" style="max-width:100px;max-height:100px;"></cy-img>\n      </p>\n\n      <!--语音消息-->\n      <p class="msg-content" *ngIf="msg.type===3" (click)="playRecord(msg.content)">\n        <ion-icon class="audio-icon" name="wifi"></ion-icon>\n      </p>\n\n      <span class="audio-duartion" *ngIf="msg.type===3">{{msg.audioDuration}}"</span>\n\n      <ion-spinner *ngIf="msg.fromUserId === ownId && msg.pending"></ion-spinner>\n\n    </div>\n  </div>\n  <div class="record-volume-wrap" *ngIf="recording">\n    <div class="title">开始说话</div>\n    <img class="volume-img" [src]="volumeImgSrc" />\n    <div class="">{{recordDuration}}s</div>\n  </div>\n  <audio #audio autoplay="autoplay"></audio>\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <div class="foot-wrapper">\n      <!--切换按钮-->\n      <a ion-button icon-only outline small (click)="switchInput()">\n        <ion-icon *ngIf="!isAudio" name="wifi" class="switch-toggle"></ion-icon>\n        <ion-icon *ngIf="isAudio" name="barcode"></ion-icon>\n      </a>\n      <!--文本-->\n      <div *ngIf="!isAudio" class="msg-input-wrapper">\n        <form [formGroup]="form" (ngSubmit)="sendMsg()">\n          <!-- <input #input type="text" formControlName="content" (focus)="onInputFocus()" /> -->\n          <cy-content-input #input formControlName="content" (focus)="onInputFocus()"></cy-content-input>\n          <a ion-button icon-only clear small (click)="presentActionSheet()">        \n            <ion-icon name="image-outline"></ion-icon>\n          </a>\n          <a ion-button icon-only clear small (click)="toggleFace()">        \n              <ion-icon [name]="isShowFace?\'happy\':\'happy-outline\'"></ion-icon>\n            </a>\n          <button type="submit" ion-button outline [disabled]="form.invalid">发送</button>\n        </form>\n      </div>\n      <!--语音-->\n      <div *ngIf="isAudio" class="audio-msg-wrapper">\n        <a ion-button block outline small (click)="recordToggle()">{{recording? \'停止录音\':\'开始录音\'}}</a>\n      </div>\n\n      <!--<button ion-button icon-only outline small><ion-icon name="add-outline"></ion-icon></button>-->\n    </div>\n  </ion-toolbar>\n    <!-- 表情栏 -->\n    <div class="face-wrap" [hidden]="!isShowFace">\n      <div class="face-item" *ngFor="let item of faceItems;" (click)="insertFace(item.src)">\n        <img src="{{item.src}}" />\n      </div>\n    </div>\n</ion-footer>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */],
-        __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */],
-        __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */],
-        __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */],
-        __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */]) === "function" && _k || Object, typeof (_l = typeof __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */]) === "function" && _l || Object, typeof (_m = typeof __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */]) === "function" && _m || Object, typeof (_o = typeof __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */]) === "function" && _o || Object, typeof (_p = typeof __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */]) === "function" && _p || Object, typeof (_q = typeof __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */]) === "function" && _q || Object, typeof (_r = typeof __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */]) === "function" && _r || Object, typeof (_s = typeof __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]) === "function" && _s || Object])
 ], ChatContentPage);
 
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
 //# sourceMappingURL=chat-content.js.map
 
 /***/ }),

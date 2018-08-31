@@ -25,7 +25,8 @@ import { PBXTrunkController } from '../controllers/pbx_trunk';
 
 import { TenantController } from '../controllers/tenant';
 
-
+import { RoomController } from '../controllers/room';
+import { PBXMessageController } from '../controllers/pbx_messages'
 
 @Injectable()
 export class FreeSwitchChat extends EventEmitter2 {
@@ -34,6 +35,8 @@ export class FreeSwitchChat extends EventEmitter2 {
     private liveChatServeList: LiveChatServe[];
     private childInjector: Injector;
     private extensionCtr: PBXExtensionController;
+    private roomCtr: RoomController;
+    private msgCtr: PBXMessageController;
     constructor(private injector: Injector) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
@@ -42,6 +45,8 @@ export class FreeSwitchChat extends EventEmitter2 {
         this.createChildInjector();
 
         this.extensionCtr = this.childInjector.get(PBXExtensionController);
+        this.roomCtr = this.childInjector.get(RoomController);
+        this.msgCtr = this.childInjector.get(PBXMessageController);
     }
 
     createChildInjector(): void {
@@ -64,6 +69,8 @@ export class FreeSwitchChat extends EventEmitter2 {
             PBXRecordFileController,
             PBXTrunkController,
             TenantController,
+            RoomController,
+            PBXMessageController,
         ], this.injector);
     }
 
@@ -86,14 +93,20 @@ export class FreeSwitchChat extends EventEmitter2 {
 
             }
             else if (to_user === 'relivechat') {
-                const d = msg.split('::');
-                const visitor = d.shift();
-                let remsg = d.join('').replace(/(^\s+)|(\s+$)/g, '');
+                let remsg = msg.replace(/(^\s+)|(\s+$)/g, '');
                 if (!remsg) {
                     remsg = '无语(^_^)';
                 }
                 const roomId = evt.getHeader('sip_h_X-Session-Id');
-
+                const visitor = evt.getHeader('sip_h_X-Livechat-Visitor');
+                this.logger.debug(`relivechat:${roomId},${visitor}`);
+                await this.msgCtr.createLiveChatMessage({
+                    tenantId: from_host,
+                    rid: roomId,
+                    from: 'agent',
+                    msg,
+                    conentType: 'text'
+                })
                 conn.message({
                     sessionId: roomId,
                     msgType: 'livechat',
@@ -130,13 +143,24 @@ export class FreeSwitchChat extends EventEmitter2 {
             const to_host = evt.getHeader('to_host');
             const msg = evt.getBody();
             const roomId = evt.getHeader('sip_h_X-Session-Id');
-            console.log(`${from_user}@${from_host} TO ${to_user}@${to_host} : ${msg} roomid:${roomId}`);
+            const visitorId = evt.getHeader('sip_h_X-Visitor-Id');
+            console.log(`${from_user}@${from_host} TO ${to_user}@${to_host} : ${msg} roomid:${roomId}`, visitorId);
 
-            const chatIndex = this.liveChatVisitorList.indexOf(roomId);
+            const chatIndex = this.liveChatVisitorList.indexOf(roomId); // TODO 从redis中获取
             // 已经有过回话
             if (chatIndex > -1 && !this.liveChatServeList[chatIndex].isEnd) {
                 const server = this.liveChatServeList[chatIndex];
                 this.logger.debug(`访客正在和坐席${server.agentNumber}聊天`)
+                await Promise.all([
+                    this.msgCtr.createLiveChatMessage({
+                        tenantId: from_host,
+                        rid: roomId,
+                        msg,
+                        from: 'visitor',
+                        conentType: 'text'
+                    }),
+                    this.roomCtr.incMsgCount(roomId)
+                ])
                 conn.message({
                     sessionId: roomId,
                     msgType: 'livechat',
@@ -156,9 +180,26 @@ export class FreeSwitchChat extends EventEmitter2 {
                 // 随机从exntension表 找到活跃的分机联系
                 const serverAgent = await this.extensionCtr.findMsgAgent(to_host);
                 if (serverAgent) {
+                    await Promise.all([
+                        this.roomCtr.createLiveChatRoom({
+                            tenantId: from_host,
+                            rid: sessionId,
+                            agentId: serverAgent.agentId._id,
+                            roomName: '访客',
+                            visitorId: visitorId
+                        }),
+                        this.msgCtr.createLiveChatMessage({
+                            tenantId: from_host,
+                            rid: sessionId,
+                            from: 'visitor',
+                            msg,
+                            conentType: 'text'
+                        })
+                    ])
+
                     this.liveChatVisitorList.push(sessionId);
                     this.liveChatServeList.push({
-                        agentId: serverAgent.agentId,
+                        agentId: serverAgent.agentId._id,
                         ts: new Date().getTime(),
                         agentNumber: serverAgent.accountCode,
                         isEnd: false,
@@ -173,7 +214,7 @@ export class FreeSwitchChat extends EventEmitter2 {
                         to: from_user + '@' + from_host,
                         subject: 'welcome',
                         profile: 'internal',//'external'
-                        body: '欢迎使用某某某系统'
+                        body: '您好，请问有什么可以帮助您？'
                     }, (e) => { console.log(e.headers) })
 
                     // 向选定的坐席发送访客的内容

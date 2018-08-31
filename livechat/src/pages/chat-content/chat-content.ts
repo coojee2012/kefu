@@ -99,7 +99,7 @@ export class ChatContentPage {
 
             this.apikey = await this.storage.get('apikey');
 
-            let [token, ownId] = await this.getToken();
+            let [token, ownId, username] = await this.getToken();
 
             if (this.apikey) {
                 // 用token和apikey 验证用户是否以前联系过 否则将创建新的用户
@@ -119,13 +119,15 @@ export class ChatContentPage {
                     console.log('成功创建新访客:', rest);
                     token = rest[0];
                     ownId = rest[1];
+
                     this.relationId = rest[2];
                     this.pageTitle = rest[3];
+                    username = rest[4];
 
                 }
 
                 console.log('indexpage:', this.relationId, this.pageTitle);
-                await this.backEnd.connect(token, ownId,this.relationId);
+                await this.backEnd.connect(token, ownId, this.relationId, username);
                 this.ownId = ownId;
                 await this.msgService.getMsgList();
             }
@@ -227,36 +229,36 @@ export class ChatContentPage {
     getToken(): Promise<any[]> {
         let p1 = this.storage.get('token');
         let p2 = this.storage.get('ownId');
-
-        return Promise.all([p1, p2])
+        let p3 = this.storage.get('username');
+        return Promise.all([p1, p2, p3])
     }
 
     async createNewVistor() {
         try {
-            let token, ownId, tenantId, companyName;
+            let token, ownId, tenantId, companyName, username;
             const result = await new Promise((resolve, reject) => {
                 this.userService.signVisitor(this.apikey)
                     .mergeMap((res) => {
                         //本地保存token
                         token = res.data.token;
-                        ownId = res.data.username;
+                        username = res.data.username;
                         tenantId = res.data.tenantId;
                         companyName = res.data.tenantName;
-
-                        return this.saveToken(token, ownId);
+                        ownId = res.data.user._id
+                        return this.saveToken(token, ownId, username);
                     })
                     .subscribe(
                         () => {
                             //保存登录名，下次登录返显处来
                             this.storage.set('latestUsername', ownId);
 
-                            resolve([token, ownId, tenantId, companyName])
+                            resolve([token, ownId, tenantId, companyName, username])
                         },
                         err => { this.myHttp.handleError(err, '登录失败'); reject(err) },
                     );
 
             });
-            console.log('11111', token, ownId, tenantId, companyName)
+            console.log('11111', token, ownId, username, tenantId, companyName)
             return Promise.resolve(result);
 
         } catch (ex) {
@@ -286,10 +288,11 @@ export class ChatContentPage {
         }
     }
 
-    private saveToken(token: any, ownId: any) {
+    private saveToken(token: any, ownId: any, username: any) {
         let p1 = this.storage.set('token', token);
         let p2 = this.storage.set('ownId', ownId);
-        let pAll = Promise.all([p1, p2]);
+        let p3 = this.storage.set('username', username);
+        let pAll = Promise.all([p1, p2, p3]);
         return Observable.fromPromise(pAll);
     }
 

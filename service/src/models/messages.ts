@@ -5,33 +5,39 @@
 import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 export type MessageModel = mongoose.Document & {
-    rid:String;
-    tenantId:String;
-    userId:String;
-    msg:String;
+    rid: string;
+    tenantId: string;
+    msg: string;
+    conentType: string;
+    msgType: string;
+    from:string;
     createdAt: Date;   // 创建时间
-    token:String;
 }
-const messageSchema = new mongoose.Schema({ 
-    rid : {
-        type: String,
+const messageSchema = new mongoose.Schema({
+    rid: {
+        type: String,    // 引用类型
         required: true
-    }, 
-    msg : {
+    },
+    msg: {
         type: String,
         default: () => ''
-    }, 
-    userId : {
-        type: Schema.Types.ObjectId,    // 引用类型
-        ref: 'User'                     // 关联用户表
-    }, 
-    token : {
-        type: String
-    },  
-    tenantId : {
+    },
+    conentType: {
+        type: String,
+        enum: ['text', 'picture', 'voice', 'file'],
+    },
+    msgType: {
+        type: String,
+        enum: ['livechat', 'system'],
+    },
+    from: {
+        type: String,
+        default: () => ''
+    },
+    tenantId: {
         type: String,
         required: true
     }
-},{ timestamps: true });
+}, { timestamps: true });
 
 export default messageSchema;

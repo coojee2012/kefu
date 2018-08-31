@@ -11,9 +11,9 @@ import commentsSchema from '../models/comments';
 import corpusSchema from '../models/corpus';
 import templateSchema from '../models/template';
 import userSchema from '../models/user';
-import { default as tenantSchema,TenantModel } from '../models/tenants';
+import { default as tenantSchema, TenantModel } from '../models/tenants';
 import { default as roomSchema, RoomModel } from '../models/rooms';
-import messageSchema from '../models/messages';
+import { default as messageSchema, MessageModel } from '../models/messages';
 import { default as pbxRouterSchema, PBXRouterModel } from '../models/pbx_routers';
 import { default as pbxCallProcessSchema, PBXCallProcessModel } from '../models/pbx_callProcess';
 import { default as pbxCDRSchema, PBXCDRModel } from '../models/pbx_cdr';
@@ -44,7 +44,7 @@ interface IModels {
     Users?: mongoose.Model<mongoose.Document>;
     Tenants?: mongoose.Model<TenantModel>;
     Rooms?: mongoose.Model<mongoose.Document>;
-    Messages?: mongoose.Model<mongoose.Document>;
+    Messages?: mongoose.Model<MessageModel>;
 
     //--------华丽的分隔符--PBX香瓜model定义--------
 
@@ -117,30 +117,30 @@ export class MongoService {
             this.models.Users = this.conn.model('Users', userSchema);
             this.models.Rooms = this.conn.model('Rooms', roomSchema);
             //TODO 测试情况下用pbx_tenants
-            this.models.Tenants = this.conn.model('pbx_Tenants', tenantSchema); 
+            this.models.Tenants = this.conn.model('pbx_Tenants', tenantSchema);
             this.models.Messages = this.conn.model('pbx_Messages', messageSchema);
             // PBX相关表
             this.models.PBXRouters = this.conn.model('PBX_Routers', pbxRouterSchema);
             this.models.PBXCallProcess = this.conn.model('PBX_CallProcess', pbxCallProcessSchema);
             this.models.PBXAgent = this.conn.model('PBX_Agents', pbxAgentSchema);
-            this.models.PBXAgentStatistic = this.conn.model('pbx_AgentStatistics',pbxAgentStatisticSchema);
-            this.models.PBXBlackList = this.conn.model('PBX_Blacklist',pbxBlackListSchema);
-            this.models.PBXCDR = this.conn.model('PBX_cdrs',pbxCDRSchema);
-            this.models.PBXConference = this.conn.model('pbx_conferences',pbxConferenceSchema);
-            this.models.PBXExtension = this.conn.model('PBX_extensions',pbxExtensionSchema);
-           
-            this.models.PBXFSHost = this.conn.model('PBX_fshosts',pbxFSHostSchema);
-            this.models.PBXIvrAction = this.conn.model('PBX_ivractions',pbxIvrActionSchema);
-            this.models.PBXIvrInput = this.conn.model('PBX_ivrinputs',pbxIvrInputSchema);
-            this.models.PBXIvrMenmu = this.conn.model('PBX_ivrmenus',pbxIvrMenmuSchema);
-            this.models.PBXLastService = this.conn.model('PBX_lastservices',pbxLastServiceSchema);
-            this.models.PBXLocalNumber = this.conn.model('PBX_localnumbers',pbxLocalNumberSchema);
-            this.models.PBXQueue = this.conn.model('PBX_queues',pbxQueueSchema);
-            this.models.PBXQueueMember = this.conn.model('PBX_queuemembers',pbxQueueMemberSchema);
-            this.models.PBXQueueStatistic = this.conn.model('PBX_queuestatustics',pbxQueueStatisticSchema);
-            this.models.PBXRecordFile = this.conn.model('PBX_recordfiles',pbxRecordFileSchema);
-            this.models.PBXSound = this.conn.model('PBX_sounds',pbxSoundSchema);
-            this.models.PBXTrunk = this.conn.model('PBX_trunks',pbxTrunkSchema);
+            this.models.PBXAgentStatistic = this.conn.model('pbx_AgentStatistics', pbxAgentStatisticSchema);
+            this.models.PBXBlackList = this.conn.model('PBX_Blacklist', pbxBlackListSchema);
+            this.models.PBXCDR = this.conn.model('PBX_cdrs', pbxCDRSchema);
+            this.models.PBXConference = this.conn.model('pbx_conferences', pbxConferenceSchema);
+            this.models.PBXExtension = this.conn.model('PBX_extensions', pbxExtensionSchema);
+
+            this.models.PBXFSHost = this.conn.model('PBX_fshosts', pbxFSHostSchema);
+            this.models.PBXIvrAction = this.conn.model('PBX_ivractions', pbxIvrActionSchema);
+            this.models.PBXIvrInput = this.conn.model('PBX_ivrinputs', pbxIvrInputSchema);
+            this.models.PBXIvrMenmu = this.conn.model('PBX_ivrmenus', pbxIvrMenmuSchema);
+            this.models.PBXLastService = this.conn.model('PBX_lastservices', pbxLastServiceSchema);
+            this.models.PBXLocalNumber = this.conn.model('PBX_localnumbers', pbxLocalNumberSchema);
+            this.models.PBXQueue = this.conn.model('PBX_queues', pbxQueueSchema);
+            this.models.PBXQueueMember = this.conn.model('PBX_queuemembers', pbxQueueMemberSchema);
+            this.models.PBXQueueStatistic = this.conn.model('PBX_queuestatustics', pbxQueueStatisticSchema);
+            this.models.PBXRecordFile = this.conn.model('PBX_recordfiles', pbxRecordFileSchema);
+            this.models.PBXSound = this.conn.model('PBX_sounds', pbxSoundSchema);
+            this.models.PBXTrunk = this.conn.model('PBX_trunks', pbxTrunkSchema);
         }
         catch (ex) {
             return Promise.reject(ex);
