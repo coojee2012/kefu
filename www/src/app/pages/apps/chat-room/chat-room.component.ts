@@ -25,6 +25,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   private roomId$: Subscription;
   private room: Room;
   private roomSub: Subscription;
+  private memu: string;
   constructor(private el: ElementRef, private renderer: Renderer2, private route: ActivatedRoute,
     private chatRoomService: ChatRoomService, private dataService: DataService,
     private router: Router, private logger: LoggerService, private sipClient: SIPService) {
@@ -32,6 +33,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.inputMsg = '';
     this.roomIds = [];
     this.MSGs = {};
+    this.memu = 'order';
   }
 
   ngOnInit() {
@@ -100,6 +102,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.inputMsg += event.target.value + ' | ';
   }
 
+  action(memu: string) {
+    this.memu = memu;
+  }
   async onEnter() {
     try {
       await this.sendMsg();

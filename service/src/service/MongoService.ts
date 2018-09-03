@@ -10,7 +10,7 @@ import booksSchema from '../models/books';
 import commentsSchema from '../models/comments';
 import corpusSchema from '../models/corpus';
 import templateSchema from '../models/template';
-import userSchema from '../models/user';
+import { default as userSchema, UserModel } from '../models/user';
 import { default as tenantSchema, TenantModel } from '../models/tenants';
 import { default as roomSchema, RoomModel } from '../models/rooms';
 import { default as messageSchema, MessageModel } from '../models/messages';
@@ -35,15 +35,24 @@ import { default as pbxRecordFileSchema, PBXRecordFileModel } from '../models/pb
 import { default as pbxSoundSchema, PBXSoundModel } from '../models/pbx_sounds';
 import { default as pbxTrunkSchema, PBXTrunkModel } from '../models/pbx_trunks';
 
+
+import { default as customerSchema, CustomerModel } from '../models/customers';
+import { default as orderTypeSchema, OrderTypeModel } from '../models/order_types';
+import { default as orderStateSchema, OrderStateModel } from '../models/order_states';
+import { default as orderPriortySchema, OrderPriortyModel } from '../models/order_priorities';
+import { default as orderFlowSchema, OrderFlowModel } from '../models/order_flows';
+import { default as orderSchema, OrderModel } from '../models/orders';
+import { default as groupSchema, GroupModel } from '../models/groups';
 interface IModels {
     Articles?: mongoose.Model<mongoose.Document>;
     Books?: mongoose.Model<mongoose.Document>;
     Comments?: mongoose.Model<mongoose.Document>;
     Corpus?: mongoose.Model<mongoose.Document>;
     Templates?: mongoose.Model<mongoose.Document>;
-    Users?: mongoose.Model<mongoose.Document>;
+    Users?: mongoose.Model<UserModel>;
+    Groups?: mongoose.Model<GroupModel>
     Tenants?: mongoose.Model<TenantModel>;
-    Rooms?: mongoose.Model<mongoose.Document>;
+    Rooms?: mongoose.Model<RoomModel>;
     Messages?: mongoose.Model<MessageModel>;
 
     //--------华丽的分隔符--PBX香瓜model定义--------
@@ -68,6 +77,17 @@ interface IModels {
     PBXRecordFile?: mongoose.Model<PBXRecordFileModel>;
     PBXSound?: mongoose.Model<PBXSoundModel>;
     PBXTrunk?: mongoose.Model<PBXTrunkModel>;
+
+    // ----客户相关
+    Customer?: mongoose.Model<CustomerModel>;
+
+    // ---- 工单相关
+    OrderType?: mongoose.Model<OrderTypeModel>;
+    OrderFlow?: mongoose.Model<OrderFlowModel>;
+    OrderState?: mongoose.Model<OrderStateModel>;
+    OrderPriorty?: mongoose.Model<OrderPriortyModel>;
+    Order?: mongoose.Model<OrderModel>;
+
 }
 @Injectable()
 export class MongoService {
@@ -116,6 +136,7 @@ export class MongoService {
             this.models.Templates = this.conn.model('Templates', templateSchema);
             this.models.Users = this.conn.model('Users', userSchema);
             this.models.Rooms = this.conn.model('Rooms', roomSchema);
+            this.models.Groups = this.conn.model('Groups', groupSchema);
             //TODO 测试情况下用pbx_tenants
             this.models.Tenants = this.conn.model('pbx_Tenants', tenantSchema);
             this.models.Messages = this.conn.model('pbx_Messages', messageSchema);
@@ -141,6 +162,13 @@ export class MongoService {
             this.models.PBXRecordFile = this.conn.model('PBX_recordfiles', pbxRecordFileSchema);
             this.models.PBXSound = this.conn.model('PBX_sounds', pbxSoundSchema);
             this.models.PBXTrunk = this.conn.model('PBX_trunks', pbxTrunkSchema);
+
+            // order工单相关
+            this.models.OrderType = this.conn.model('OrderTypes', orderTypeSchema);
+            this.models.OrderFlow = this.conn.model('OrderFlows', orderFlowSchema);
+            this.models.OrderPriorty = this.conn.model('OrderPriorties', orderPriortySchema);
+            this.models.OrderState = this.conn.model('OrderStates', orderStateSchema);
+            this.models.Order = this.conn.model('Orders', orderSchema);
         }
         catch (ex) {
             return Promise.reject(ex);

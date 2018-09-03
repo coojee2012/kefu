@@ -22,10 +22,12 @@ import { Passport } from '../config/passport'
 // import { default as CorpusController } from '../controllers/corpus';
 
 import { PBXExtensionController } from '../controllers/pbx_extension';
+import { CustomerController } from '../controllers/customer';
 export class WebAPI {
   private Router: Express.Router;
   private userController: UserController;
   private pbxExtensionCtr: PBXExtensionController;
+  private customerCtr:CustomerController;
   private logger: LoggerService;
   private passport: Passport;
   constructor(private injector: Injector) {
@@ -34,6 +36,7 @@ export class WebAPI {
     this.pbxExtensionCtr = this.injector.get(PBXExtensionController);
     this.logger = this.injector.get(LoggerService);
     this.passport = this.injector.get(Passport);
+    this.customerCtr = this.injector.get(CustomerController);
     //this.userController = new UserController(new LoggerService(true));
   }
 
@@ -133,6 +136,13 @@ export class WebAPI {
     Router.get('/user/:id/basic', userController.basic);*/
     this.Router.param('userid', this.userController.byId);
 
+
+    // 创建客户
+    this.Router.post('/customer/create',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.customerCtr.create(req, res, next)
+        .then()
+        .catch(console.log)
+    });
 
     // 分机管理
 
