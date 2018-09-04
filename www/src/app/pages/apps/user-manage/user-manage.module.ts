@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared';
 import { UserManageComponent } from './user-manage.component';
 import { ROUTER_CONFIG } from './user-manage.routes';
@@ -19,7 +18,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     SharedModule,
     ROUTER_CONFIG
   ],
-  providers: [ PaginationService ],
+  providers: [PaginationService],
   declarations: [
     UserManageComponent,
     UserAddComponent,

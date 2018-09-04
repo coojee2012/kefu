@@ -25,7 +25,7 @@ export class UserAddComponent implements OnInit {
       username: '',
       password: '',
       repassword: '',
-      extension: '',
+      extension: '1000',
       phone: '',
       memo: '',
       role: 'agent',

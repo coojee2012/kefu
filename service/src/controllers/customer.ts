@@ -20,6 +20,7 @@ export class CustomerController {
 
         try {
             const optUser = (req as any).user;
+            this.logger.debug('optUser:', optUser);
             req.checkBody({
                 'name': {
                     notEmpty: true,

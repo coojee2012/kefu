@@ -7,7 +7,8 @@ import { ArticleController } from '../controllers/article'
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { TenantController } from '../controllers/tenant';
 import { PBXTrunkController } from '../controllers/pbx_trunk';
-import { PBXCDRController } from '../controllers/pbx_cdr'
+import { PBXCDRController } from '../controllers/pbx_cdr';
+import { CustomerController} from '../controllers/customer';
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -29,6 +30,7 @@ export class RoutesService {
       UserController,
       PBXExtensionController,
       ArticleController,
+      CustomerController,
     ], this.injector);
   }
 

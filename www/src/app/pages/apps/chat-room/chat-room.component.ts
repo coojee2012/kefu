@@ -26,6 +26,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   private room: Room;
   private roomSub: Subscription;
   private memu: string;
+  private newMsgIn: boolean; // 用于控制聊天窗口滚动到底部
   constructor(private el: ElementRef, private renderer: Renderer2, private route: ActivatedRoute,
     private chatRoomService: ChatRoomService, private dataService: DataService,
     private router: Router, private logger: LoggerService, private sipClient: SIPService) {
@@ -34,6 +35,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.roomIds = [];
     this.MSGs = {};
     this.memu = 'order';
+    this.newMsgIn = false;
   }
 
   ngOnInit() {
@@ -77,17 +79,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.roomSub.unsubscribe();
   }
   ngAfterViewChecked() {
-    // this.logger.debug('ngAfterViewChecked');
-    const divEl = this.el.nativeElement.querySelector('.direct-chat-messages');
-    const el = new ElementRef(divEl);
-    el.nativeElement.scrollTop = el.nativeElement.scrollHeight;
-    // console.log(el.nativeElement.scrollTop, el.nativeElement.scrollHeight);
-    // el.nativeElement.scrollIntoView();
+    if (this.newMsgIn) {
+      const divEl = this.el.nativeElement.querySelector('.direct-chat-messages');
+      const el = new ElementRef(divEl);
+      el.nativeElement.scrollTop = el.nativeElement.scrollHeight;
+      this.newMsgIn = false;
+      // console.log(el.nativeElement.scrollTop, el.nativeElement.scrollHeight);
+      // el.nativeElement.scrollIntoView();
+    }
+
   }
   handleChatMsg(msg: LiveChatMessage) {
     this.logger.debug('handle chat msg ', msg.rid, this.roomId);
     if (msg.rid === this.roomId) {
       this.messages.push(msg);
+      this.newMsgIn = true;
     }
 
   }
@@ -124,6 +130,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
         t: 'text'
       };
       this.messages.push(message);
+      this.newMsgIn = true;
       this.inputMsg = '';
 
     } catch (ex) {

@@ -138,7 +138,7 @@ export class WebAPI {
 
 
     // 创建客户
-    this.Router.post('/customer/create',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.post('/customer/:tenantId/create',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.customerCtr.create(req, res, next)
         .then()
         .catch(console.log)

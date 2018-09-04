@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../shared';
 import { ChatRoomComponent } from './chat-room.component';
 import { ROUTER_CONFIG } from './chat-room.routes';
@@ -18,6 +18,7 @@ import { ChatDetailComponent } from './chat-detail/chat-detail.component';
     NgbModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     SharedModule,
     ROUTER_CONFIG
   ],
