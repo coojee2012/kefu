@@ -417,7 +417,7 @@ var IndexPage = (function () {
             var ownId = all[1];
             if (token && ownId) {
                 _this.userService.safe(token, ownId).subscribe(function (res) {
-                    _this.backEnd.connect(token, ownId, 'tenantId');
+                    _this.backEnd.connect(token, ownId, 'tenantId', 'username');
                     shouldInitData && _this.initData(token, ownId);
                 }, function (err) {
                     if (err && err.status !== 200) {
@@ -513,10 +513,18 @@ IndexPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'cy-index-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" [tabBadge]="chatUnread" tabBadgeStyle="danger" tabTitle="聊天" tabIcon="chatbubbles"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="通讯录" tabIcon="contacts"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="发现" tabIcon="compass"></ion-tab>\n  <ion-tab [root]="tab4Root" tabTitle="我的" tabIcon="contact"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */]) === "function" && _j || Object, typeof (_k = typeof __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]) === "function" && _k || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+        __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */],
+        __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */],
+        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
+        __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */],
+        __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */],
+        __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */],
+        __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */],
+        __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]])
 ], IndexPage);
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 //# sourceMappingURL=index.js.map
 
 /***/ }),

@@ -342,7 +342,7 @@ export class UserController implements UserInterface {
                 });
                 return;
             }
-            const token = jwt.sign({ username: req.body.username.username }, `kefu2018@abcf`, {
+            const token = jwt.sign({ username: req.body.username }, `kefu2018@abcf`, {
                 expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
             });
             await this.tenantController.create({ tenantId: req.body.domain })
@@ -425,7 +425,7 @@ export class UserController implements UserInterface {
                         token,
                         username,
                         tenantId,
-                        tenantName:tenatInfo.companyName,
+                        tenantName: tenatInfo.companyName,
                         'user': {
                             'nickname': user.basic.nickname,
                             'avatar': user.basic.avatar,
@@ -468,22 +468,31 @@ export class UserController implements UserInterface {
 
             let tenant;
 
-            jwt.verify(req.body.apikey, 'kefu2018@abcf', (err, decoded) => {
-                if (!decoded) {
-                    res.json({
-                        'meta': {
-                            'code': 434,
-                            'message': 'APIKEY验证失败'
-                        }
-                    });
-                    return;
 
-                } else {
+            
+            const verifyResut = await new Promise((resolve, reject) => {
+                jwt.verify(req.body.apikey, 'kefu2018@abcf', (err, decoded) => {                 
+                    if (err) { reject(err) }
+                    else {
+                        resolve(decoded);
+                    }
+                })
+            });
+            
+            if (!verifyResut) {
+                res.json({
+                    'meta': {
+                        'code': 434,
+                        'message': 'APIKEY验证失败'
+                    }
+                });
+                return;
+            } else {
+                tenant = verifyResut;
+            }
 
-                    tenant = decoded;
-                }
-            })
 
+            
             if (tenant && tenant.tenantId === user.domain) {
                 const tenatInfo = await this.tenantController.getTenantByDomain(tenant.tenantId);
 

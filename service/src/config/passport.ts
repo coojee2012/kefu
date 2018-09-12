@@ -20,45 +20,62 @@ export class Passport {
     strategy(token, done) {
         const self = this;
         jwt.verify(token, 'kefu2018@abcf', (err, decoded) => {
-            if (!decoded) {
-                console.log('errr',token,err);
-                return done(null, false);
+            if (err) {
+                console.log('error', token, err);
+                return done(err);
             }
-            console.log('jwt decoded:', decoded);
-            self.mongoServer.models.Users.findOne({
-                username: decoded.username,
-                token: token
-            }).exec((error, user: any) => {
-                if (error) {
-                    return done(error);
-                }
-                if (!user) {
-                    return done(null, false, { message: '账号和密码不存在' });
-                }
-                return done(null, user);
-            });
+            else if (!decoded) {
+                console.log('decoded is undefind', token, err);
+                return done(null, false);
+            } else {
+                console.log('jwt decoded strategy:', decoded);
+                self.mongoServer.models.Users.findOne({
+                    username: decoded.username,
+                    token: token
+                }).exec((error, user: any) => {
+                    if (error) {
+                        console.log('jwt decoded strategy exec error:', error);
+                        return done(error);
+                    }
+                    else if (!user) {
+                        console.log('jwt decoded strategy exec dont  find user :', token);
+                        return done(null, false);
+                    }
+                    else { return done(null, user); }
+                });
+            }
+
         });
     }
 
     strategyApiKey(apikey, done) {
         const self = this;
         jwt.verify(apikey, 'kefu2018@abcf', (err, decoded) => {
-            if (!decoded) {
+            if (err) {
+                console.log('strategyApiKey error', err);
+                return done(err);
+            }
+            else if (!decoded) {
                 return done(null, false);
             }
-            console.log('jwt decoded:', decoded);
-            self.mongoServer.models.Tenants.findOne({
-                tenantId: decoded.tenantId,
-                apikey: apikey
-            }).exec((error, tenant: any) => {
-                if (error) {
-                    return done(error);
-                }
-                if (!tenant) {
-                    return done(null, false, { message: '非法APIKEY' });
-                }
-                return done(null, tenant);
-            });
+            else {
+                console.log('jwt decoded strategyApiKey:', decoded);
+                self.mongoServer.models.Tenants.findOne({
+                    tenantId: decoded.tenantId,
+                    apikey: apikey
+                }).exec((error, tenant: any) => {
+                    if (error) {
+                        return done(error);
+                    }
+                    else if (!tenant) {
+                        return done(null, false);
+                    }
+                    else {
+                        return done(null, tenant);
+                    }
+
+                });
+            }
         });
     }
 

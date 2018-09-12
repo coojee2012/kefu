@@ -72,6 +72,33 @@ export class PBXExtensionController {
         }
     }
 
+    async mutilCreate(tenantId: string, start: number, end: number, password: string) {
+        try {
+            const usedExtensions = await this.mongoDB.models.PBXExtension.find({ tenantId }, { _id: -1, accountCode: 1 });
+            const useds: string[] = [];
+            usedExtensions.forEach(item => {
+                useds.push(item.accountCode);
+            })
+            this.logger.debug('used extensions:', usedExtensions);
+            const newExtens = [];
+            for (let i = start; i <= end; i++) {
+                const exten = `${i}`;
+                if (useds.indexOf(exten) === -1) {
+                    newExtens.push({
+                        accountCode: exten,
+                        password: password,
+                        tenantId,
+                    })
+                }
+            }
+
+            const docs = await this.mongoDB.models.PBXExtension.create(newExtens);
+            return docs;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
     async addmuti(req: Request, res: Response, next: NextFunction) {
         try {
             const { tenantId } = req.params
@@ -104,35 +131,39 @@ export class PBXExtensionController {
                 return;
             }
 
+            const accountcodes = req.body.accountCode.split('-');
+            const start = +accountcodes[0];
+            const end = +accountcodes[1];
+            if (start - end >= 0) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '起始分机的值小于结束分机的值'
+                    }
+                });
+                return;
+            }
+
+            if (end - start > 50) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '一次性添加分机不能超过50个'
+                    }
+                });
+                return;
+            }
+            const docs = await this.mutilCreate(tenantId, start, end, req.body.password);
+
 
             res.json({
                 'meta': {
-                    'code': 422,
-                    'message': '添加多个分机功能尚在开发中......'
-                }
+                    'code': 200,
+                    'message': '批量创建分机成功'
+                },
+                data: docs
             });
             return;
-
-
-            const newExtension = new this.mongoDB.models.PBXExtension({
-                accountCode: req.body.accountCode,
-                password: req.body.password,
-                tenantId,
-            })
-
-            // 保存用户账号
-            newExtension.save((err, exten: PBXExtensionModel) => {
-                if (err) {
-                    return next(err);
-                }
-                res.json({
-                    'meta': {
-                        'code': 200,
-                        'message': '成功创建新用户!'
-                    },
-                    'data': exten
-                });
-            });
 
         }
         catch (ex) {

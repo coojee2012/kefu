@@ -8,7 +8,7 @@ import * as jwt from 'jsonwebtoken';
 import { RedisService } from '../service/RedisService';
 import { PBXTrunkController } from './pbx_trunk';
 import { PBXCDRController } from './pbx_cdr'
-
+import { PBXExtensionController } from './pbx_extension';
 
 import { RedisOptions, Redis } from 'ioredis';
 import Redlock = require('redlock');
@@ -21,11 +21,13 @@ export class TenantController {
     private redisService: RedisService;
     private pbxTrunkController: PBXTrunkController;
     private pbxCdrController: PBXCDRController;
+    private pbxExtensionCtr:PBXExtensionController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
         this.redisService = this.injector.get(RedisService);
         this.redLockClient = this.redisService.getClientByName('RedLock');
         this.pbxTrunkController = this.injector.get(PBXTrunkController);
         this.pbxCdrController = this.injector.get(PBXCDRController);
+        this.pbxExtensionCtr = this.injector.get(PBXExtensionController);
     }
     async create(data) {
         try {
@@ -42,6 +44,9 @@ export class TenantController {
                     apikey: token,
                 });
                 const tenant = await newUser.save();
+                // 初始一些模拟数据
+                await this.pbxExtensionCtr.mutilCreate(tenantId,1000,1005,'123456');
+
                 return tenant;
             }
 

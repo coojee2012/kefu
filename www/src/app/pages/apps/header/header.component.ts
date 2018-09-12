@@ -44,6 +44,7 @@ export class HeaderComponent implements OnInit {
   // 签入服务
   checkInServ(ckType: string) {
     const user = this.headerService.getUser();
+    console.log('checkInServ', user);
     if (!user || !user.extension || !user.extPwd) {
       const alertMsg = !user ? '用户不存在！' : '用户尚未分配分机';
       const modalRef = this.modalService.open(AlertModalComponent, {
