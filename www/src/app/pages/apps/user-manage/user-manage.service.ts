@@ -15,9 +15,10 @@ export class UserManageService {
     private authorizationService: AuthorizationService,
     private logger: LoggerService
   ) {
-    this.optUser = this.authorizationService.getCurrentUser().user;
+
   }
   addUser(data: any): Observable<any> {
+    this.optUser = this.authorizationService.getCurrentUser().user;
     data = Object.assign({}, data, { domain: this.optUser.domain });
     return this.http.post(`/user/${this.optUser.domain}/add`, data)
       .pipe(
@@ -27,6 +28,7 @@ export class UserManageService {
   }
 
   delUser(id): Observable<any> {
+    this.optUser = this.authorizationService.getCurrentUser().user;
     return this.http.post(`/user/${this.optUser.domain}/del`, { id })
       .pipe(
         catchError(this.handleError)
@@ -34,6 +36,7 @@ export class UserManageService {
   }
 
   resetPwd(id): Observable<any> {
+    this.optUser = this.authorizationService.getCurrentUser().user;
     return this.http.post(`/user/${this.optUser.domain}/reset`, { id, password: '111111' })
       .pipe(
         catchError(this.handleError)

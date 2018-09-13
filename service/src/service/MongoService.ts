@@ -43,6 +43,7 @@ import { default as orderPriortySchema, OrderPriortyModel } from '../models/orde
 import { default as orderFlowSchema, OrderFlowModel } from '../models/order_flows';
 import { default as orderSchema, OrderModel } from '../models/orders';
 import { default as groupSchema, GroupModel } from '../models/groups';
+import { default as userEventSchema, UserEventModel } from '../models/userEvent';
 interface IModels {
     Articles?: mongoose.Model<mongoose.Document>;
     Books?: mongoose.Model<mongoose.Document>;
@@ -87,7 +88,7 @@ interface IModels {
     OrderState?: mongoose.Model<OrderStateModel>;
     OrderPriorty?: mongoose.Model<OrderPriortyModel>;
     Order?: mongoose.Model<OrderModel>;
-
+    UserEvent?: mongoose.Model<UserEventModel>;
 }
 @Injectable()
 export class MongoService {
@@ -169,6 +170,7 @@ export class MongoService {
             this.models.OrderPriorty = this.conn.model('OrderPriorties', orderPriortySchema);
             this.models.OrderState = this.conn.model('OrderStates', orderStateSchema);
             this.models.Order = this.conn.model('Orders', orderSchema);
+            this.models.UserEvent = this.conn.model('UserEvent', userEventSchema);
         }
         catch (ex) {
             return Promise.reject(ex);

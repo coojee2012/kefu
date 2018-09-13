@@ -8,23 +8,24 @@ import { map, filter, switchMap, catchError } from 'rxjs/operators';
     providedIn: 'root'
 })
 export class ChatRoomService {
-    private optUser: any;
     constructor(
         private authorizationService: AuthorizationService,
         private http: HttpClient,
         private logger: LoggerService
     ) {
-        this.optUser = this.authorizationService.getCurrentUser().user;
+
     }
 
     getUser() {
-        return this.optUser;
+        const optUser = this.authorizationService.getCurrentUser().user;
+        return optUser;
     }
 
     // 添加一个客户
     addCustomer(data: any): Observable<any> {
-        data = Object.assign({}, data, { domain: this.optUser.domain });
-        return this.http.post(`/customer/${this.optUser.domain}/create`, data)
+        const optUser = this.getUser();
+        data = Object.assign({}, data, { domain: optUser.domain });
+        return this.http.post(`/customer/${optUser.domain}/create`, data)
             .pipe(
                 catchError(this.handleError)
             );

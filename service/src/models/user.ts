@@ -102,17 +102,20 @@ const userSchema = new mongoose.Schema({
     role: {    // 角色身份  0 超级管理员 1 坐席 group 组长
         type: String,
         required: true,
-        enum: ['master', 'agent', 'group','visitor'],
+        enum: ['master', 'agent', 'group', 'visitor'],
         default: 'agent'
     },
     phone: { // 工作使用的电话
         type: String,
+        default: () => ''
     },
     memo: { // 备注
         type: String,
+        default: () => ''
     },
     extension: { // 工作使用的分机
         type: String,
+        default: () => ''
     },
     author: {    // 作者身份  0 普通作者 1 签约作者 2 金牌作者
         type: String,

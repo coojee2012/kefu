@@ -19,11 +19,11 @@ export class HeaderComponent implements OnInit {
     private headerService: HeaderService,
     private sipClient: SIPService
   ) {
-    this.isCheckIn = false;
-    this.checkInType = '';
   }
 
   ngOnInit() {
+    this.isCheckIn = false;
+    this.checkInType = '';
   }
   openDialout() {
     const modalRef = this.modalService.open(NgbdDialoutModalComponent, {
@@ -42,34 +42,85 @@ export class HeaderComponent implements OnInit {
       this.checkInType === 'mobile' ? 'fa fa-mobile fa-lg ' : 'fa fa-headphones fa-lg ';
   }
   // 签入服务
-  checkInServ(ckType: string) {
-    const user = this.headerService.getUser();
-    console.log('checkInServ', user);
-    if (!user || !user.extension || !user.extPwd) {
-      const alertMsg = !user ? '用户不存在！' : '用户尚未分配分机';
+  async checkInServ(ckType: string) {
+    try {
+      const user = this.headerService.getUser();
+      console.log('checkInServ', user);
+      if (!user || !user.extension || !user.extPwd) {
+        const alertMsg = !user ? '用户不存在！' : '用户尚未分配分机';
+        const modalRef = this.modalService.open(AlertModalComponent, {
+          size: 'sm',
+          centered: true,
+          windowClass: 'modal-warning in'
+        });
+        modalRef.componentInstance.alertTitle = '友情提示：';
+        modalRef.componentInstance.alertMsg = alertMsg;
+      } else {
+        await this.sipClient.init({ domain: user.domain, exten: user.extension, password: user.extPwd });
+        await new Promise((resolve, reject) => {
+          const subscription = this.headerService.checkIn()
+            .subscribe(
+              results => {
+                if (results.meta && results.meta.code === 200) {
+                  subscription.unsubscribe();
+                  resolve();
+                } else {
+                  subscription.unsubscribe();
+                  reject('写入签入数据异常');
+                }
+              },
+              error => {
+                subscription.unsubscribe();
+                reject(error);
+              });
+        });
+        this.checkInType = ckType;
+        this.isCheckIn = true;
+      }
+    } catch (error) {
       const modalRef = this.modalService.open(AlertModalComponent, {
         size: 'sm',
         centered: true,
         windowClass: 'modal-warning in'
       });
       modalRef.componentInstance.alertTitle = '友情提示：';
-      modalRef.componentInstance.alertMsg = alertMsg;
-    } else {
-      this.sipClient.init({ domain: user.domain, exten: user.extension, password: user.extPwd })
-        .then(res => {
-          this.checkInType = ckType;
-          this.isCheckIn = true;
-        })
-        .catch(err => {
-          const modalRef = this.modalService.open(AlertModalComponent, {
-            size: 'sm',
-            centered: true,
-            windowClass: 'modal-warning in'
-          });
-          modalRef.componentInstance.alertTitle = '友情提示：';
-          modalRef.componentInstance.alertMsg = '签入失败！';
-        });
+      modalRef.componentInstance.alertMsg = '签入失败！';
     }
 
+
+  }
+
+
+  async checkOutServ() {
+    try {
+      await new Promise((resolve, reject) => {
+        const subscription = this.headerService.checkOut()
+          .subscribe(
+            results => {
+              if (results.meta && results.meta.code === 200) {
+                subscription.unsubscribe();
+                resolve();
+              } else {
+                subscription.unsubscribe();
+                reject('写入签出数据异常');
+              }
+            },
+            error => {
+              subscription.unsubscribe();
+              reject(error);
+            });
+      });
+      await this.sipClient.stop();
+      this.isCheckIn = false;
+    } catch (error) {
+      this.isCheckIn = false;
+      const modalRef = this.modalService.open(AlertModalComponent, {
+        size: 'sm',
+        centered: true,
+        windowClass: 'modal-warning in'
+      });
+      modalRef.componentInstance.alertTitle = '友情提示：';
+      modalRef.componentInstance.alertMsg = '签出失败！';
+    }
   }
 }

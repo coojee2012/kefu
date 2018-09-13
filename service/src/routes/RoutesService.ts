@@ -8,7 +8,8 @@ import { PBXExtensionController } from '../controllers/pbx_extension';
 import { TenantController } from '../controllers/tenant';
 import { PBXTrunkController } from '../controllers/pbx_trunk';
 import { PBXCDRController } from '../controllers/pbx_cdr';
-import { CustomerController} from '../controllers/customer';
+import { CustomerController } from '../controllers/customer';
+import { UserEventController } from '../controllers/userEvent';
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -31,6 +32,7 @@ export class RoutesService {
       PBXExtensionController,
       ArticleController,
       CustomerController,
+      UserEventController,
     ], this.injector);
   }
 
@@ -38,7 +40,7 @@ export class RoutesService {
     /**
      * 全局代理
      */
-    app.all('*',  (req: Request, res: Response, next: NextFunction) => {
+    app.all('*', (req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers',
         'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');

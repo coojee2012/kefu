@@ -27,7 +27,7 @@ export class WebAPI {
   private Router: Express.Router;
   private userController: UserController;
   private pbxExtensionCtr: PBXExtensionController;
-  private customerCtr:CustomerController;
+  private customerCtr: CustomerController;
   private logger: LoggerService;
   private passport: Passport;
   constructor(private injector: Injector) {
@@ -57,22 +57,22 @@ export class WebAPI {
         .catch(console.log)
     });
 
-    this.Router.post('/user/signvisitor', this.passport.getPassport().authenticate('apikey', { session: false }),(req, res, next) => {
+    this.Router.post('/user/signvisitor', this.passport.getPassport().authenticate('apikey', { session: false }), (req, res, next) => {
       this.userController.registVisitor(req, res, next)
         .then()
         .catch(console.log)
     });
 
 
-    
-    this.Router.post('/user/checkVisitorToken', this.passport.getPassport().authenticate('user', { session: false }),(req, res, next) => {
+
+    this.Router.post('/user/checkVisitorToken', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.checkVisitorToken(req, res, next)
         .then()
         .catch(console.log)
     });
-    
 
-    this.Router.post('/logout',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+
+    this.Router.post('/logout', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.logout(req, res, next)
         .then()
         .catch(console.log)
@@ -86,46 +86,46 @@ export class WebAPI {
         .catch(console.log)
     });
 
-    this.Router.post('/user/:tenantId/add',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.post('/user/:tenantId/add', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.add(req, res, next)
         .then()
         .catch(console.log)
     });
 
-    this.Router.post('/user/safe',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.post('/user/safe', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.safe(req, res, next)
         .then()
         .catch(console.log)
     });
 
-    this.Router.get('/user/getOwn',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.get('/user/getOwn', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.get(req, res, next)
         .then()
         .catch(console.log)
     });
 
-    this.Router.get('/user/getRelationList',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.get('/user/getRelationList', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.getRelationList(req, res, next)
         .then()
         .catch(console.log)
     });
 
-    this.Router.get('/user/getUser/:id',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.get('/user/getUser/:id', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.getUserById(req, res, next)
         .then()
         .catch(console.log)
     });
-    
-    
-    
 
-    this.Router.post('/user/:tenantId/del',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+
+
+
+    this.Router.post('/user/:tenantId/del', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.del(req, res, next)
         .then()
         .catch(console.log)
     });
 
-    this.Router.post('/user/:tenantId/reset',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.post('/user/:tenantId/reset', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.userController.reset(req, res, next)
         .then()
         .catch(console.log)
@@ -138,7 +138,7 @@ export class WebAPI {
 
 
     // 创建客户
-    this.Router.post('/customer/:tenantId/create',this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+    this.Router.post('/customer/:tenantId/create', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.customerCtr.create(req, res, next)
         .then()
         .catch(console.log)
@@ -168,22 +168,33 @@ export class WebAPI {
         .then()
         .catch(console.log)
     });
+    this.Router.post('/pbx/extension/:tenantId/checkin', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.checkIn(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    this.Router.post('/pbx/extension/:tenantId/checkout', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.pbxExtensionCtr.checkOutRest(req, res, next)
+        .then()
+        .catch(console.log)
+    });
 
     // 分机注册
 
-    this.Router.post('/fs/directory',this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
+    this.Router.post('/fs/directory', this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
       this.pbxExtensionCtr.directory(req, res, next)
         .then()
         .catch(console.log)
     });
 
-   // TODO 动态加载一些配置 如  gateways 会议等
-    this.Router.post('/fs/configuration',this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
+    // TODO 动态加载一些配置 如  gateways 会议等
+    this.Router.post('/fs/configuration', this.passport.getPassport().authenticate('basic', { session: false }), (req, res, next) => {
       this.pbxExtensionCtr.configuration(req, res, next)
         .then()
         .catch(console.log)
     });
-    
+
 
     // 文集增删改查
     // this.Router.post('/article', passport.authenticate('user', { session: false }), ArticleController.save);

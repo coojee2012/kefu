@@ -54,14 +54,82 @@ export class SIPService {
                     resolve();
                 };
                 this.client.setMaxListeners(1000);
+                this.client.transport.setMaxListeners(1000);
                 this.client.on('registered', onRegistered);
                 this.client.on('registrationFailed', onRegistionFailed);
                 this.client.on('invite', this.acceptACall.bind(this));
                 this.client.on('message', this.handleChatMsg.bind(this));
+                this.client.on('transportCreated', function (transport) {
+                    console.log('======transportCreated====');
+                    transport.setMaxListeners(0);
+                    // transport.on('transportError', this.onTransportError.bind(this));
+                }.bind(this));
                 this.client.start();
             });
         } catch (ex) {
             this.logger.error('SIP INIT ERROR:', ex);
+        }
+    }
+
+    async start(options?: any) {
+        try {
+            if (this.client) {
+                this.client.start();
+                this.client.on('invite', this.acceptACall.bind(this));
+                this.client.on('message', this.handleChatMsg.bind(this));
+            } else {
+                await this.init(options);
+            }
+
+        } catch (error) {
+            this.logger.error('SIP START ERROR:', error);
+            return Promise.reject(error);
+        }
+    }
+
+    async stop() {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.client.once('unregistered', (response, cause) => {
+                    this.logger.debug('stop sipclient:', response, cause);
+                    if (cause) {
+                        reject(cause);
+                    } else {
+                        this.client = null;
+                        resolve();
+                    }
+                });
+                this.client.stop();
+
+            });
+            return result;
+        } catch (ex) {
+            this.logger.error('SIP STOP ERROR:', ex);
+            return Promise.reject(ex);
+        }
+    }
+
+    async unregister() {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                this.client.once('unregistered', (response, cause) => {
+                    this.logger.debug('unregistered sip client:', response, cause);
+                    if (cause) {
+                        reject(cause);
+                    } else {
+                        resolve();
+                    }
+                });
+                const options = {
+                    'all': true,
+                    'extraHeaders': ['X-Foo: foo', 'X-Bar: bar']
+                };
+                this.client.unregister(options);
+            });
+            return result;
+        } catch (ex) {
+            this.logger.error('SIP UNREG ERROR:', ex);
+            return Promise.reject(ex);
         }
     }
 
@@ -152,22 +220,22 @@ export class SIPService {
                 if (!msg) {
                     msg = '无言以对(^_^)';
                 }
-                this.session = this.client.message('relivechat', msg,
+                const session = this.client.message('relivechat', msg,
                     {
                         contentType: 'text/plain', extraHeaders: [`X-Livechat-Visitor:${sendTo}`,
                         `X-Session-Id:${livechatSessionId}`]
                     });
-                this.session.once('progress', (response, cause) => {
+                session.once('progress', (response, cause) => {
                     this.logger.debug('send msg progress', cause);
                 });
-                this.session.once('accepted', (response, cause) => {
+                session.once('accepted', (response, cause) => {
                     this.logger.debug('send msg accepted', cause);
                     resolve(msg);
                 });
-                this.session.once('rejected', (response, cause) => {
+                session.once('rejected', (response, cause) => {
                     this.logger.debug('send msg rejected', cause);
                 });
-                this.session.once('failed', (response, cause) => {
+                session.once('failed', (response, cause) => {
                     this.logger.debug('send msg failed', cause);
                     reject(cause);
                 });

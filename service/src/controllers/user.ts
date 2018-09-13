@@ -10,6 +10,8 @@ import { Request, Response, NextFunction } from 'express';
 import * as mongoose from 'mongoose';
 import { ArticleController } from './article';
 import { TenantController } from './tenant';
+import { PBXExtensionController } from './pbx_extension';
+import { UserEventController } from './userEvent';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
 import redisClient from '../config/redis';
@@ -40,10 +42,13 @@ export interface UserInterface {
 export class UserController implements UserInterface {
     private articleController: ArticleController;
     private tenantController: TenantController;
+    private pbxExtenCtrl: PBXExtensionController;
+    private userEventCtrl: UserEventController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
         this.articleController = injector.get(ArticleController);
         this.tenantController = injector.get(TenantController);
-
+        this.pbxExtenCtrl = injector.get(PBXExtensionController);
+        this.userEventCtrl = injector.get(UserEventController);
     }
 
     /**
@@ -51,7 +56,7 @@ export class UserController implements UserInterface {
      * 用户登陆
      */
     async login(req: Request, res: Response, next: NextFunction) {
-        this.logger.debug('测试日志打印');
+        this.logger.debug(`用户${req.body.username}登录`);
         req.checkBody({
             'username': {
                 notEmpty: true,
@@ -106,49 +111,52 @@ export class UserController implements UserInterface {
                 extpwd = extenInfo ? extenInfo.password : '';
             }
 
-            user.comparePassword(req.body.password, (err, isMatch: boolean) => {
-                if (err) {
-                    return next(err);
-                }
-                if (isMatch) {
-                    const token = jwt.sign({ username: user.username }, `kefu2018@abcf`, {
-                        expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
-                    });
-                    user.token = token;
-                    user.save(function (error) {
-                        if (error) {
-                            return next(error);
-                        }
-                        res.json({
-                            'meta': {
-                                'code': 200,
-                                'message': '登陆成功'
-                            },
-                            'data': {
-                                token,
-                                'user': {
-                                    'nickname': user.basic.nickname,
-                                    'avatar': user.basic.avatar,
-                                    'phone': user.phone,
-                                    'extension': user.extension,
-                                    extPwd: extpwd,
-                                    'role': user.role,
-                                    'domain': user.domain,
-                                    'state': user.state,
-                                    'slug': user.slug
-                                }
-                            }
-                        });
-                    });
-                } else {
-                    res.json({
-                        'meta': {
-                            'code': 422,
-                            'message': '登陆失败,密码错误!'
-                        }
-                    });
-                }
+            const mactched = await new Promise((resolve, reject) => {
+                user.comparePassword(req.body.password, (err, isMatch: boolean) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(isMatch)
+                    }
+                })
             });
+            if (mactched) {
+                const token = jwt.sign({ username: user.username }, `kefu2018@abcf`, {
+                    expiresIn: '1 days'  // token到期时间设置 1000, '2 days', '10h', '7d'
+                });
+                user.token = token;
+                await user.save();
+                await this.userEventCtrl.create(domain, 'login', user._id);
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': '登陆成功'
+                    },
+                    'data': {
+                        token,
+                        'user': {
+                            'nickname': user.basic.nickname,
+                            'avatar': user.basic.avatar,
+                            'phone': user.phone,
+                            'extension': user.extension,
+                            extPwd: extpwd,
+                            'role': user.role,
+                            'domain': user.domain,
+                            'state': user.state,
+                            'slug': user.slug
+                        }
+                    }
+                });
+            } else {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '登陆失败,密码错误!'
+                    }
+                });
+            }
+
+
         } catch (err) {
             console.log('登陆信息失败', err);
             res.json({
@@ -161,7 +169,7 @@ export class UserController implements UserInterface {
     }
 
     /**
-     * POST /logout
+     * POST
      * 检查注册昵称
      */
     async checkNickname(req: Request, res: Response, next: NextFunction) {
@@ -215,7 +223,7 @@ export class UserController implements UserInterface {
     }
 
     /**
-     * POST /logout
+     * POST
      * 检查手机号
      */
     async checkUsername(req: Request, res: Response, next: NextFunction) {
@@ -353,34 +361,38 @@ export class UserController implements UserInterface {
                 domain: req.body.domain,
                 username: req.body.username,
                 password: req.body.password,
+                extension: '1000',
                 role: 'master',
                 status: 1,
                 phone: req.body.username,
                 token: token
             });
             // 保存用户账号
-            newUser.save((err, user: UserModel) => {
-                if (err) {
-                    return next(err);
-                }
-                res.json({
-                    'meta': {
-                        'code': 200,
-                        'message': '成功创建新用户!'
-                    },
-                    'data': {
-                        token,
-                        'user': {
-                            'nickname': user.basic.nickname,
-                            'avatar': user.basic.avatar,
-                            'phone': user.phone,
-                            'domain': user.domain,
-                            'state': user.state,
-                            '_id': user._id
-                        }
+            const doc = await newUser.save();
+
+
+            await this.pbxExtenCtrl.assignToUser(req.body.domain, doc._id, '1000');
+
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '成功创建新用户!'
+                },
+                'data': {
+                    token,
+                    'user': {
+                        'nickname': doc.basic.nickname,
+                        'avatar': doc.basic.avatar,
+                        'phone': doc.phone,
+                        'domain': doc.domain,
+                        extPwd: '123456',
+                        'extension': doc.extension,
+                        'state': doc.state,
+                        '_id': doc._id
                     }
-                });
+                }
             });
+
         }
         catch (ex) {
             console.log(ex, req);
@@ -469,16 +481,16 @@ export class UserController implements UserInterface {
             let tenant;
 
 
-            
+
             const verifyResut = await new Promise((resolve, reject) => {
-                jwt.verify(req.body.apikey, 'kefu2018@abcf', (err, decoded) => {                 
+                jwt.verify(req.body.apikey, 'kefu2018@abcf', (err, decoded) => {
                     if (err) { reject(err) }
                     else {
                         resolve(decoded);
                     }
                 })
             });
-            
+
             if (!verifyResut) {
                 res.json({
                     'meta': {
@@ -492,7 +504,7 @@ export class UserController implements UserInterface {
             }
 
 
-            
+
             if (tenant && tenant.tenantId === user.domain) {
                 const tenatInfo = await this.tenantController.getTenantByDomain(tenant.tenantId);
 
@@ -529,28 +541,30 @@ export class UserController implements UserInterface {
         try {
             if ((req as any).isAuthenticated()) {
                 // console.log('req', (req as any).user)
-                this.mongoDB.models.Users.update({ _id: (req as any).user._id }, { token: undefined })
-                    .exec((err: any, user: UserModel) => {
-                        if (err) {
-                            return next(err);
+                const user = (req as any).user;
+                const results = await Promise.all([
+                    this.mongoDB.models.Users.update({ _id: user._id }, { token: undefined }),
+                    this.userEventCtrl.create(user.domain, 'logout', user._id),
+                    this.pbxExtenCtrl.checkOut(user.domain, user._id, user.extension)
+                ])
+                const { ok, nModified, n } = results[0];
+                if (nModified == 0) {
+                    res.json({
+                        'meta': {
+                            'code': 422,
+                            'message': '用户不存在'
                         }
-                        if (!user) {
-                            res.json({
-                                'meta': {
-                                    'code': 422,
-                                    'message': '用户不存在'
-                                }
-                            });
-                            return;
-                        }
-                        (req as any).logout();
-                        res.json({
-                            'meta': {
-                                'code': 200,
-                                'message': '退出成功'
-                            }
-                        });
                     });
+                    return;
+                }
+                (req as any).logout();
+
+                res.json({
+                    'meta': {
+                        'code': 200,
+                        'message': '退出成功'
+                    }
+                });
             } else {
                 res.json({
                     'meta': {
@@ -563,7 +577,6 @@ export class UserController implements UserInterface {
         } catch (ex) {
             return next(ex);
         }
-
     }
 
     /**

@@ -6,13 +6,15 @@ import { PBXExtensionModel } from '../models/pbx_extensions';
 import { Request, Response, NextFunction } from 'express';
 import { LoggerService } from '../service/LogService';
 import { MongoService } from '../service/MongoService';
-
+import { UserEventController } from './userEvent';
 @Injectable()
 export class PBXExtensionController {
     private DialString: string;
+    private userEventCtr: UserEventController;
     constructor(private injector: Injector, private logger: LoggerService, private mongoDB: MongoService) {
         // this.DialString = '{sip_invite_domain=${domain},presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(${dialed_user}@${dialed_domain})}';
         this.DialString = '{^^:sip_invite_domain=${dialed_domain}:presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(*/${dialed_user}@${dialed_domain})}';
+        this.userEventCtr = this.injector.get(UserEventController);
     }
     async create(req: Request, res: Response, next: NextFunction) {
         try {
@@ -70,6 +72,23 @@ export class PBXExtensionController {
         catch (ex) {
             return next(ex);
         }
+    }
+
+    async assignToUser(tenantId: string, userId: string, accountCode: string) {
+        try {
+            const updateRes = await this.mongoDB.models.PBXExtension.update({
+                tenantId,
+                accountCode,
+            }, {
+                    $set: {
+                        agentId: userId
+                    }
+                })
+            return updateRes;
+        } catch (error) {
+            return Promise.reject(error);
+        }
+
     }
 
     async mutilCreate(tenantId: string, start: number, end: number, password: string) {
@@ -199,7 +218,6 @@ export class PBXExtensionController {
     }
 
     async setAgentLastCallId(tenantId: string, accountCode: string, callId: string) {
-        const _this = this;
         try {
             const query = {
                 tenantId,
@@ -298,6 +316,77 @@ export class PBXExtensionController {
         catch (ex) {
             this.logger.error('extension  del  error', ex);
             return next(ex);
+        }
+    }
+
+    async checkIn(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = (req as any).user;
+            const { tenantId } = req.params
+            const query = {
+                tenantId,
+                accountCode: user.extension
+            }
+            const setData = {
+                status: 'Login',
+            }
+
+
+            const resuslts = await Promise.all([
+                this.mongoDB.models.PBXExtension.update(query, { $set: setData }, { multi: false }),
+                this.userEventCtr.create(tenantId, 'checkin', user._id)
+            ])
+
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '签入成功'
+                },
+                data: resuslts[0]
+            });
+
+        } catch (error) {
+            this.logger.error('extension  checkIn  error', error)
+            return next(error);
+        }
+    }
+
+    async checkOutRest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = (req as any).user;
+            const { tenantId } = req.params
+            const resuslt = await this.checkOut(tenantId, user._id, user.extension);
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '签出成功'
+                },
+                data: resuslt
+            });
+        } catch (error) {
+            this.logger.error('extension  checkOutRest  error', error)
+            return next(error);
+        }
+    }
+
+    async checkOut(tenantId: string, userId: string, accountCode: string) {
+        try {
+            const query = {
+                tenantId,
+                accountCode,
+            }
+            const setData = {
+                status: 'Logout',
+            }
+
+            const results = await Promise.all([
+                this.mongoDB.models.PBXExtension.update(query, { $set: setData }, { multi: false }),
+                this.userEventCtr.create(tenantId, 'checkout', userId)
+            ])
+            return results[0];
+        } catch (error) {
+            this.logger.error('extension  checkOut  error', error)
+            return Promise.reject(error);
         }
     }
 
