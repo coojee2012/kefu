@@ -10,7 +10,7 @@ import { EventService } from '../service/EventService';
 import { TenantController } from '../controllers/tenant';
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { PBXAgentController } from '../controllers/pbx_agent';
-
+import { UserEventController } from '../controllers/userEvent';
 import { RedisOptions, Redis } from 'ioredis';
 import Redlock = require('redlock');
 import { Lock } from 'redlock';
@@ -486,7 +486,8 @@ export class QueueWorkerService {
         this.childInjector = ReflectiveInjector.resolveAndCreate([
             TenantController,
             PBXExtensionController,
-            PBXAgentController
+            PBXAgentController,
+            UserEventController,
         ], this.injector)
     }
 

@@ -61,7 +61,7 @@ export class SIPService {
                 this.client.on('message', this.handleChatMsg.bind(this));
                 this.client.on('transportCreated', function (transport) {
                     console.log('======transportCreated====');
-                    transport.setMaxListeners(0);
+                    // transport.setMaxListeners(0);
                     // transport.on('transportError', this.onTransportError.bind(this));
                 }.bind(this));
                 this.client.start();

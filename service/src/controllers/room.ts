@@ -49,6 +49,67 @@ export class RoomController {
         }
     }
 
+    async bindCustormerRest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const optUser = (req as any).user;
+            req.checkBody({
+                rid: {
+                    notEmpty: true,
+                    errorMessage: '房间ID不能为空'
+                },
+                customerId: {
+                    notEmpty: true,
+                    errorMessage: '客户ID不能为空'
+                },
+            });
+            const result = await req.getValidationResult();
+            if (!result.isEmpty()) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': result.array()[0].msg
+                    }
+                });
+                return;
+            }
+            const userTenantId = optUser.domain;
+            const { tenantId } = req.params
+            if (!userTenantId || userTenantId !== tenantId) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '租户授权无效'
+                    }
+                });
+                return;
+            }
+
+
+            const upresult = await this.bindCustormer(tenantId, req.body.rid, req.body.customerId);
+
+
+
+
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '房间绑定客户成功'
+                },
+                data: upresult
+            });
+
+
+
+        } catch (error) {
+            this.logger.error('房间绑定客户失败：', error);
+            res.json({
+                'meta': {
+                    'code': 404,
+                    'message': ''
+                }
+            });
+        }
+    }
 
     async incMsgCount(rid) {
         try {
@@ -58,6 +119,24 @@ export class RoomController {
                     $inc: 1
                 }
             })
+            return upres;
+        }
+        catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
+
+    async bindCustormer(tenantId, rid, customerId) {
+        try {
+
+            const upres = await this.mongoDB.models.Rooms.update({
+                tenantId,
+                rid
+            }, {
+                    $set: {
+                        customer: customerId
+                    }
+                })
             return upres;
         }
         catch (ex) {

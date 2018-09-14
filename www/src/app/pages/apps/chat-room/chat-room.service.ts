@@ -3,18 +3,22 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { AuthorizationService } from '../../../core/authorization';
 import { LoggerService } from '../../../services/LogService';
 import { throwError as observableThrowError, Observable, Subject } from 'rxjs';
-import { map, filter, switchMap, catchError } from 'rxjs/operators';
+import { map, filter, switchMap, catchError, debounceTime } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root'
 })
 export class ChatRoomService {
+
+    tipSource = new Subject<any>();
+    tip$: Observable<any>;
     constructor(
         private authorizationService: AuthorizationService,
         private http: HttpClient,
         private logger: LoggerService
     ) {
-
+        this.tip$ = this.tipSource.asObservable();
     }
+
 
     getUser() {
         const optUser = this.authorizationService.getCurrentUser().user;
@@ -26,6 +30,29 @@ export class ChatRoomService {
         const optUser = this.getUser();
         data = Object.assign({}, data, { domain: optUser.domain });
         return this.http.post(`/customer/${optUser.domain}/create`, data)
+            .pipe(
+                catchError(this.handleError)
+            );
+    }
+    searchCustomer(searchKey: string): Observable<any> {
+        const optUser = this.getUser();
+        return this.http.post(`/customer/${optUser.domain}/search`, { key: searchKey })
+            .pipe(
+                catchError(this.handleError)
+            );
+    }
+    bindCustomer(rid: string, customerId: string): Observable<any> {
+        const optUser = this.getUser();
+        return this.http.post(`/room/${optUser.domain}/bindcustorm`, { rid: rid, customerId: customerId })
+            .pipe(
+                catchError(this.handleError)
+            );
+    }
+
+    modifyCustomer(customId: string, data: any): Observable<any> {
+        const optUser = this.getUser();
+        data = Object.assign({}, data, { domain: optUser.domain });
+        return this.http.post(`/customer/${optUser.domain}/update/${customId}`, data)
             .pipe(
                 catchError(this.handleError)
             );

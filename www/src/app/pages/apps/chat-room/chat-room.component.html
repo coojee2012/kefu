@@ -8,11 +8,23 @@
         <a href="#">
           <i class="fa fa-refresh"></i> 刷新</a>
       </li> -->
+      <ngb-alert *ngIf="tipMsg && tipStyle==='danger'" type="danger" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+      <ngb-alert *ngIf="tipMsg && tipStyle==='success'" type="success" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
   </ol>
 </section>
 <!-- Main content -->
 <section class="content">
   <!-- Small boxes (Stat box) -->
+
+  <!-- <div class="row">
+    <div class="col-sm-12">
+      <ngb-alert *ngIf="tipMsg && tipStyle==='danger'" type="danger" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+    </div>
+    <div class="col-sm-12">
+      <ngb-alert *ngIf="tipMsg && tipStyle==='success'" type="success" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+    </div>
+  </div> -->
+
   <div class="row">
     <div class="col-md-5">
       <!-- DIRECT CHAT -->
@@ -27,7 +39,7 @@
           </div>
         </div>
         <!-- /.box-header -->
-        <div class="box-body" >
+        <div class="box-body">
           <!-- Conversations are loaded here -->
           <div class="direct-chat-messages" style="height:600px;">
             <!-- Message. Default to the left -->
@@ -179,10 +191,10 @@
 
         <!-- Custom Tabs -->
 
-       <app-chat-order *ngIf="memu==='order'"></app-chat-order>
-       <app-chat-faq *ngIf="memu==='faq'"></app-chat-faq>
-       <app-chat-detail *ngIf="memu==='detail'"></app-chat-detail>
-    </div>
+        <app-chat-order *ngIf="memu==='order'" [roomId]="roomId"></app-chat-order>
+        <app-chat-faq *ngIf="memu==='faq'"></app-chat-faq>
+        <app-chat-detail *ngIf="memu==='detail'"></app-chat-detail>
+      </div>
 
 
     </div>

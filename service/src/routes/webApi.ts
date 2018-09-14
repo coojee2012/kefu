@@ -23,11 +23,13 @@ import { Passport } from '../config/passport'
 
 import { PBXExtensionController } from '../controllers/pbx_extension';
 import { CustomerController } from '../controllers/customer';
+import { RoomController } from '../controllers/room';
 export class WebAPI {
   private Router: Express.Router;
   private userController: UserController;
   private pbxExtensionCtr: PBXExtensionController;
   private customerCtr: CustomerController;
+  private roomCtr: RoomController;
   private logger: LoggerService;
   private passport: Passport;
   constructor(private injector: Injector) {
@@ -37,6 +39,7 @@ export class WebAPI {
     this.logger = this.injector.get(LoggerService);
     this.passport = this.injector.get(Passport);
     this.customerCtr = this.injector.get(CustomerController);
+    this.roomCtr = this.injector.get(RoomController);
     //this.userController = new UserController(new LoggerService(true));
   }
 
@@ -140,6 +143,24 @@ export class WebAPI {
     // 创建客户
     this.Router.post('/customer/:tenantId/create', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.customerCtr.create(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    // 创建客户
+    this.Router.post('/customer/:tenantId/search', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.customerCtr.keySearch(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+    this.Router.post('/customer/:tenantId/update/:id', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.customerCtr.updateRest(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+    // 房间管理
+    this.Router.post('/room/:tenantId/bindcustorm', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.roomCtr.bindCustormerRest(req, res, next)
         .then()
         .catch(console.log)
     });

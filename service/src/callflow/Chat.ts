@@ -27,7 +27,7 @@ import { TenantController } from '../controllers/tenant';
 
 import { RoomController } from '../controllers/room';
 import { PBXMessageController } from '../controllers/pbx_messages'
-
+import { UserEventController } from '../controllers/userEvent';
 @Injectable()
 export class FreeSwitchChat extends EventEmitter2 {
     private logger: LoggerService;
@@ -71,6 +71,7 @@ export class FreeSwitchChat extends EventEmitter2 {
             TenantController,
             RoomController,
             PBXMessageController,
+            UserEventController,
         ], this.injector);
     }
 

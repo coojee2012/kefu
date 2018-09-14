@@ -32,6 +32,7 @@ import { PBXRecordFileController } from '../controllers/pbx_recordFile';
 import { PBXTrunkController } from '../controllers/pbx_trunk';
 
 import { TenantController } from '../controllers/tenant';
+import { UserEventController } from '../controllers/userEvent';
 
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
@@ -46,6 +47,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     private callProcessControl: PBXCallProcessController;
     private cdrControl: PBXCDRController;
     private flowBase: FlowBase;
+    private userEventCtl:UserEventController;
     private ivr: IVR;
     private queue: CCQueue;
 
@@ -113,6 +115,7 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
 
 
             TenantController,
+            UserEventController,
         ], this.injector);
     }
     /**

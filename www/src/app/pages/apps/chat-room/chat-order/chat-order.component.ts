@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AuthorizationService } from '../../../../core/authorization';
 import { LoggerService } from '../../../../services/LogService';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,10 +10,14 @@ import { ChatRoomService } from '../chat-room.service';
   styleUrls: ['./chat-order.component.css']
 })
 export class ChatOrderComponent implements OnInit {
-
+  @Input() roomId: string;
+  private relationCustomId: string;
   private memu: string;
+  private searchCustomKey: string;
   addCustomForm: FormGroup;
   private custormFromFolded: boolean;
+  private bindCustormListShowed: boolean;
+  private searchCustormerList: any[];
   constructor(
     private service: ChatRoomService,
     private logger: LoggerService,
@@ -22,9 +26,12 @@ export class ChatOrderComponent implements OnInit {
   ) {
     this.memu = 'list';
     this.custormFromFolded = false;
+    this.bindCustormListShowed = false;
   }
 
   ngOnInit() {
+    this.searchCustomKey = '';
+    this.searchCustormerList = [];
     this.createCustormForm();
   }
 
@@ -113,7 +120,162 @@ export class ChatOrderComponent implements OnInit {
     //   .subscribe(value => this.checkMobile(value));
   }
 
-  addCustomSubmit() { }
+  async bindCustomSearch() {
+    try {
+      if (!this.searchCustomKey) {
+        return;
+      }
+      await new Promise((resolve, reject) => {
+        const subscription = this.service.searchCustomer(this.searchCustomKey)
+          .subscribe(results => {
+            if (results.meta && results.meta.code === 200) {
+              subscription.unsubscribe();
+              this.searchCustormerList = results.data;
+              resolve();
+            } else {
+              subscription.unsubscribe();
+              reject(results);
+            }
+          },
+            error => {
+              subscription.unsubscribe();
+              reject(error);
+            });
+      });
+      this.custormFromFolded = true;
+      this.bindCustormListShowed = true;
+    } catch (error) {
+      this.logger.error('查询客户列表异常:', error);
+      let errMsg = '查询客户列表异常！';
+      if (error && error.err) {
+        errMsg += `错误码:${error.err.status}`;
+      } else if (error && error.meta) {
+
+      }
+      this.service.tipSource.next({ message: errMsg, style: 'danger' });
+    }
+  }
+
+  async bindCustom(index: number) {
+    try {
+      const selectedoc = this.searchCustormerList[index];
+      // 更新form值的参考链接  https://blog.csdn.net/fangquan1980/article/details/80841007
+      if (selectedoc) {
+        this.relationCustomId = selectedoc._id;
+        this.addCustomForm.patchValue({
+          name: selectedoc.name,
+          mobile: selectedoc.mobile,
+          telphone: selectedoc.telphone,
+          companyName: selectedoc.companyName,
+          address: selectedoc.address,
+          email: selectedoc.email,
+          level: selectedoc.level,
+          memo: selectedoc.memo,
+        });
+        await new Promise((resolve, reject) => {
+          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId)
+            .subscribe(results => {
+              if (results.meta && results.meta.code === 200) {
+                subscription.unsubscribe();
+                resolve();
+              } else {
+                subscription.unsubscribe();
+                reject(results);
+              }
+            },
+              error => {
+                subscription.unsubscribe();
+                reject(error);
+              });
+        });
+        this.returnCustomForm();
+      } else {
+        this.service.tipSource.next({ message: '绑定客户数据异常！', style: 'danger' });
+      }
+
+    } catch (error) {
+      this.logger.error('binding custom error:', error);
+      this.service.tipSource.next({ message: '绑定客户发生异常！', style: 'danger' });
+    }
+  }
+
+  returnCustomForm() {
+    this.custormFromFolded = false;
+    this.bindCustormListShowed = false;
+  }
+
+  async addCustomSubmit() {
+    try {
+      if (this.relationCustomId) {
+        await this.updateCustom();
+      } else {
+        await new Promise((resolve, reject) => {
+          const subscription = this.service.addCustomer(this.addCustomForm.value)
+            .subscribe(results => {
+              if (results.meta && results.meta.code === 200) {
+                subscription.unsubscribe();
+                this.relationCustomId = results.data._id;
+                this.service.tipSource.next({ message: '添加成功！', style: 'success' });
+                resolve();
+              } else {
+                subscription.unsubscribe();
+                reject(results.meta);
+              }
+            },
+              error => {
+                subscription.unsubscribe();
+                reject(error);
+              });
+        });
+        await new Promise((resolve, reject) => {
+          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId)
+            .subscribe(results => {
+              if (results.meta && results.meta.code === 200) {
+                subscription.unsubscribe();
+                resolve();
+              } else {
+                subscription.unsubscribe();
+                reject(results);
+              }
+            },
+              error => {
+                subscription.unsubscribe();
+                reject(error);
+              });
+        });
+      }
+
+    } catch (error) {
+      this.service.tipSource.next({ message: '添加失败！', style: 'danger' });
+      this.logger.error('add custom error:', error);
+    }
+
+  }
+
+  async updateCustom() {
+    try {
+      await new Promise((resolve, reject) => {
+        const subscription = this.service.modifyCustomer(this.relationCustomId, this.addCustomForm.value)
+          .subscribe(results => {
+            if (results.meta && results.meta.code === 200) {
+              subscription.unsubscribe();
+              this.service.tipSource.next({ message: '更新成功！', style: 'success' });
+              resolve();
+            } else {
+              subscription.unsubscribe();
+              reject(results.meta);
+            }
+          },
+            error => {
+              subscription.unsubscribe();
+              reject(error);
+            });
+      });
+    } catch (error) {
+      this.service.tipSource.next({ message: '更新用户信息失败！', style: 'danger' });
+      this.logger.error('update custom error:', error);
+    }
+  }
   foldCustomForm() {
     this.custormFromFolded = !this.custormFromFolded;
   }

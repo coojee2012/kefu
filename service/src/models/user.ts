@@ -46,6 +46,7 @@ export type UserModel = mongoose.Document & {
     token: String;    // 登陆签名
     memo: String; // 备注
     extension: String; // 使用分机
+    customer?: any; // 针对vistor访客，绑定在某个客户上
     comparePassword: (candidatePassword: String, callback: (err: any, isMatch: boolean) => any) => void;  // 验证密码
     gravatar: (size: number) => String   // 获取头像
 };
@@ -109,6 +110,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: () => ''
     },
+    customer: {
+        type: mongoose.Schema.Types.ObjectId,    // 引用类型
+        ref: 'Customer'                     // 关联客户 针对访客有效
+    }, 
     memo: { // 备注
         type: String,
         default: () => ''

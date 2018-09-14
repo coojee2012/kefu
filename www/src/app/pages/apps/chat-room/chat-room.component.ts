@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription, Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, debounceTime } from 'rxjs/operators';
 import { LoggerService } from '../../../services/LogService';
 
 import { SIPService } from '../../../services/SIPService';
@@ -16,6 +16,8 @@ import { ChatRoomService } from './chat-room.service';
   styleUrls: ['./chat-room.component.css']
 })
 export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
+  private tipMsg: string;
+  private tipStyle: string;
   private messages: LiveChatMessage[];
   private chatMessageSub: Subscription;
   private inputMsg: string;
@@ -69,6 +71,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
           .pipe()
           .subscribe(this.handleChatMsg.bind(this));
       });
+
+    // 操作消息提醒
+    this.chatRoomService.tip$.subscribe((tip) => {
+      this.logger.debug('tip', tip);
+      this.tipMsg = tip.message;
+      this.tipStyle = tip.style;
+    });
+    this.chatRoomService.tip$.pipe(
+      debounceTime(5000)
+    ).subscribe(() => {
+      this.logger.debug('tip debouce');
+      this.tipMsg = '';
+      this.tipStyle = '';
+    });
+
   }
 
   ngOnDestroy() {

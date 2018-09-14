@@ -170,6 +170,7 @@ export class MongoService {
             this.models.OrderPriorty = this.conn.model('OrderPriorties', orderPriortySchema);
             this.models.OrderState = this.conn.model('OrderStates', orderStateSchema);
             this.models.Order = this.conn.model('Orders', orderSchema);
+            this.models.Customer = this.conn.model('Customers',customerSchema);
             this.models.UserEvent = this.conn.model('UserEvent', userEventSchema);
         }
         catch (ex) {

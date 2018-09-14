@@ -10,6 +10,7 @@ import { PBXTrunkController } from '../controllers/pbx_trunk';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { CustomerController } from '../controllers/customer';
 import { UserEventController } from '../controllers/userEvent';
+import { RoomController } from '../controllers/room';
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -33,6 +34,7 @@ export class RoutesService {
       ArticleController,
       CustomerController,
       UserEventController,
+      RoomController,
     ], this.injector);
   }
 

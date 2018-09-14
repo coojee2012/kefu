@@ -3,17 +3,21 @@
     <h1 class="box-title" style="font-size:14px;">联系人信息</h1>
     <div class="box-tools">
       <div class="input-group input-group-sm" style="width: 350px;">
-        <input type="text" name="table_search" class="form-control pull-right" placeholder="绑定已有联系人">
+        <input type="text" name="table_search" class="form-control pull-right" [(ngModel)]="searchCustomKey"
+          placeholder="绑定已有联系人">
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default">
+          <button type="button" class="btn btn-default" (click)="bindCustomSearch()">
             <i class="fa fa-search"></i>
           </button>
           <button type="button" class="btn btn-info " (click)="addCustomSubmit()" [ngClass]="{'btn-default':!addCustomForm.valid,'btn-info':addCustomForm.valid}"
             [disabled]="!addCustomForm.valid">
             <i class="fa fa-floppy-o"></i>&nbsp;保存&nbsp;
           </button>
-          <button type="button" class="btn btn-default" (click)="foldCustomForm()">
+          <button *ngIf="!bindCustormListShowed" type="button" class="btn btn-default" (click)="foldCustomForm()">
             <i class="fa fa-chevron-up" [ngClass]="{'fa-chevron-down':custormFromFolded,'fa-chevron-up':!custormFromFolded}"></i>
+          </button>
+          <button *ngIf="bindCustormListShowed" type="button" class="btn btn-default" (click)="returnCustomForm()">
+            <i class="fa fa-reply"></i>
           </button>
 
         </div>
@@ -54,9 +58,9 @@
       </div>
       <div class="col-lg-4  col-md-6">
         <div class="form-group">
-          <label>电话</label>
+          <label>其他电话</label>
 
-          <input type="text" class="form-control" formControlName="telphone" placeholder="电话">
+          <input type="text" class="form-control" formControlName="telphone" placeholder="其他联系电话">
 
         </div>
       </div>
@@ -96,6 +100,31 @@
       </div> -->
 
     </form>
+  </div>
+  <div *ngIf="bindCustormListShowed" class="box-body">
+    <table *ngIf="searchCustormerList.length" class="table table-hover">
+      <tr>
+        <th>姓名</th>
+        <th>手机</th>
+        <th>电话</th>
+        <th>公司</th>
+        <th>操作</th>
+      </tr>
+      <tr *ngFor="let custorm of searchCustormerList; let i = index">
+        <td>{{ custorm.name }}</td>
+        <td>{{ custorm.mobile }}</td>
+        <td>{{ custorm.telphone }}</td>
+        <td>{{ custorm.companyName }}</td>
+        <td>
+          <a src="javascript:void();" (click)="bindCustom( i )">
+            <i class="fa fa-chain"></i>
+          </a>
+        </td>
+
+      </tr>
+
+    </table>
+    <p *ngIf="!searchCustormerList.length">没有找到符合条件的记录！</p>
   </div>
 
   <div class="box box-warning">

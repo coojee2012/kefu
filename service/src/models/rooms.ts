@@ -18,6 +18,7 @@ export type RoomModel = mongoose.Document & {
     roomType: string;
     duration: number;
     closeBy: String;
+    customer?: any; 
 }
 
 const roomSchema = new mongoose.Schema({
@@ -56,6 +57,10 @@ const roomSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,    // 引用类型
         ref: 'Users'                     // 关联用户表
     }, // 房价归属
+    customer: {
+        type: Schema.Types.ObjectId,    // 引用类型
+        ref: 'Customer'                     // 关联客户
+    }, 
     receivers: [
         {
             type: Schema.Types.ObjectId,    // 引用类型
