@@ -85,7 +85,7 @@ export class RoomController {
             }
 
 
-            const upresult = await this.bindCustormer(tenantId, req.body.rid, req.body.customerId);
+            const upresult = await this.bindCustormer(tenantId, req.body.rid, req.body.customerId, req.body.display);
 
 
 
@@ -111,6 +111,46 @@ export class RoomController {
         }
     }
 
+    async getOpendRoomsRest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const optUser = (req as any).user;
+            const userTenantId = optUser.domain;
+            const { tenantId } = req.params
+            if (!userTenantId || userTenantId !== tenantId) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '用户授权无效'
+                    }
+                });
+                return;
+            }
+
+            const docs = await this.mongoDB.models.Rooms.find({
+                tenantId,
+                usernames: optUser._id,
+                open: true,
+            })
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '获取未关闭的房间列表成功'
+                },
+                data: docs
+            });
+
+
+        } catch (error) {
+            this.logger.error('获取未关闭房间列表失败：', error);
+            res.json({
+                'meta': {
+                    'code': 404,
+                    'message': ''
+                }
+            });
+        }
+    }
+
     async incMsgCount(rid) {
         try {
 
@@ -126,16 +166,21 @@ export class RoomController {
         }
     }
 
-    async bindCustormer(tenantId, rid, customerId) {
+    async bindCustormer(tenantId, rid, customerId, display?: string) {
         try {
 
+            let setData = {
+                customer: customerId
+            };
+
+            if (!!display) {
+                setData = Object.assign({}, setData, { display })
+            }
             const upres = await this.mongoDB.models.Rooms.update({
                 tenantId,
                 rid
             }, {
-                    $set: {
-                        customer: customerId
-                    }
+                    $set: setData
                 })
             return upres;
         }

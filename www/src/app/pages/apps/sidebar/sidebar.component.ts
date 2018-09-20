@@ -14,14 +14,23 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private isActive: boolean[];
   private roomSub: Subscription;
   private rooms: Room[];
+  private roomIds: string[]; // 用户更新room的信息
   constructor(private logger: LoggerService, private router: Router,
     private dataService: DataService,
     private loginService: LoginService) {
-    this.rooms = [];
     this.isActive = [false, false, false];
   }
 
   ngOnInit() {
+    this.roomIds = [];
+    this.rooms = [];
+    this.dataService.initRooms()
+      .then(res => { })
+      .catch(err => {
+        this.logger.error('ng init error:', err);
+      });
+
+
     this.roomSub = this.dataService.Room$.subscribe(this.onRoomSub.bind(this));
   }
 
@@ -30,7 +39,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   onRoomSub(room: Room) {
-    this.rooms.push(room);
+    const index = this.roomIds.indexOf(room.id);
+    if (index > -1) {
+      // const oldRoom = this.rooms[index];
+      // const keys = Object.keys(room);
+      // keys.forEach(key => {
+      //   this.rooms[index][key] = room[key];
+      // });
+      this.rooms[index] = Object.assign({}, this.rooms[index], room);
+    } else {
+      this.roomIds.push(room.id);
+      this.rooms.push(room);
+    }
   }
 
   loginOut() {

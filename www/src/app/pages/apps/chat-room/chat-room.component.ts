@@ -116,7 +116,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   handleRoomChange(room: Room) {
-    this.logger.debug('handle room  change ', room.id, this.roomId);
+    this.logger.debug('handle room  change ', room.id, this.roomId, room);
     if (room.id === this.roomId) {
       this.room = room;
     }

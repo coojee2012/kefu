@@ -4,6 +4,7 @@ import { LoggerService } from '../../../../services/LogService';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChatRoomService } from '../chat-room.service';
+import { DataService, Room } from '../../../../services/DataService';
 @Component({
   selector: 'app-chat-order',
   templateUrl: './chat-order.component.html',
@@ -18,9 +19,11 @@ export class ChatOrderComponent implements OnInit {
   private custormFromFolded: boolean;
   private bindCustormListShowed: boolean;
   private searchCustormerList: any[];
+
   constructor(
     private service: ChatRoomService,
     private logger: LoggerService,
+    private dataService: DataService,
     private router: Router,
     private fb: FormBuilder,
   ) {
@@ -173,10 +176,11 @@ export class ChatOrderComponent implements OnInit {
           memo: selectedoc.memo,
         });
         await new Promise((resolve, reject) => {
-          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId)
+          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId, selectedoc.name)
             .subscribe(results => {
               if (results.meta && results.meta.code === 200) {
                 subscription.unsubscribe();
+                this.dataService.RoomSource.next({ id: this.roomId, userName: selectedoc.name });
                 resolve();
               } else {
                 subscription.unsubscribe();
@@ -215,6 +219,7 @@ export class ChatOrderComponent implements OnInit {
               if (results.meta && results.meta.code === 200) {
                 subscription.unsubscribe();
                 this.relationCustomId = results.data._id;
+                this.dataService.RoomSource.next({ id: this.roomId, userName: results.data.name });
                 this.service.tipSource.next({ message: '添加成功！', style: 'success' });
                 resolve();
               } else {
@@ -228,7 +233,7 @@ export class ChatOrderComponent implements OnInit {
               });
         });
         await new Promise((resolve, reject) => {
-          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId)
+          const subscription = this.service.bindCustomer(this.roomId, this.relationCustomId, this.addCustomForm.value.name)
             .subscribe(results => {
               if (results.meta && results.meta.code === 200) {
                 subscription.unsubscribe();
@@ -259,6 +264,7 @@ export class ChatOrderComponent implements OnInit {
           .subscribe(results => {
             if (results.meta && results.meta.code === 200) {
               subscription.unsubscribe();
+              this.dataService.RoomSource.next({ id: this.roomId, userName: this.addCustomForm.value.name });
               this.service.tipSource.next({ message: '更新成功！', style: 'success' });
               resolve();
             } else {

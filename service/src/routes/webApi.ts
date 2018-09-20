@@ -165,6 +165,13 @@ export class WebAPI {
         .catch(console.log)
     });
 
+    this.Router.post('/room/:tenantId/opens', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.roomCtr.getOpendRoomsRest(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
+
     // 分机管理
 
     this.Router.post('/pbx/extension/:tenantId', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
