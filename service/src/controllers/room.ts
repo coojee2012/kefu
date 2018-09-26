@@ -85,7 +85,7 @@ export class RoomController {
             }
 
 
-            const upresult = await this.bindCustormer(tenantId, req.body.rid, req.body.customerId, req.body.display);
+            const upresult = await this.bindCustormer(tenantId, req.body.rid, req.body.customerId, req.body.dispaly);
 
 
 

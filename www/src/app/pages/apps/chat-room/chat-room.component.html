@@ -191,7 +191,7 @@
 
         <!-- Custom Tabs -->
 
-        <app-chat-order *ngIf="memu==='order'" [roomId]="roomId"></app-chat-order>
+        <app-chat-order *ngIf="memu==='order'" [roomId]="roomId" [customerId] = "customerId"></app-chat-order>
         <app-chat-faq *ngIf="memu==='faq'"></app-chat-faq>
         <app-chat-detail *ngIf="memu==='detail'"></app-chat-detail>
       </div>

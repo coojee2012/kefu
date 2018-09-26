@@ -41,6 +41,16 @@ export class ChatRoomService {
                 catchError(this.handleError)
             );
     }
+
+    getCustomerById(id: string): Observable<any> {
+        const optUser = this.getUser();
+        this.logger.debug('dddddddd', id);
+        return this.http.post(`/customer/${optUser.domain}/get`, { id: id })
+            .pipe(
+                catchError(this.handleError)
+            );
+    }
+
     bindCustomer(rid: string, customerId: string, dispaly?: string): Observable<any> {
         const optUser = this.getUser();
         return this.http.post(`/room/${optUser.domain}/bindcustorm`, { rid: rid, customerId: customerId, dispaly: dispaly })

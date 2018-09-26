@@ -152,6 +152,13 @@ export class WebAPI {
         .then()
         .catch(console.log)
     });
+
+    this.Router.post('/customer/:tenantId/get', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
+      this.customerCtr.getByIdRest(req, res, next)
+        .then()
+        .catch(console.log)
+    });
+
     this.Router.post('/customer/:tenantId/update/:id', this.passport.getPassport().authenticate('user', { session: false }), (req, res, next) => {
       this.customerCtr.updateRest(req, res, next)
         .then()

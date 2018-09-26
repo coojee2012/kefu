@@ -22,6 +22,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
   private chatMessageSub: Subscription;
   private inputMsg: string;
   private roomId: string;
+  private customerId: string;
   private roomIds: string[];
   private MSGs: any;
   private roomId$: Subscription;
@@ -119,6 +120,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.logger.debug('handle room  change ', room.id, this.roomId, room);
     if (room.id === this.roomId) {
       this.room = room;
+      this.customerId = room.customer;
     }
   }
   onKey(event: any) { // without type info

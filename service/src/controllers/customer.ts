@@ -162,6 +162,58 @@ export class CustomerController {
         }
     }
 
+    async getByIdRest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const optUser = (req as any).user;
+            this.logger.debug('optUser:', optUser.domain);
+
+            req.checkBody({
+                'id': {
+                    notEmpty: true,
+                    errorMessage: 'ID不能为空'
+                },
+            });
+            const result = await req.getValidationResult();
+            if (!result.isEmpty()) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': result.array()[0].msg
+                    }
+                });
+                return;
+            }
+            const userTenantId = optUser.domain;
+            const { tenantId } = req.params
+
+            if (!userTenantId || userTenantId !== tenantId) {
+                res.json({
+                    'meta': {
+                        'code': 422,
+                        'message': '租户授权无效'
+                    }
+                });
+                return;
+            }
+
+            const doc = await this.mongoDB.models.Customer.findOne({
+                tenantId,
+                _id: req.body.id
+            });
+
+            res.json({
+                'meta': {
+                    'code': 200,
+                    'message': '获取客户成功'
+                },
+                data: doc
+            });
+            return;
+        } catch (error) {
+
+        }
+    }
+
     async keySearch(req: Request, res: Response, next: NextFunction) {
         try {
             const optUser = (req as any).user;
