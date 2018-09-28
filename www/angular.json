@@ -26,14 +26,12 @@
               "src/assets/ionicons/css/ionicons.css",
               "src/assets/css/AdminLTE.css",
               "src/assets/css/skins/_all-skins.min.css",
-              "src/assets/select2/dist/css/select2.min.css",
               "src/styles.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "src/assets/js/adminlte.min.js",
-              "src/assets/select2/dist/js/select2.min.js",
-              "node_modules/sip.js/dist/sip-0.11.0.js"
+              "node_modules/sip.js/dist/sip.js"
             ]
           },
           "configurations": {
