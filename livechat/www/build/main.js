@@ -46,7 +46,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var MyHttp = (function (_super) {
+var MyHttp = /** @class */ (function (_super) {
     __extends(MyHttp, _super);
     function MyHttp(_backend, _defaultOptions, loadingCtrl, systemService, fileTransfer) {
         var _this = _super.call(this, _backend, _defaultOptions) || this;
@@ -179,16 +179,16 @@ var MyHttp = (function (_super) {
         //程序异常
         this.systemService.showToast(defaultMsg);
     };
+    MyHttp = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* RequestOptions */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */],
+            __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */]])
+    ], MyHttp);
     return MyHttp;
 }(__WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Http */]));
-MyHttp = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* ConnectionBackend */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* RequestOptions */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["h" /* LoadingController */],
-        __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_7__ionic_native_file_transfer__["a" /* FileTransfer */]])
-], MyHttp);
 
 //# sourceMappingURL=my-http.js.map
 
@@ -212,8 +212,8 @@ MyHttp = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__friend_list_friend_list__ = __webpack_require__(296);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__discover_discover__ = __webpack_require__(298);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__me_me__ = __webpack_require__(302);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__login_login__ = __webpack_require__(69);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__chat_content_chat_content__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__login_login__ = __webpack_require__(70);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__chat_content_chat_content__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_msg__ = __webpack_require__(93);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_system__ = __webpack_require__(15);
@@ -284,7 +284,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 
 
 
-var IndexPage = (function () {
+var IndexPage = /** @class */ (function () {
     function IndexPage(navCtrl, vibration, localNotifications, storage, alertCtrl, userService, msgService, systemService, myHttp, backEnd) {
         this.navCtrl = navCtrl;
         this.vibration = vibration;
@@ -507,23 +507,23 @@ var IndexPage = (function () {
     IndexPage.prototype.gotoLoginPage = function () {
         this.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_11__login_login__["a" /* LoginPage */]);
     };
+    IndexPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-index-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\index\index.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" [tabBadge]="chatUnread" tabBadgeStyle="danger" tabTitle="聊天" tabIcon="chatbubbles"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="通讯录" tabIcon="contacts"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="发现" tabIcon="compass"></ion-tab>\n  <ion-tab [root]="tab4Root" tabTitle="我的" tabIcon="contact"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\index\index.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */],
+            __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */],
+            __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
+            __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */],
+            __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]])
+    ], IndexPage);
     return IndexPage;
 }());
-IndexPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-index-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" [tabBadge]="chatUnread" tabBadgeStyle="danger" tabTitle="聊天" tabIcon="chatbubbles"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="通讯录" tabIcon="contacts"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="发现" tabIcon="compass"></ion-tab>\n  <ion-tab [root]="tab4Root" tabTitle="我的" tabIcon="contact"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/index/index.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_native_vibration__["a" /* Vibration */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_local_notifications__["a" /* LocalNotifications */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
-        __WEBPACK_IMPORTED_MODULE_13__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_14__services_msg__["a" /* MsgService */],
-        __WEBPACK_IMPORTED_MODULE_15__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_16__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_17__providers_backend__["a" /* BackEnd */]])
-], IndexPage);
 
 //# sourceMappingURL=index.js.map
 
@@ -551,8 +551,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 // import 'rxjs/add/operator/finally';
 
-var _ = __webpack_require__(374);
-var SystemService = (function () {
+var _ = __webpack_require__(373);
+var SystemService = /** @class */ (function () {
     function SystemService(toastCtrl, loadingCtrl) {
         this.toastCtrl = toastCtrl;
         this.loadingCtrl = loadingCtrl;
@@ -602,13 +602,13 @@ var SystemService = (function () {
             _this.closeLoading(loading);
         });
     };
+    SystemService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["m" /* ToastController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* LoadingController */]])
+    ], SystemService);
     return SystemService;
 }());
-SystemService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["m" /* ToastController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* LoadingController */]])
-], SystemService);
 
 //# sourceMappingURL=system.js.map
 
@@ -638,7 +638,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var FriendRequestPage = (function () {
+var FriendRequestPage = /** @class */ (function () {
     function FriendRequestPage(navCtrl, navParams, userService, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -656,18 +656,18 @@ var FriendRequestPage = (function () {
             }, 1000);
         }, function (err) { return _this.myHttp.handleError(err, '申请失败'); });
     };
+    FriendRequestPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-friend-request-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\friend-request\friend-request.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>朋友验证</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="markFriend()">发送</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n\n  <ion-list>\n    <ion-item>\n      <ion-input type="text" placeholder="请求信息" [(ngModel)]="requestMsg"></ion-input>\n    </ion-item>\n  </ion-list>\n  <p class="hint">你需要发送验证申请，等对方通过</p>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\friend-request\friend-request.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_3__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_4__providers_my_http__["a" /* MyHttp */]])
+    ], FriendRequestPage);
     return FriendRequestPage;
 }());
-FriendRequestPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-friend-request-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-request/friend-request.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>朋友验证</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="markFriend()">发送</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n\n  <ion-list>\n    <ion-item>\n      <ion-input type="text" placeholder="请求信息" [(ngModel)]="requestMsg"></ion-input>\n    </ion-item>\n  </ion-list>\n  <p class="hint">你需要发送验证申请，等对方通过</p>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-request/friend-request.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_3__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_4__providers_my_http__["a" /* MyHttp */]])
-], FriendRequestPage);
 
 //# sourceMappingURL=friend-request.js.map
 
@@ -709,7 +709,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var TimelineAddPage = (function () {
+var TimelineAddPage = /** @class */ (function () {
     function TimelineAddPage(sanitizer, fb, imagePicker, camera, crop, cordovaFile, navCtrl, actionSheetCtrl, timelineService, systemService, myHttp) {
         this.sanitizer = sanitizer;
         this.fb = fb;
@@ -874,26 +874,26 @@ var TimelineAddPage = (function () {
             return res[0];
         });
     };
+    TimelineAddPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-timeline-add-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\timeline-add\timeline-add.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>记录心情</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="publish()" [disabled]="form.invalid">发表</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="publish()">\n    <ion-list class="input-wrap">\n      <ion-item>\n        <ion-textarea type="text" placeholder="写下你的心情吧" formControlName="content"></ion-textarea>\n      </ion-item>\n    </ion-list>\n  </form>\n  <div class="media-wrap">\n    <div class="add-media-btn" *ngFor="let media of medias" (click)="fillMedia(media)">\n      <!--<button class="remove-btn" *ngIf="media.isFill()" (click)="removeMedia(media)"><ion-icon name="close" ></ion-icon></button>-->\n      <!--<button class="remove-btn" (click)="removeMedia(media)"><ion-icon name="close" ></ion-icon></button>-->\n      <img *ngIf="media.src" [src]="media.src" />\n      <ion-icon name="add" *ngIf="!media.src"></ion-icon>\n    </div>\n  </div>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\timeline-add\timeline-add.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__["a" /* ImagePicker */],
+            __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__["a" /* Camera */],
+            __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__["a" /* Crop */],
+            __WEBPACK_IMPORTED_MODULE_7__ionic_native_file__["a" /* File */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_8__services_timeline__["a" /* TimelineService */],
+            __WEBPACK_IMPORTED_MODULE_9__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
+    ], TimelineAddPage);
     return TimelineAddPage;
 }());
-TimelineAddPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-timeline-add-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/timeline-add/timeline-add.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>记录心情</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="publish()" [disabled]="form.invalid">发表</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="publish()">\n    <ion-list class="input-wrap">\n      <ion-item>\n        <ion-textarea type="text" placeholder="写下你的心情吧" formControlName="content"></ion-textarea>\n      </ion-item>\n    </ion-list>\n  </form>\n  <div class="media-wrap">\n    <div class="add-media-btn" *ngFor="let media of medias" (click)="fillMedia(media)">\n      <!--<button class="remove-btn" *ngIf="media.isFill()" (click)="removeMedia(media)"><ion-icon name="close" ></ion-icon></button>-->\n      <!--<button class="remove-btn" (click)="removeMedia(media)"><ion-icon name="close" ></ion-icon></button>-->\n      <img *ngIf="media.src" [src]="media.src" />\n      <ion-icon name="add" *ngIf="!media.src"></ion-icon>\n    </div>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/timeline-add/timeline-add.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__["a" /* ImagePicker */],
-        __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__["a" /* Camera */],
-        __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__["a" /* Crop */],
-        __WEBPACK_IMPORTED_MODULE_7__ionic_native_file__["a" /* File */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_8__services_timeline__["a" /* TimelineService */],
-        __WEBPACK_IMPORTED_MODULE_9__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
-], TimelineAddPage);
 
-var MediaFile = (function () {
+var MediaFile = /** @class */ (function () {
     function MediaFile() {
         this.src = null;
         this.file = null;
@@ -944,7 +944,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var TimelineService = (function () {
+var TimelineService = /** @class */ (function () {
     function TimelineService(myHttp, backEnd) {
         this.myHttp = myHttp;
         this.backEnd = backEnd;
@@ -992,13 +992,13 @@ var TimelineService = (function () {
     TimelineService.prototype.refresh = function () {
         this.onRefreshSubject.next();
     };
+    TimelineService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
+    ], TimelineService);
     return TimelineService;
 }());
-TimelineService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
-], TimelineService);
 
 //# sourceMappingURL=timeline.js.map
 
@@ -1032,7 +1032,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var JokeService = (function () {
+var JokeService = /** @class */ (function () {
     function JokeService(myHttp, backEnd) {
         this.myHttp = myHttp;
         this.backEnd = backEnd;
@@ -1053,13 +1053,13 @@ var JokeService = (function () {
     JokeService.prototype.dislikeJoke = function (jokeId, isDislike) {
         return this.myHttp.post(__WEBPACK_IMPORTED_MODULE_3__config_config__["b" /* API_HOST */] + '/joke/dislike/' + jokeId, { isDislike: isDislike });
     };
+    JokeService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_backend__["a" /* BackEnd */]])
+    ], JokeService);
     return JokeService;
 }());
-JokeService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_backend__["a" /* BackEnd */]])
-], JokeService);
 
 //# sourceMappingURL=joke.js.map
 
@@ -1084,7 +1084,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 /*UserValidator*/
-var UserValidator = (function () {
+var UserValidator = /** @class */ (function () {
     function UserValidator(userService) {
         this.userService = userService;
     }
@@ -1112,12 +1112,12 @@ var UserValidator = (function () {
             });
         };
     };
+    UserValidator = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_user__["a" /* UserService */]])
+    ], UserValidator);
     return UserValidator;
 }());
-UserValidator = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_user__["a" /* UserService */]])
-], UserValidator);
 
 //# sourceMappingURL=user.js.map
 
@@ -1156,7 +1156,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var UserService = (function () {
+var UserService = /** @class */ (function () {
     function UserService(myHttp, backEnd) {
         this.myHttp = myHttp;
         this.backEnd = backEnd;
@@ -1359,13 +1359,13 @@ var UserService = (function () {
     UserService.prototype.existsByUsername = function (username) {
         return this.myHttp.get(__WEBPACK_IMPORTED_MODULE_5__config_config__["b" /* API_HOST */] + '/user/existsByUsername/' + username);
     };
+    UserService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
+    ], UserService);
     return UserService;
 }());
-UserService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
-], UserService);
 
 //# sourceMappingURL=user.js.map
 
@@ -1412,14 +1412,14 @@ webpackEmptyAsyncContext.id = 211;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ChatPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat_content_chat_content__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__chat_content_chat_content__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__chat_popover_chat_popover__ = __webpack_require__(275);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__friend_add_friend_add__ = __webpack_require__(95);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_msg__ = __webpack_require__(93);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_backend__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs__ = __webpack_require__(376);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs__ = __webpack_require__(375);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_rxjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_utils__ = __webpack_require__(67);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1438,7 +1438,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var ChatPage = (function () {
+var ChatPage = /** @class */ (function () {
     function ChatPage(zone, appCtrl, popoverCtrl, msgService, backEnd) {
         this.zone = zone;
         this.appCtrl = appCtrl;
@@ -1499,18 +1499,18 @@ var ChatPage = (function () {
     ChatPage.prototype.gotoFriendAddPage = function () {
         this.appCtrl.getRootNav().push(__WEBPACK_IMPORTED_MODULE_4__friend_add_friend_add__["a" /* FriendAddPage */]);
     };
+    ChatPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-chat-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\chat\chat.html"*/'<ion-header>\n  <ion-navbar>\n\n    <!-- <ion-buttons start >\n      <button ion-button icon-only (click)="gotoFriendListPage()">\n          <ion-icon name="contacts"></ion-icon>\n      </button>\n    </ion-buttons> -->\n\n    <ion-title>聊天{{connectState | connectState}}</ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="presentPopover($event)">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n\n  <ion-list>\n    <ion-item-sliding *ngFor="let chat of chatList">\n      <button ion-item detail-none (click)="gotoChatContentPage(chat.relationId,chat.name)">\n		<ion-thumbnail item-left>\n			<cy-img [src]="chat.avatarSrc | avatarSrc"></cy-img>\n		</ion-thumbnail>\n		\n		<h2>{{chat.name}} <ion-note>{{chat.timediff | timediff}}</ion-note></h2>\n		<p>{{chat.lastContent}}</p>\n\n		<ion-badge color="danger" *ngIf="chat.unread > 0">{{chat.unread}}</ion-badge>\n	  </button>\n      <ion-item-options side="right">\n        <button ion-button color="danger" (click)="deleteChat(chat.relationId)">\n        <ion-icon name="trash"></ion-icon>\n        <span class="button-title">删除</span>\n      </button>\n      </ion-item-options>\n    </ion-item-sliding>\n\n\n  </ion-list>\n  <!-- <cy-img src="./assets/img/fengjing1.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img>\n  <cy-img src="./assets/img/fengjing2.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img>\n  <cy-img src="./assets/img/fengjing3.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img> -->\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\chat\chat.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["l" /* PopoverController */],
+            __WEBPACK_IMPORTED_MODULE_5__services_msg__["a" /* MsgService */],
+            __WEBPACK_IMPORTED_MODULE_6__providers_backend__["a" /* BackEnd */]])
+    ], ChatPage);
     return ChatPage;
 }());
-ChatPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-chat-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat/chat.html"*/'<ion-header>\n  <ion-navbar>\n\n    <!-- <ion-buttons start >\n      <button ion-button icon-only (click)="gotoFriendListPage()">\n          <ion-icon name="contacts"></ion-icon>\n      </button>\n    </ion-buttons> -->\n\n    <ion-title>聊天{{connectState | connectState}}</ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="presentPopover($event)">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n\n  <ion-list>\n    <ion-item-sliding *ngFor="let chat of chatList">\n      <button ion-item detail-none (click)="gotoChatContentPage(chat.relationId,chat.name)">\n		<ion-thumbnail item-left>\n			<cy-img [src]="chat.avatarSrc | avatarSrc"></cy-img>\n		</ion-thumbnail>\n		\n		<h2>{{chat.name}} <ion-note>{{chat.timediff | timediff}}</ion-note></h2>\n		<p>{{chat.lastContent}}</p>\n\n		<ion-badge color="danger" *ngIf="chat.unread > 0">{{chat.unread}}</ion-badge>\n	  </button>\n      <ion-item-options side="right">\n        <button ion-button color="danger" (click)="deleteChat(chat.relationId)">\n        <ion-icon name="trash"></ion-icon>\n        <span class="button-title">删除</span>\n      </button>\n      </ion-item-options>\n    </ion-item-sliding>\n\n\n  </ion-list>\n  <!-- <cy-img src="./assets/img/fengjing1.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img>\n  <cy-img src="./assets/img/fengjing2.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img>\n  <cy-img src="./assets/img/fengjing3.jpg" style="width:100%;height:100px;" [zoom]="true"></cy-img> -->\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat/chat.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["l" /* PopoverController */],
-        __WEBPACK_IMPORTED_MODULE_5__services_msg__["a" /* MsgService */],
-        __WEBPACK_IMPORTED_MODULE_6__providers_backend__["a" /* BackEnd */]])
-], ChatPage);
 
 //# sourceMappingURL=chat.js.map
 
@@ -1521,7 +1521,7 @@ ChatPage = __decorate([
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyReplaySubject; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_rxjs_ReplaySubject__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1534,7 +1534,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 
-var MyReplaySubject = (function (_super) {
+var MyReplaySubject = /** @class */ (function (_super) {
     __extends(MyReplaySubject, _super);
     function MyReplaySubject(bufferSize, scheduler) {
         var _this = _super.call(this, bufferSize, (3600000 * 24 * 365 * 100), scheduler) || this;
@@ -1575,7 +1575,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-var ReorderPage = (function () {
+var ReorderPage = /** @class */ (function () {
     function ReorderPage(navCtrl) {
         this.navCtrl = navCtrl;
         this.ladder = [
@@ -1602,14 +1602,14 @@ var ReorderPage = (function () {
     ReorderPage.prototype.reorderItems = function (indexes) {
         this.ladder = Object(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["o" /* reorderArray */])(this.ladder, indexes);
     };
+    ReorderPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'reorder-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\reorder\reorder.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>排序</ion-title>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<ion-list reorder="true" (ionItemReorder)="reorderItems($event)">\n        <ion-item *ngFor="let team of ladder; let i = index;">{{team}}</ion-item>\n    </ion-list>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\reorder\reorder.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]])
+    ], ReorderPage);
     return ReorderPage;
 }());
-ReorderPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'reorder-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/reorder/reorder.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>排序</ion-title>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<ion-list reorder="true" (ionItemReorder)="reorderItems($event)">\n        <ion-item *ngFor="let team of ladder; let i = index;">{{team}}</ion-item>\n    </ion-list>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/reorder/reorder.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]])
-], ReorderPage);
 
 //# sourceMappingURL=reorder.js.map
 
@@ -1694,7 +1694,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var ChatPopoverPage = (function () {
+var ChatPopoverPage = /** @class */ (function () {
     function ChatPopoverPage(viewCtrl, navCtrl) {
         this.viewCtrl = viewCtrl;
         this.navCtrl = navCtrl;
@@ -1710,15 +1710,15 @@ var ChatPopoverPage = (function () {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_3__timeline_add_timeline_add__["a" /* TimelineAddPage */]);
         this.viewCtrl.dismiss();
     };
+    ChatPopoverPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-chat-popover-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\chat-popover\chat-popover.html"*/'<ion-list>\n  <button ion-item detail-none>\n    <ion-icon name="md-qr-scanner" item-left ></ion-icon>\n		扫一扫\n  </button>\n  <button ion-item detail-none (click)="gotoFriendAddPage()">\n    <ion-icon name="person-add" item-left></ion-icon>\n		添加好友\n  </button>\n  <button ion-item detail-none (click)="gotoTimelineAddPage()">\n    <ion-icon name="create" item-left></ion-icon>\n		发表心情\n  </button>\n</ion-list>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\chat-popover\chat-popover.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["n" /* ViewController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]])
+    ], ChatPopoverPage);
     return ChatPopoverPage;
 }());
-ChatPopoverPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-chat-popover-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-popover/chat-popover.html"*/'<ion-list>\n  <button ion-item detail-none>\n    <ion-icon name="md-qr-scanner" item-left ></ion-icon>\n		扫一扫\n  </button>\n  <button ion-item detail-none (click)="gotoFriendAddPage()">\n    <ion-icon name="person-add" item-left></ion-icon>\n		添加好友\n  </button>\n  <button ion-item detail-none (click)="gotoTimelineAddPage()">\n    <ion-icon name="create" item-left></ion-icon>\n		发表心情\n  </button>\n</ion-list>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-popover/chat-popover.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["n" /* ViewController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */]])
-], ChatPopoverPage);
 
 //# sourceMappingURL=chat-popover.js.map
 
@@ -1758,7 +1758,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var FriendByContactPage = (function () {
+var FriendByContactPage = /** @class */ (function () {
     function FriendByContactPage(platform, contacts, navCtrl, userService, systemService, myHttp) {
         this.platform = platform;
         this.contacts = contacts;
@@ -1827,19 +1827,19 @@ var FriendByContactPage = (function () {
         });
         return displayName;
     };
+    FriendByContactPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-friend-by-contact-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\friend-by-contact\friend-by-contact.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>通讯录朋友</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n\n  <ion-list>\n    <ion-item detail-none *ngFor="let user of userList">\n      <ion-thumbnail item-left>\n        <img [src]="user.avatarSrc">\n      </ion-thumbnail>\n\n      <h2 class="displayName">{{user.displayName}}</h2>\n      <p class="nickname">昵称:{{user.nickname}}</p>\n\n      <button ion-button outline item-end *ngIf="!user._isFriend" (click)=" gotoFriendRequestPage(user._id)">添加</button>\n      <ion-note item-right *ngIf="user._isFriend">已添加</ion-note>\n    </ion-item>\n\n\n  </ion-list>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\friend-by-contact\friend-by-contact.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_2__ionic_native_contacts__["a" /* Contacts */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_6__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_7__providers_my_http__["a" /* MyHttp */]])
+    ], FriendByContactPage);
     return FriendByContactPage;
 }());
-FriendByContactPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-friend-by-contact-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-by-contact/friend-by-contact.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>通讯录朋友</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n<ion-content>\n\n  <ion-list>\n    <ion-item detail-none *ngFor="let user of userList">\n      <ion-thumbnail item-left>\n        <img [src]="user.avatarSrc">\n      </ion-thumbnail>\n\n      <h2 class="displayName">{{user.displayName}}</h2>\n      <p class="nickname">昵称:{{user.nickname}}</p>\n\n      <button ion-button outline item-end *ngIf="!user._isFriend" (click)=" gotoFriendRequestPage(user._id)">添加</button>\n      <ion-note item-right *ngIf="user._isFriend">已添加</ion-note>\n    </ion-item>\n\n\n  </ion-list>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-by-contact/friend-by-contact.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_native_contacts__["a" /* Contacts */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_6__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_my_http__["a" /* MyHttp */]])
-], FriendByContactPage);
 
 //# sourceMappingURL=friend-by-contact.js.map
 
@@ -1854,7 +1854,7 @@ FriendByContactPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__friend_add_friend_add__ = __webpack_require__(95);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__friend_new_friend_new__ = __webpack_require__(297);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__user_detail_user_detail__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user__ = __webpack_require__(16);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1871,7 +1871,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var FriendListPage = (function () {
+var FriendListPage = /** @class */ (function () {
     function FriendListPage(app, navCtrl, userService) {
         this.app = app;
         this.navCtrl = navCtrl;
@@ -1896,16 +1896,16 @@ var FriendListPage = (function () {
     FriendListPage.prototype.gotoFriendNewPage = function () {
         this.app.getRootNav().push(__WEBPACK_IMPORTED_MODULE_3__friend_new_friend_new__["a" /* FriendNewPage */]);
     };
+    FriendListPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-friend-list-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\friend-list\friend-list.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>通讯录</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n	<ion-list>\n		<button ion-item (click)="gotoFriendAddPage()">\n			<ion-icon name="person-add" item-left color="primary"></ion-icon>\n			添加好友\n		</button>\n		<button ion-item (click)="gotoFriendNewPage()">\n			<ion-icon name="link" item-left item-left color="thirdly"></ion-icon>\n			请求列表\n		</button>\n	</ion-list>\n\n	<ion-list *ngIf="list.length">\n		<button  ion-item detail-none *ngFor="let item of list" (click)="gotoUserDetailPage(item._id)">\n			<ion-thumbnail item-left>\n	           <img [src]="item.avatarSrc | avatarSrc">\n	        </ion-thumbnail>\n	        <h2>{{item.nickname}}</h2>\n		</button>\n	</ion-list>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\friend-list\friend-list.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */]])
+    ], FriendListPage);
     return FriendListPage;
 }());
-FriendListPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-friend-list-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-list/friend-list.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>通讯录</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n	<ion-list>\n		<button ion-item (click)="gotoFriendAddPage()">\n			<ion-icon name="person-add" item-left color="primary"></ion-icon>\n			添加好友\n		</button>\n		<button ion-item (click)="gotoFriendNewPage()">\n			<ion-icon name="link" item-left item-left color="thirdly"></ion-icon>\n			请求列表\n		</button>\n	</ion-list>\n\n	<ion-list *ngIf="list.length">\n		<button  ion-item detail-none *ngFor="let item of list" (click)="gotoUserDetailPage(item._id)">\n			<ion-thumbnail item-left>\n	           <img [src]="item.avatarSrc | avatarSrc">\n	        </ion-thumbnail>\n	        <h2>{{item.nickname}}</h2>\n		</button>\n	</ion-list>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-list/friend-list.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */]])
-], FriendListPage);
 
 //# sourceMappingURL=friend-list.js.map
 
@@ -1933,7 +1933,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var FriendNewPage = (function () {
+var FriendNewPage = /** @class */ (function () {
     function FriendNewPage(userService, systemService, myHttp) {
         this.userService = userService;
         this.systemService = systemService;
@@ -1958,16 +1958,16 @@ var FriendNewPage = (function () {
             _this.userService.getRelationList();
         }, function (err) { return _this.myHttp.handleError('添加失败'); });
     };
+    FriendNewPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-friend-new-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\friend-new\friend-new.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>新好友</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n  <div *ngIf="list && !list.length === 0" class="no-friend-request-tip">\n    <div>\n      <ion-icon name="sad" class="tip-icon"></ion-icon>\n    </div>\n    没有新好友请求\n  </div>\n\n  <ion-list *ngIf="list && list.length > 0">\n    <ion-item *ngFor="let item of list">\n      <ion-thumbnail item-left>\n        <img [src]="item._fromUser.avatarSrc | avatarSrc">\n      </ion-thumbnail>\n      <h2>{{item._fromUser.nickname}}</h2>\n      <p>{{item.requestMsg}}</p>\n\n      <button ion-button outline item-end *ngIf="!item.confirm" (click)="confirmFriend(item._fromUser._id)">添加</button>\n\n      <ion-note item-end *ngIf="item.confirm">已添加</ion-note>\n    </ion-item>\n  </ion-list>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\friend-new\friend-new.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_2__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_3__providers_my_http__["a" /* MyHttp */]])
+    ], FriendNewPage);
     return FriendNewPage;
 }());
-FriendNewPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-friend-new-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-new/friend-new.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>新好友</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n  <div *ngIf="list && !list.length === 0" class="no-friend-request-tip">\n    <div>\n      <ion-icon name="sad" class="tip-icon"></ion-icon>\n    </div>\n    没有新好友请求\n  </div>\n\n  <ion-list *ngIf="list && list.length > 0">\n    <ion-item *ngFor="let item of list">\n      <ion-thumbnail item-left>\n        <img [src]="item._fromUser.avatarSrc | avatarSrc">\n      </ion-thumbnail>\n      <h2>{{item._fromUser.nickname}}</h2>\n      <p>{{item.requestMsg}}</p>\n\n      <button ion-button outline item-end *ngIf="!item.confirm" (click)="confirmFriend(item._fromUser._id)">添加</button>\n\n      <ion-note item-end *ngIf="item.confirm">已添加</ion-note>\n    </ion-item>\n  </ion-list>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-new/friend-new.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_2__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_3__providers_my_http__["a" /* MyHttp */]])
-], FriendNewPage);
 
 //# sourceMappingURL=friend-new.js.map
 
@@ -1995,7 +1995,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var DiscoverPage = (function () {
+var DiscoverPage = /** @class */ (function () {
     function DiscoverPage(navCtrl, appCtrl) {
         this.navCtrl = navCtrl;
         this.appCtrl = appCtrl;
@@ -2006,15 +2006,15 @@ var DiscoverPage = (function () {
     DiscoverPage.prototype.gotoJokeListPage = function () {
         this.appCtrl.getRootNav().push(__WEBPACK_IMPORTED_MODULE_3__joke_list_joke_list__["a" /* JokeListPage */]);
     };
+    DiscoverPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-discover-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\discover\discover.html"*/'<ion-header>\n	<ion-navbar>\n		<ion-title>发现</ion-title>\n	</ion-navbar>\n</ion-header>\n\n<ion-content>\n	<ion-list margin-top>\n		<button ion-item (click)="gotoTimelineListPage()">\n			<ion-icon name="send" item-left></ion-icon>\n			朋友圈\n		</button>\n	</ion-list>\n\n	<ion-list margin-top>\n		<button ion-item (click)="gotoJokeListPage()">\n			<ion-icon name="happy" item-left></ion-icon>\n			笑话\n		</button>\n	</ion-list>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\discover\discover.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */]])
+    ], DiscoverPage);
     return DiscoverPage;
 }());
-DiscoverPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-discover-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/discover/discover.html"*/'<ion-header>\n	<ion-navbar>\n		<ion-title>发现</ion-title>\n	</ion-navbar>\n</ion-header>\n\n<ion-content>\n	<ion-list margin-top>\n		<button ion-item (click)="gotoTimelineListPage()">\n			<ion-icon name="send" item-left></ion-icon>\n			朋友圈\n		</button>\n	</ion-list>\n\n	<ion-list margin-top>\n		<button ion-item (click)="gotoJokeListPage()">\n			<ion-icon name="happy" item-left></ion-icon>\n			笑话\n		</button>\n	</ion-list>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/discover/discover.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */]])
-], DiscoverPage);
 
 //# sourceMappingURL=discover.js.map
 
@@ -2028,7 +2028,7 @@ DiscoverPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__user_detail_user_detail__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__timeline_add_timeline_add__ = __webpack_require__(151);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__providers_backend__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_timeline__ = __webpack_require__(152);
@@ -2037,7 +2037,7 @@ DiscoverPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_rxjs_add_operator_do__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_utils__ = __webpack_require__(67);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2062,7 +2062,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 function isStringLike(s) {
     return s !== undefined && s !== null && s !== '';
 }
-var TimelineListPage = (function () {
+var TimelineListPage = /** @class */ (function () {
     function TimelineListPage(cdRef, renderer, fb, navCtrl, keyboard, timelineService, systemService, backEnd, myHttp) {
         this.cdRef = cdRef;
         this.renderer = renderer;
@@ -2223,30 +2223,30 @@ var TimelineListPage = (function () {
     TimelineListPage.prototype.gotoUserDetailPage = function (userId) {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_3__user_detail_user_detail__["a" /* UserDetailPage */], { userId: userId });
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
+        __metadata("design:type", Object)
+    ], TimelineListPage.prototype, "input", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
+        __metadata("design:type", Object)
+    ], TimelineListPage.prototype, "contentComponent", void 0);
+    TimelineListPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-timeline-list-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\timeline-list\timeline-list.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>朋友圈</ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="gotoTimelineAddPage()">\n          <ion-icon name="create"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n\n<ion-content [fullscreen]="true" (click)="onContentClick()">\n  <ion-refresher (ionRefresh)="doRefresh($event)">\n    <ion-refresher-content></ion-refresher-content>\n  </ion-refresher>\n\n  <div class="timeline" *ngFor="let timeline of timelines">\n\n    <img class="avatar" [src]="timeline._user && timeline._user.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(timeline.userId)">\n\n    <div class="right-container ">\n      <a class="nickname" (click)="gotoUserDetailPage(timeline.userId)">{{timeline._user && timeline._user.nickname}}</a>\n      <!--内容-->\n      <p class="content">{{timeline.content}}</p>\n\n      <!--图片区-->\n      <div class="media-container clearfix">\n        <div class="media-wrap" *ngFor="let mediaSrc of timeline.mediaSrcs">\n          <cy-img [src]="mediaSrc | imgSrc" width="100%" height="100%" [zoom]="true"></cy-img>\n        </div>\n      </div>\n      <div>\n        <span class="publishTime">{{timeline.timediff | timediff}}</span>\n        <div class="cb-wrap clearfix">\n          <div class="comment-btn-wrap">\n            <!--点赞按钮-->\n            <button ion-button icon-left clear small (click)="likeTimeline(timeline._id,!timeline._isLike)">\n        			<ion-icon name="heart" color="fourthly" *ngIf="timeline._isLike"></ion-icon>\n							<ion-icon name="heart-outline" color="fourthly" *ngIf="!timeline._isLike"></ion-icon>\n      			</button>\n            <!--评论按钮-->\n            <button ion-button icon-left clear small (click)="onCommentBtnClick($event,timeline._id)">\n							<ion-icon name="md-chatboxes" color="grey"></ion-icon>\n						</button>\n          </div>\n        </div>\n      </div>\n\n      <div class="cc-wrap" *ngIf="(timeline._likeUsers && timeline._likeUsers.length) || (timeline._comments && timeline._comments.length)">\n        <div class="comment-content-wrap">\n          <!--点赞-->\n          <div class="likes" *ngIf="timeline._likeUsers && timeline._likeUsers.length">\n            <ion-icon name="heart-outline"></ion-icon>\n            <ng-template ngFor let-likeUser [ngForOf]="timeline._likeUsers" let-i="index">\n              <span *ngIf="i>0">,</span>\n              <span class="likeUser" (click)="gotoUserDetailPage(timeline.userId)">\n							 {{likeUser.nickname}}\n              </span>\n            </ng-template>\n            \n          </div>\n          <!--评论-->\n          <div class="comments" *ngIf="timeline._comments && timeline._comments.length">\n            <div class="comment" *ngFor="let comment of timeline._comments" (click)="onCommentBtnClick($event, timeline._id, comment.userId, comment._user.nickname)">\n              <span>{{comment._user && comment._user.nickname}}</span>\n              <span *ngIf="comment._atUser">@ {{comment._atUser && comment._atUser.nickname}}</span>：{{comment.content}}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n\n</ion-content>\n\n<ion-footer [ngClass]="{hide:!commenting}">\n  <ion-toolbar>\n    <form [formGroup]="form" (ngSubmit)="commentTimeline()">\n      <input #input type="text" [attr.placeholder]="getPlaceholder()" formControlName="content" />\n    </form>\n  </ion-toolbar>\n</ion-footer>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\timeline-list\timeline-list.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_8__ionic_native_keyboard__["a" /* Keyboard */],
+            __WEBPACK_IMPORTED_MODULE_6__services_timeline__["a" /* TimelineService */],
+            __WEBPACK_IMPORTED_MODULE_7__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_backend__["a" /* BackEnd */],
+            __WEBPACK_IMPORTED_MODULE_9__providers_my_http__["a" /* MyHttp */]])
+    ], TimelineListPage);
     return TimelineListPage;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
-    __metadata("design:type", Object)
-], TimelineListPage.prototype, "input", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
-    __metadata("design:type", Object)
-], TimelineListPage.prototype, "contentComponent", void 0);
-TimelineListPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-timeline-list-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/timeline-list/timeline-list.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>朋友圈</ion-title>\n\n    <ion-buttons end>\n      <button ion-button icon-only (click)="gotoTimelineAddPage()">\n          <ion-icon name="create"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n\n<ion-content [fullscreen]="true" (click)="onContentClick()">\n  <ion-refresher (ionRefresh)="doRefresh($event)">\n    <ion-refresher-content></ion-refresher-content>\n  </ion-refresher>\n\n  <div class="timeline" *ngFor="let timeline of timelines">\n\n    <img class="avatar" [src]="timeline._user && timeline._user.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(timeline.userId)">\n\n    <div class="right-container ">\n      <a class="nickname" (click)="gotoUserDetailPage(timeline.userId)">{{timeline._user && timeline._user.nickname}}</a>\n      <!--内容-->\n      <p class="content">{{timeline.content}}</p>\n\n      <!--图片区-->\n      <div class="media-container clearfix">\n        <div class="media-wrap" *ngFor="let mediaSrc of timeline.mediaSrcs">\n          <cy-img [src]="mediaSrc | imgSrc" width="100%" height="100%" [zoom]="true"></cy-img>\n        </div>\n      </div>\n      <div>\n        <span class="publishTime">{{timeline.timediff | timediff}}</span>\n        <div class="cb-wrap clearfix">\n          <div class="comment-btn-wrap">\n            <!--点赞按钮-->\n            <button ion-button icon-left clear small (click)="likeTimeline(timeline._id,!timeline._isLike)">\n        			<ion-icon name="heart" color="fourthly" *ngIf="timeline._isLike"></ion-icon>\n							<ion-icon name="heart-outline" color="fourthly" *ngIf="!timeline._isLike"></ion-icon>\n      			</button>\n            <!--评论按钮-->\n            <button ion-button icon-left clear small (click)="onCommentBtnClick($event,timeline._id)">\n							<ion-icon name="md-chatboxes" color="grey"></ion-icon>\n						</button>\n          </div>\n        </div>\n      </div>\n\n      <div class="cc-wrap" *ngIf="(timeline._likeUsers && timeline._likeUsers.length) || (timeline._comments && timeline._comments.length)">\n        <div class="comment-content-wrap">\n          <!--点赞-->\n          <div class="likes" *ngIf="timeline._likeUsers && timeline._likeUsers.length">\n            <ion-icon name="heart-outline"></ion-icon>\n            <ng-template ngFor let-likeUser [ngForOf]="timeline._likeUsers" let-i="index">\n              <span *ngIf="i>0">,</span>\n              <span class="likeUser" (click)="gotoUserDetailPage(timeline.userId)">\n							 {{likeUser.nickname}}\n              </span>\n            </ng-template>\n            \n          </div>\n          <!--评论-->\n          <div class="comments" *ngIf="timeline._comments && timeline._comments.length">\n            <div class="comment" *ngFor="let comment of timeline._comments" (click)="onCommentBtnClick($event, timeline._id, comment.userId, comment._user.nickname)">\n              <span>{{comment._user && comment._user.nickname}}</span>\n              <span *ngIf="comment._atUser">@ {{comment._atUser && comment._atUser.nickname}}</span>：{{comment.content}}\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n\n</ion-content>\n\n<ion-footer [ngClass]="{hide:!commenting}">\n  <ion-toolbar>\n    <form [formGroup]="form" (ngSubmit)="commentTimeline()">\n      <input #input type="text" [attr.placeholder]="getPlaceholder()" formControlName="content" />\n    </form>\n  </ion-toolbar>\n</ion-footer>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/timeline-list/timeline-list.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_8__ionic_native_keyboard__["a" /* Keyboard */],
-        __WEBPACK_IMPORTED_MODULE_6__services_timeline__["a" /* TimelineService */],
-        __WEBPACK_IMPORTED_MODULE_7__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_backend__["a" /* BackEnd */],
-        __WEBPACK_IMPORTED_MODULE_9__providers_my_http__["a" /* MyHttp */]])
-], TimelineListPage);
 
 //# sourceMappingURL=timeline-list.js.map
 
@@ -2284,7 +2284,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 function isStringLike(s) {
     return s !== undefined && s !== null && s !== '';
 }
-var JokeListPage = (function () {
+var JokeListPage = /** @class */ (function () {
     function JokeListPage(fb, jokeService, myHttp, navCtrl) {
         this.fb = fb;
         this.jokeService = jokeService;
@@ -2331,17 +2331,17 @@ var JokeListPage = (function () {
     JokeListPage.prototype.gotoJokeAddPage = function () {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_3__joke_add_joke_add__["a" /* JokeAddPage */]);
     };
+    JokeListPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-joke-list-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\joke-list\joke-list.html"*/'<ion-header>\n	<ion-navbar>\n		<ion-title>笑话</ion-title>\n\n		<ion-buttons end>\n			<button ion-button icon-only (click)="gotoJokeAddPage()">\n				<ion-icon name="create"></ion-icon>\n			</button>\n		</ion-buttons>\n	</ion-navbar>\n</ion-header>\n\n\n<ion-content [fullscreen]="true">\n	<ion-refresher (ionRefresh)="doRefresh($event)">\n		<ion-refresher-content></ion-refresher-content>\n	</ion-refresher>\n\n	<ion-card *ngFor="let joke of jokes">\n\n		<ion-item>\n			<ion-avatar item-start>\n				<img [src]="joke._user.avatarSrc | avatarSrc" />\n			</ion-avatar>\n			<h2>\n				<ion-icon name="male" color="primary" *ngIf="joke._user.gender===0"></ion-icon>\n				<ion-icon name="female" color="fourthly" *ngIf="joke._user.gender===1"></ion-icon>\n				{{joke._user.nickname}}\n			</h2>\n			<p>{{joke.publishTime | date:\'yyyy-MM-dd hh:mm:ss\'}}</p>\n		</ion-item>\n\n		<img src="img/advance-card-bttf.png">\n\n		<ion-card-content>\n			<p>{{ joke.content }}</p>\n		</ion-card-content>\n\n		<ion-row>\n			<ion-col>\n				<button ion-button icon-left clear small (click)="likeJoke(joke, !joke._isLike)">\n					<ion-icon [name]="joke._isLike ? \'happy\' : \'happy-outline\'"></ion-icon>\n					<div>{{ joke._likeCount}}</div>\n				</button>\n\n				<button ion-button icon-left clear small (click)="dislikeJoke(joke, !joke._isDislike)">\n					<ion-icon [name]="joke._isDislike ? \'sad\' : \'sad-outline\'"></ion-icon>\n					<div>{{ joke._dislikeCount}}</div>\n				</button>\n			</ion-col>\n		</ion-row>\n\n	</ion-card>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\joke-list\joke-list.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_4__services_joke__["a" /* JokeService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */]])
+    ], JokeListPage);
     return JokeListPage;
 }());
-JokeListPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-joke-list-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/joke-list/joke-list.html"*/'<ion-header>\n	<ion-navbar>\n		<ion-title>笑话</ion-title>\n\n		<ion-buttons end>\n			<button ion-button icon-only (click)="gotoJokeAddPage()">\n				<ion-icon name="create"></ion-icon>\n			</button>\n		</ion-buttons>\n	</ion-navbar>\n</ion-header>\n\n\n<ion-content [fullscreen]="true">\n	<ion-refresher (ionRefresh)="doRefresh($event)">\n		<ion-refresher-content></ion-refresher-content>\n	</ion-refresher>\n\n	<ion-card *ngFor="let joke of jokes">\n\n		<ion-item>\n			<ion-avatar item-start>\n				<img [src]="joke._user.avatarSrc | avatarSrc" />\n			</ion-avatar>\n			<h2>\n				<ion-icon name="male" color="primary" *ngIf="joke._user.gender===0"></ion-icon>\n				<ion-icon name="female" color="fourthly" *ngIf="joke._user.gender===1"></ion-icon>\n				{{joke._user.nickname}}\n			</h2>\n			<p>{{joke.publishTime | date:\'yyyy-MM-dd hh:mm:ss\'}}</p>\n		</ion-item>\n\n		<img src="img/advance-card-bttf.png">\n\n		<ion-card-content>\n			<p>{{ joke.content }}</p>\n		</ion-card-content>\n\n		<ion-row>\n			<ion-col>\n				<button ion-button icon-left clear small (click)="likeJoke(joke, !joke._isLike)">\n					<ion-icon [name]="joke._isLike ? \'happy\' : \'happy-outline\'"></ion-icon>\n					<div>{{ joke._likeCount}}</div>\n				</button>\n\n				<button ion-button icon-left clear small (click)="dislikeJoke(joke, !joke._isDislike)">\n					<ion-icon [name]="joke._isDislike ? \'sad\' : \'sad-outline\'"></ion-icon>\n					<div>{{ joke._dislikeCount}}</div>\n				</button>\n			</ion-col>\n		</ion-row>\n\n	</ion-card>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/joke-list/joke-list.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_4__services_joke__["a" /* JokeService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */]])
-], JokeListPage);
 
 //# sourceMappingURL=joke-list.js.map
 
@@ -2375,7 +2375,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var JokeAddPage = (function () {
+var JokeAddPage = /** @class */ (function () {
     function JokeAddPage(sanitizer, fb, navCtrl, actionSheetCtrl, jokeService, systemService, myHttp) {
         this.sanitizer = sanitizer;
         this.fb = fb;
@@ -2410,20 +2410,20 @@ var JokeAddPage = (function () {
             }, 1500);
         }, function (err) { return _this.myHttp.handleError(err, '发表失败'); });
     };
+    JokeAddPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-joke-add-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\joke-add\joke-add.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>发表笑话</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="publish()" [disabled]="form.invalid">发表</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="publish()">\n    <ion-list class="input-wrap">\n      <ion-item>\n        <ion-textarea type="text" placeholder="来一段" formControlName="content"></ion-textarea>\n      </ion-item>\n    </ion-list>\n  </form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\joke-add\joke-add.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_4__services_joke__["a" /* JokeService */],
+            __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */]])
+    ], JokeAddPage);
     return JokeAddPage;
 }());
-JokeAddPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-joke-add-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/joke-add/joke-add.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>发表笑话</ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="publish()" [disabled]="form.invalid">发表</button>\n    </ion-buttons>\n  </ion-navbar>\n\n\n\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="publish()">\n    <ion-list class="input-wrap">\n      <ion-item>\n        <ion-textarea type="text" placeholder="来一段" formControlName="content"></ion-textarea>\n      </ion-item>\n    </ion-list>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/joke-add/joke-add.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_4__services_joke__["a" /* JokeService */],
-        __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */]])
-], JokeAddPage);
 
 //# sourceMappingURL=joke-add.js.map
 
@@ -2465,7 +2465,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var MePage = (function () {
+var MePage = /** @class */ (function () {
     function MePage(platform, appCtrl, barcodeScanner, userService, backend, systemService, myHttp) {
         this.platform = platform;
         this.appCtrl = appCtrl;
@@ -2511,20 +2511,20 @@ var MePage = (function () {
     MePage.prototype.gotoQRcodePage = function () {
         this.appCtrl.getRootNav().push(__WEBPACK_IMPORTED_MODULE_6__qrcode_qrcode__["a" /* QRcodePage */]);
     };
+    MePage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-me-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\me\me.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>我的</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list margin-top>\n    <button class="info" ion-item (click)="gotoMeDetailPage()">\n			<ion-thumbnail item-left>\n	           <img [src]="own.avatarSrc | avatarSrc" />\n	        </ion-thumbnail>\n	        <h2>\n            <span class="nickname">{{own.nickname}}</span>\n             <ion-icon name="male" color="primary" *ngIf="own.gender===0"></ion-icon>\n            <ion-icon name="female" color="fourthly" *ngIf="own.gender===1"></ion-icon>\n          </h2>\n          <p class="username">用户名：{{own.username}}</p>\n        </button>\n  </ion-list>\n\n\n  <ion-list>\n    <button ion-item (click)="scanBarCode()">\n      <ion-icon name="md-qr-scanner" color="primary" item-left></ion-icon> 扫一扫\n    </button>\n    <!-- <button ion-item (click)="gotoQRcodePage()">\n      <ion-icon name="md-qr-scanner" color="primary" item-left></ion-icon> 我的二维码\n    </button> -->\n\n    <button ion-item (click)="gotoDownloadPage()">\n      <ion-icon name="logo-android" color="android" item-left></ion-icon> 下载APP\n    </button>\n  </ion-list>\n\n  <ion-list>\n    <button ion-item (click)="gotoSettingPage()">\n      <ion-icon name="settings" color="thirdly" item-left></ion-icon> 设置\n      </button>\n  </ion-list>\n\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\me\me.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
+            __WEBPACK_IMPORTED_MODULE_2__ionic_native_barcode_scanner__["a" /* BarcodeScanner */],
+            __WEBPACK_IMPORTED_MODULE_7__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_9__providers_backend__["a" /* BackEnd */],
+            __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
+    ], MePage);
     return MePage;
 }());
-MePage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-me-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/me/me.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>我的</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list margin-top>\n    <button class="info" ion-item (click)="gotoMeDetailPage()">\n			<ion-thumbnail item-left>\n	           <img [src]="own.avatarSrc | avatarSrc" />\n	        </ion-thumbnail>\n	        <h2>\n            <span class="nickname">{{own.nickname}}</span>\n             <ion-icon name="male" color="primary" *ngIf="own.gender===0"></ion-icon>\n            <ion-icon name="female" color="fourthly" *ngIf="own.gender===1"></ion-icon>\n          </h2>\n          <p class="username">用户名：{{own.username}}</p>\n        </button>\n  </ion-list>\n\n\n  <ion-list>\n    <button ion-item (click)="scanBarCode()">\n      <ion-icon name="md-qr-scanner" color="primary" item-left></ion-icon> 扫一扫\n    </button>\n    <!-- <button ion-item (click)="gotoQRcodePage()">\n      <ion-icon name="md-qr-scanner" color="primary" item-left></ion-icon> 我的二维码\n    </button> -->\n\n    <button ion-item (click)="gotoDownloadPage()">\n      <ion-icon name="logo-android" color="android" item-left></ion-icon> 下载APP\n    </button>\n  </ion-list>\n\n  <ion-list>\n    <button ion-item (click)="gotoSettingPage()">\n      <ion-icon name="settings" color="thirdly" item-left></ion-icon> 设置\n      </button>\n  </ion-list>\n\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/me/me.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["c" /* App */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_native_barcode_scanner__["a" /* BarcodeScanner */],
-        __WEBPACK_IMPORTED_MODULE_7__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_9__providers_backend__["a" /* BackEnd */],
-        __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
-], MePage);
 
 //# sourceMappingURL=me.js.map
 
@@ -2548,18 +2548,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-var DownloadPage = (function () {
+var DownloadPage = /** @class */ (function () {
     function DownloadPage() {
         this.android_url = __WEBPACK_IMPORTED_MODULE_1__config_config__["a" /* ANDROID_DOWNLOAD_URL */];
     }
+    DownloadPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-download-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\download\download.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>下载APP</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <h2>Android版</h2>\n\n  <div padding class="qrcode-wrap">\n    <cy-qrcode class="qrcode" [text]="android_url"></cy-qrcode>\n\n    <a margin-top ion-button block round [href]="android_url">下载</a>\n  </div>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\download\download.html"*/
+        }),
+        __metadata("design:paramtypes", [])
+    ], DownloadPage);
     return DownloadPage;
 }());
-DownloadPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-download-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/download/download.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>下载APP</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <h2>Android版</h2>\n\n  <div padding class="qrcode-wrap">\n    <cy-qrcode class="qrcode" [text]="android_url"></cy-qrcode>\n\n    <a margin-top ion-button block round [href]="android_url">下载</a>\n  </div>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/download/download.html"*/
-    }),
-    __metadata("design:paramtypes", [])
-], DownloadPage);
 
 //# sourceMappingURL=download.js.map
 
@@ -2573,7 +2573,7 @@ DownloadPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_storage__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__login_login__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__login_login__ = __webpack_require__(70);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2587,7 +2587,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var SettingPage = (function () {
+var SettingPage = /** @class */ (function () {
     function SettingPage(navCtrl, storage) {
         this.navCtrl = navCtrl;
         this.storage = storage;
@@ -2602,15 +2602,15 @@ var SettingPage = (function () {
             that.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_3__login_login__["a" /* LoginPage */]);
         });
     };
+    SettingPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-setting-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\setting\setting.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>设置</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list margin-top>\n    <button ion-item (click)="clearStorage()">清除缓存</button>\n  </ion-list>\n\n  <div padding-horizontal>\n    <button ion-button block round color="danger" (click)="signout()">登出</button>\n  </div>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\setting\setting.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]])
+    ], SettingPage);
     return SettingPage;
 }());
-SettingPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-setting-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/setting/setting.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>设置</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list margin-top>\n    <button ion-item (click)="clearStorage()">清除缓存</button>\n  </ion-list>\n\n  <div padding-horizontal>\n    <button ion-button block round color="danger" (click)="signout()">登出</button>\n  </div>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/setting/setting.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]])
-], SettingPage);
 
 //# sourceMappingURL=setting.js.map
 
@@ -2629,7 +2629,7 @@ SettingPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__validators_index__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__signup_signup__ = __webpack_require__(306);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__login_login__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__login_login__ = __webpack_require__(70);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2648,7 +2648,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var VerifyMobilePage = (function () {
+var VerifyMobilePage = /** @class */ (function () {
     function VerifyMobilePage(navCtrl, renderer, userservice, fb, systemService, myHttp, alertCtrl) {
         this.navCtrl = navCtrl;
         this.renderer = renderer;
@@ -2756,24 +2756,24 @@ var VerifyMobilePage = (function () {
     VerifyMobilePage.prototype.gotoSignupPage = function (mobileToken) {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_7__signup_signup__["a" /* SignupPage */], { mobileToken: mobileToken });
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('codeInput'),
+        __metadata("design:type", Object)
+    ], VerifyMobilePage.prototype, "codeInput", void 0);
+    VerifyMobilePage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-verifymobile-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\verifymobile\verifymobile.html"*/'<ion-header no-border>\n  <ion-navbar color="transparent">\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <h1 class="tip">请输入你的手机号</h1>\n  <form [formGroup]="form" (ngSubmit)="checkVerificationCode()">\n    <ion-list>\n      <ion-item>\n        <ion-label>手机号</ion-label>\n        <ion-input type="tel" formControlName="mobile" placeholder="11位手机号" [clearInput]="true"></ion-input>\n      </ion-item>\n      <ion-item>\n        <ion-label>验证码</ion-label>\n        <ion-input #codeInput type="tel" formControlName="code" placeholder="6位数字" [clearInput]="true"></ion-input>\n        <button ion-button item-end outline round (click)="getVerificationCode($event)" [disabled]="disableButton">{{buttonName}}</button>\n      </ion-item>\n    </ion-list>\n    <div padding-horizontal>\n      <button type="submit" ion-button block round>下一步</button>\n    </div>\n  </form>\n</ion-content>'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\verifymobile\verifymobile.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
+            __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["b" /* AlertController */]])
+    ], VerifyMobilePage);
     return VerifyMobilePage;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('codeInput'),
-    __metadata("design:type", Object)
-], VerifyMobilePage.prototype, "codeInput", void 0);
-VerifyMobilePage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-verifymobile-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/verifymobile/verifymobile.html"*/'<ion-header no-border>\n  <ion-navbar color="transparent">\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <h1 class="tip">请输入你的手机号</h1>\n  <form [formGroup]="form" (ngSubmit)="checkVerificationCode()">\n    <ion-list>\n      <ion-item>\n        <ion-label>手机号</ion-label>\n        <ion-input type="tel" formControlName="mobile" placeholder="11位手机号" [clearInput]="true"></ion-input>\n      </ion-item>\n      <ion-item>\n        <ion-label>验证码</ion-label>\n        <ion-input #codeInput type="tel" formControlName="code" placeholder="6位数字" [clearInput]="true"></ion-input>\n        <button ion-button item-end outline round (click)="getVerificationCode($event)" [disabled]="disableButton">{{buttonName}}</button>\n      </ion-item>\n    </ion-list>\n    <div padding-horizontal>\n      <button type="submit" ion-button block round>下一步</button>\n    </div>\n  </form>\n</ion-content>'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/verifymobile/verifymobile.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
-        __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["b" /* AlertController */]])
-], VerifyMobilePage);
 
 //# sourceMappingURL=verifymobile.js.map
 
@@ -2816,7 +2816,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 // declare var cordova: any;
-var SignupPage = (function () {
+var SignupPage = /** @class */ (function () {
     function SignupPage(sanitizer, navCtrl, navParams, actionSheetCtrl, userservice, fb, userService, userValidator, systemService, myHttp) {
         this.sanitizer = sanitizer;
         this.navCtrl = navCtrl;
@@ -2864,23 +2864,23 @@ var SignupPage = (function () {
             _this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_10__set_info_set_info__["a" /* SetInfoPage */], { mobileToken: formData.mobileToken });
         }, function (err) { return _this.myHttp.handleError(err, '注册失败'); });
     };
+    SignupPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-signup-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\signup\signup.html"*/'<ion-header no-border>\n  <ion-navbar color="transparent">\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="signup()">\n    <h2 class="tip">注册帐号</h2>\n    <ion-list>\n      <ion-item>\n        <ion-label>用户名</ion-label>\n        <ion-input type="text" formControlName="username" placeholder="6-18个字符，字母、数字或_，开头必须为字母"></ion-input>\n      </ion-item>\n      <ion-item>\n        <ion-label>密码</ion-label>\n        <ion-input type="password" formControlName="password" placeholder="6-18个字符，字母、数字或_"></ion-input>\n      </ion-item>\n    </ion-list>\n\n    <div padding-horizontal>\n      <button ion-button block round>注册</button>\n    </div>\n  </form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\signup\signup.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_6__validators_user__["a" /* UserValidator */],
+            __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_8__providers_my_http__["a" /* MyHttp */]])
+    ], SignupPage);
     return SignupPage;
 }());
-SignupPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-signup-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/signup/signup.html"*/'<ion-header no-border>\n  <ion-navbar color="transparent">\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form [formGroup]="form" (ngSubmit)="signup()">\n    <h2 class="tip">注册帐号</h2>\n    <ion-list>\n      <ion-item>\n        <ion-label>用户名</ion-label>\n        <ion-input type="text" formControlName="username" placeholder="6-18个字符，字母、数字或_，开头必须为字母"></ion-input>\n      </ion-item>\n      <ion-item>\n        <ion-label>密码</ion-label>\n        <ion-input type="password" formControlName="password" placeholder="6-18个字符，字母、数字或_"></ion-input>\n      </ion-item>\n    </ion-list>\n\n    <div padding-horizontal>\n      <button ion-button block round>注册</button>\n    </div>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/signup/signup.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_6__validators_user__["a" /* UserValidator */],
-        __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_8__providers_my_http__["a" /* MyHttp */]])
-], SignupPage);
 
 //# sourceMappingURL=signup.js.map
 
@@ -2925,7 +2925,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 // declare var cordova: any;
-var SetInfoPage = (function () {
+var SetInfoPage = /** @class */ (function () {
     function SetInfoPage(sanitizer, navCtrl, navParams, imagePicker, platform, camera, crop, actionSheetCtrl, userservice, fb, userService, userValidator, systemService, myHttp) {
         this.sanitizer = sanitizer;
         this.navCtrl = navCtrl;
@@ -3096,27 +3096,27 @@ var SetInfoPage = (function () {
         // 	})
         // 	.catch((err) => this.myHttp.handleError(err, '设置头像失败'));
     };
+    SetInfoPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-set-info-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\set-info\set-info.html"*/'<ion-header no-border>\n	<ion-navbar color="transparent">\n		<ion-buttons end>\n			<button ion-button icon-only (click)="skip()">\n				跳过,以后设置\n			</button>\n		</ion-buttons>\n	</ion-navbar>\n</ion-header>\n<ion-content>\n\n	<form [formGroup]="form" (ngSubmit)="setInfo()">\n		<h2 class="tip">完善个人资料</h2>\n		<div class="avatar-wrap">\n			<img [src]="avatarSrc | avatarSrc" (click)="presentActionSheet()" />\n			<p class="avatar-tip">点击图片，上传头像</p>\n		</div>\n		<ion-list>\n			<button ion-item (click)="selectGender($event)">\n				<ion-label>性别</ion-label>\n				<ion-note item-right>{{form.value.gender | gender}}</ion-note>\n			</button>\n			<ion-item>\n				<ion-label>昵称</ion-label>\n				<ion-input type="text" formControlName="nickname"></ion-input>\n			</ion-item>\n\n			<ion-item>\n				<ion-label>个性签名</ion-label>\n				<ion-textarea type="text" formControlName="motto"></ion-textarea>\n			</ion-item>\n		</ion-list>\n		<div padding-horizontal>\n			<button ion-button block>保存</button>\n		</div>\n	</form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\set-info\set-info.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__["a" /* ImagePicker */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__["a" /* Camera */],
+            __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__["a" /* Crop */],
+            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_9__validators_user__["a" /* UserValidator */],
+            __WEBPACK_IMPORTED_MODULE_7__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
+    ], SetInfoPage);
     return SetInfoPage;
 }());
-SetInfoPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-set-info-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/set-info/set-info.html"*/'<ion-header no-border>\n	<ion-navbar color="transparent">\n		<ion-buttons end>\n			<button ion-button icon-only (click)="skip()">\n				跳过,以后设置\n			</button>\n		</ion-buttons>\n	</ion-navbar>\n</ion-header>\n<ion-content>\n\n	<form [formGroup]="form" (ngSubmit)="setInfo()">\n		<h2 class="tip">完善个人资料</h2>\n		<div class="avatar-wrap">\n			<img [src]="avatarSrc | avatarSrc" (click)="presentActionSheet()" />\n			<p class="avatar-tip">点击图片，上传头像</p>\n		</div>\n		<ion-list>\n			<button ion-item (click)="selectGender($event)">\n				<ion-label>性别</ion-label>\n				<ion-note item-right>{{form.value.gender | gender}}</ion-note>\n			</button>\n			<ion-item>\n				<ion-label>昵称</ion-label>\n				<ion-input type="text" formControlName="nickname"></ion-input>\n			</ion-item>\n\n			<ion-item>\n				<ion-label>个性签名</ion-label>\n				<ion-textarea type="text" formControlName="motto"></ion-textarea>\n			</ion-item>\n		</ion-list>\n		<div padding-horizontal>\n			<button ion-button block>保存</button>\n		</div>\n	</form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/set-info/set-info.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["c" /* DomSanitizer */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_native_image_picker__["a" /* ImagePicker */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_5__ionic_native_camera__["a" /* Camera */],
-        __WEBPACK_IMPORTED_MODULE_6__ionic_native_crop__["a" /* Crop */],
-        __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_9__validators_user__["a" /* UserValidator */],
-        __WEBPACK_IMPORTED_MODULE_7__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_10__providers_my_http__["a" /* MyHttp */]])
-], SetInfoPage);
 
 //# sourceMappingURL=set-info.js.map
 
@@ -3151,7 +3151,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 // import { SystemService } from '../../services/system';
-var MeDetailPage = (function () {
+var MeDetailPage = /** @class */ (function () {
     function MeDetailPage(navCtrl, userService) {
         this.navCtrl = navCtrl;
         this.userService = userService;
@@ -3178,15 +3178,15 @@ var MeDetailPage = (function () {
     MeDetailPage.prototype.gotoModMottoPage = function () {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_5__mod_motto_mod_motto__["a" /* ModMottoPage */], { motto: this.own.motto });
     };
+    MeDetailPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-me-detail-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\me-detail\me-detail.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个人信息</ion-title>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<ion-list>\n		<button ion-item (click)="gotoModAvatarPage()">\n			<span>个人头像</span>\n			<ion-thumbnail item-right>\n	           <img [src]="own.avatarSrc | avatarSrc" />\n	        </ion-thumbnail>\n		</button>\n		<button ion-item (click)="gotoModNicknamePage()">\n			<span >昵称</span>\n			<ion-note item-right>{{own.nickname}}</ion-note>\n		</button>\n		<ion-item>\n			<span>用户名</span>\n			<ion-note item-right>{{own.username}}</ion-note>\n		</ion-item>\n		<button ion-item (click)="gotoModGenderPage()">\n			<span>性别</span>\n			<ion-note item-right>{{own.gender | gender}}</ion-note>\n		</button>\n		<!--<button ion-item>\n			<span>地区</span>\n			<ion-note item-right>广东 东莞</ion-note>\n		</button>-->\n		<button ion-item (click)="gotoModMottoPage()">\n			<span>个性签名</span>\n			<ion-note item-right>{{own.motto || \'没填写\'}}</ion-note>\n		</button>\n	</ion-list>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\me-detail\me-detail.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_6__services_user__["a" /* UserService */]])
+    ], MeDetailPage);
     return MeDetailPage;
 }());
-MeDetailPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-me-detail-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/me-detail/me-detail.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个人信息</ion-title>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<ion-list>\n		<button ion-item (click)="gotoModAvatarPage()">\n			<span>个人头像</span>\n			<ion-thumbnail item-right>\n	           <img [src]="own.avatarSrc | avatarSrc" />\n	        </ion-thumbnail>\n		</button>\n		<button ion-item (click)="gotoModNicknamePage()">\n			<span >昵称</span>\n			<ion-note item-right>{{own.nickname}}</ion-note>\n		</button>\n		<ion-item>\n			<span>用户名</span>\n			<ion-note item-right>{{own.username}}</ion-note>\n		</ion-item>\n		<button ion-item (click)="gotoModGenderPage()">\n			<span>性别</span>\n			<ion-note item-right>{{own.gender | gender}}</ion-note>\n		</button>\n		<!--<button ion-item>\n			<span>地区</span>\n			<ion-note item-right>广东 东莞</ion-note>\n		</button>-->\n		<button ion-item (click)="gotoModMottoPage()">\n			<span>个性签名</span>\n			<ion-note item-right>{{own.motto || \'没填写\'}}</ion-note>\n		</button>\n	</ion-list>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/me-detail/me-detail.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_6__services_user__["a" /* UserService */]])
-], MeDetailPage);
 
 //# sourceMappingURL=me-detail.js.map
 
@@ -3256,7 +3256,7 @@ function FileEntry2Blob(fileEntry) {
         });
     });
 }
-var ModAvatarPage = (function () {
+var ModAvatarPage = /** @class */ (function () {
     function ModAvatarPage(sanitizer, platform, navCtrl, navParams, storage, imagePicker, camera, crop, fileCordova, actionSheetCtrl, userService, systemService, myHttp) {
         // this.avatarSrc = navParams.data['avatarSrc'];
         this.sanitizer = sanitizer;
@@ -3391,26 +3391,26 @@ var ModAvatarPage = (function () {
     ModAvatarPage.prototype.cropImg = function (fileURI) {
         return this.crop.crop(fileURI, { quality: 100 });
     };
+    ModAvatarPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-mod-avatar-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\mod-avatar\mod-avatar.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个人头像</ion-title>\n    <ion-buttons end >\n      <button ion-button icon-only (click)="presentActionSheet()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<div class="img-box">\n		<img [src]="avatarSrc | avatarSrc:500"/>\n	</div>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\mod-avatar\mod-avatar.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__angular_platform_browser__["c" /* DomSanitizer */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_6__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_3__ionic_native_image_picker__["a" /* ImagePicker */],
+            __WEBPACK_IMPORTED_MODULE_4__ionic_native_camera__["a" /* Camera */],
+            __WEBPACK_IMPORTED_MODULE_5__ionic_native_crop__["a" /* Crop */],
+            __WEBPACK_IMPORTED_MODULE_12__ionic_native_file__["a" /* File */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_7__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_9__providers_my_http__["a" /* MyHttp */]])
+    ], ModAvatarPage);
     return ModAvatarPage;
 }());
-ModAvatarPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-mod-avatar-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-avatar/mod-avatar.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个人头像</ion-title>\n    <ion-buttons end >\n      <button ion-button icon-only (click)="presentActionSheet()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<div class="img-box">\n		<img [src]="avatarSrc | avatarSrc:500"/>\n	</div>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-avatar/mod-avatar.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__angular_platform_browser__["c" /* DomSanitizer */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_6__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_image_picker__["a" /* ImagePicker */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_native_camera__["a" /* Camera */],
-        __WEBPACK_IMPORTED_MODULE_5__ionic_native_crop__["a" /* Crop */],
-        __WEBPACK_IMPORTED_MODULE_12__ionic_native_file__["a" /* File */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_7__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_8__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_9__providers_my_http__["a" /* MyHttp */]])
-], ModAvatarPage);
 
 //# sourceMappingURL=mod-avatar.js.map
 
@@ -3478,8 +3478,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 
 
 // var io = require('../assets/js/socket.io-1.4.5');
-var SIP = __webpack_require__(375);
-var BackEnd = (function () {
+var SIP = __webpack_require__(374);
+var BackEnd = /** @class */ (function () {
     function BackEnd(myhttp) {
         this.myhttp = myhttp;
         //连接完触发
@@ -3830,12 +3830,12 @@ var BackEnd = (function () {
     BackEnd.prototype.getChatMessage = function () {
         return this.pushMsg$;
     };
+    BackEnd = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]])
+    ], BackEnd);
     return BackEnd;
 }());
-BackEnd = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__my_http__["a" /* MyHttp */]])
-], BackEnd);
 
 //# sourceMappingURL=backend.js.map
 
@@ -3867,7 +3867,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var ModNicknamePage = (function () {
+var ModNicknamePage = /** @class */ (function () {
     function ModNicknamePage(navCtrl, navParams, builder, userService, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -3892,19 +3892,19 @@ var ModNicknamePage = (function () {
             _this.navCtrl.pop();
         }, function (err) { return _this.myHttp.handleError(err, '修改失败'); });
     };
+    ModNicknamePage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-mod-nickname-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\mod-nickname\mod-nickname.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>昵称</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only [disabled]="form.invalid || !form.dirty" (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list>\n			<ion-item>\n				<ion-input #input type="text" placeholder="昵称" formControlName="nickname"></ion-input>\n			</ion-item>\n		</ion-list>\n	</form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\mod-nickname\mod-nickname.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
+    ], ModNicknamePage);
     return ModNicknamePage;
 }());
-ModNicknamePage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-mod-nickname-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-nickname/mod-nickname.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>昵称</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only [disabled]="form.invalid || !form.dirty" (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list>\n			<ion-item>\n				<ion-input #input type="text" placeholder="昵称" formControlName="nickname"></ion-input>\n			</ion-item>\n		</ion-list>\n	</form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-nickname/mod-nickname.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
-], ModNicknamePage);
 
 //# sourceMappingURL=mod-nickname.js.map
 
@@ -3936,7 +3936,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var ModGenderPage = (function () {
+var ModGenderPage = /** @class */ (function () {
     function ModGenderPage(navCtrl, navParams, builder, userService, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -3961,19 +3961,19 @@ var ModGenderPage = (function () {
             _this.navCtrl.pop();
         }, function (err) { return _this.myHttp.handleError(err, '修改失败'); });
     };
+    ModGenderPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-mod-gender-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\mod-gender\mod-gender.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>性别</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only  (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list radio-group formControlName="gender">\n		  <ion-item>\n		    <ion-label>男</ion-label>\n		    <ion-radio value="0"></ion-radio>\n		  </ion-item>\n\n		  <ion-item>\n		    <ion-label>女</ion-label>\n		    <ion-radio value="1"></ion-radio>\n		  </ion-item>\n\n		</ion-list>\n\n		<!-- <ion-list radio-group formArrayName="genders">\n		  <ion-item *ngFor="let gender of genders.controls;let i= index">\n		    	<ion-label>{{gender.value}}</ion-label>\n		    	<ion-radio [value]="gender.value"></ion-radio>\n		  </ion-item>\n		</ion-list> -->\n	</form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\mod-gender\mod-gender.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
+    ], ModGenderPage);
     return ModGenderPage;
 }());
-ModGenderPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-mod-gender-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-gender/mod-gender.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>性别</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only  (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list radio-group formControlName="gender">\n		  <ion-item>\n		    <ion-label>男</ion-label>\n		    <ion-radio value="0"></ion-radio>\n		  </ion-item>\n\n		  <ion-item>\n		    <ion-label>女</ion-label>\n		    <ion-radio value="1"></ion-radio>\n		  </ion-item>\n\n		</ion-list>\n\n		<!-- <ion-list radio-group formArrayName="genders">\n		  <ion-item *ngFor="let gender of genders.controls;let i= index">\n		    	<ion-label>{{gender.value}}</ion-label>\n		    	<ion-radio [value]="gender.value"></ion-radio>\n		  </ion-item>\n		</ion-list> -->\n	</form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-gender/mod-gender.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
-], ModGenderPage);
 
 //# sourceMappingURL=mod-gender.js.map
 
@@ -4005,7 +4005,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var ModMottoPage = (function () {
+var ModMottoPage = /** @class */ (function () {
     function ModMottoPage(navCtrl, navParams, builder, userService, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -4030,19 +4030,19 @@ var ModMottoPage = (function () {
             _this.navCtrl.pop();
         }, function (err) { return _this.myHttp.handleError(err, '修改失败'); });
     };
+    ModMottoPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-mod-motto-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\mod-motto\mod-motto.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个性签名</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only [disabled]="form.invalid || !form.dirty" (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list>\n			<ion-item>\n				<ion-textarea type="text" placeholder="个性签名" formControlName="motto"></ion-textarea>\n			</ion-item>\n		</ion-list>\n	</form>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\mod-motto\mod-motto.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
+    ], ModMottoPage);
     return ModMottoPage;
 }());
-ModMottoPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-mod-motto-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-motto/mod-motto.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>个性签名</ion-title>\n\n    <ion-buttons end >\n      <button ion-button icon-only [disabled]="form.invalid || !form.dirty" (click)="submit()">\n          完成\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n	<form [formGroup]="form" (ngSubmit)="submit()">\n		<ion-list>\n			<ion-item>\n				<ion-textarea type="text" placeholder="个性签名" formControlName="motto"></ion-textarea>\n			</ion-item>\n		</ion-list>\n	</form>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/mod-motto/mod-motto.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_3__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_4__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_5__providers_my_http__["a" /* MyHttp */]])
-], ModMottoPage);
 
 //# sourceMappingURL=mod-motto.js.map
 
@@ -4066,20 +4066,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-var QRcodePage = (function () {
+var QRcodePage = /** @class */ (function () {
     function QRcodePage() {
         this.qrcodeText = __WEBPACK_IMPORTED_MODULE_1__config_config__["b" /* API_HOST */] + '/qrcode?userId=111&&action=markfriend';
     }
     QRcodePage.prototype.ngOnInit = function () {
     };
+    QRcodePage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-qrcode-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\qrcode\qrcode.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>我的二维码</ion-title>\n\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n  <cy-qrcode [text]="qrcodeText"></cy-qrcode>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\qrcode\qrcode.html"*/
+        }),
+        __metadata("design:paramtypes", [])
+    ], QRcodePage);
     return QRcodePage;
 }());
-QRcodePage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-qrcode-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/qrcode/qrcode.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>我的二维码</ion-title>\n\n  </ion-navbar>\n\n</ion-header>\n<ion-content>\n  <cy-qrcode [text]="qrcodeText"></cy-qrcode>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/qrcode/qrcode.html"*/
-    }),
-    __metadata("design:paramtypes", [])
-], QRcodePage);
 
 //# sourceMappingURL=qrcode.js.map
 
@@ -4125,11 +4125,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__ionic_native_keyboard__ = __webpack_require__(146);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__ = __webpack_require__(261);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__ionic_native_file__ = __webpack_require__(91);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__app_component__ = __webpack_require__(365);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__app_component__ = __webpack_require__(364);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__pages_index_index__ = __webpack_require__(147);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__ = __webpack_require__(275);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__ = __webpack_require__(263);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__ = __webpack_require__(628);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__ = __webpack_require__(298);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__pages_me_me__ = __webpack_require__(302);
@@ -4140,11 +4140,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__ = __webpack_require__(312);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__ = __webpack_require__(629);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__ = __webpack_require__(95);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__ = __webpack_require__(305);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__ = __webpack_require__(306);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__ = __webpack_require__(307);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_login_login__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_login_login__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__ = __webpack_require__(296);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__ = __webpack_require__(297);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__ = __webpack_require__(150);
@@ -4241,136 +4241,136 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 /*validators*/
 
 //import { IndexPageModule } from '../pages/index/index.module'
-var AppModule = (function () {
+var AppModule = /** @class */ (function () {
     function AppModule() {
     }
+    AppModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["L" /* NgModule */])({
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */],
+                /*pages*/
+                __WEBPACK_IMPORTED_MODULE_19__pages_index_index__["a" /* IndexPage */],
+                __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__["a" /* ChatPage */],
+                __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__["a" /* ChatContentPage */],
+                __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__["a" /* ChatPopoverPage */],
+                __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__["a" /* DailyPage */],
+                __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__["a" /* DiscoverPage */],
+                __WEBPACK_IMPORTED_MODULE_25__pages_me_me__["a" /* MePage */],
+                __WEBPACK_IMPORTED_MODULE_26__pages_me_detail_me_detail__["a" /* MeDetailPage */],
+                __WEBPACK_IMPORTED_MODULE_27__pages_mod_avatar_mod_avatar__["a" /* ModAvatarPage */],
+                __WEBPACK_IMPORTED_MODULE_28__pages_mod_nickname_mod_nickname__["a" /* ModNicknamePage */],
+                __WEBPACK_IMPORTED_MODULE_29__pages_mod_gender_mod_gender__["a" /* ModGenderPage */],
+                __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__["a" /* ModMottoPage */],
+                __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__["a" /* ShopPage */],
+                __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__["a" /* FriendAddPage */],
+                __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__["a" /* FriendRequestPage */],
+                __WEBPACK_IMPORTED_MODULE_41__pages_friend_by_contact_friend_by_contact__["a" /* FriendByContactPage */],
+                __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__["a" /* UserDetailPage */],
+                __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__["a" /* SignupPage */],
+                __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__["a" /* SetInfoPage */],
+                __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__["a" /* VerifyMobilePage */],
+                __WEBPACK_IMPORTED_MODULE_37__pages_login_login__["a" /* LoginPage */],
+                __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__["a" /* FriendListPage */],
+                __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__["a" /* FriendNewPage */],
+                __WEBPACK_IMPORTED_MODULE_42__pages_reorder_reorder__["a" /* ReorderPage */],
+                __WEBPACK_IMPORTED_MODULE_43__pages_download_download__["a" /* DownloadPage */],
+                __WEBPACK_IMPORTED_MODULE_44__pages_setting_setting__["a" /* SettingPage */],
+                __WEBPACK_IMPORTED_MODULE_45__pages_timeline_list_timeline_list__["a" /* TimelineListPage */],
+                __WEBPACK_IMPORTED_MODULE_46__pages_timeline_add_timeline_add__["a" /* TimelineAddPage */],
+                __WEBPACK_IMPORTED_MODULE_47__pages_joke_list_joke_list__["a" /* JokeListPage */],
+                __WEBPACK_IMPORTED_MODULE_48__pages_joke_add_joke_add__["a" /* JokeAddPage */],
+                __WEBPACK_IMPORTED_MODULE_49__pages_qrcode_qrcode__["a" /* QRcodePage */],
+            ],
+            imports: [
+                __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* HttpModule */],
+                __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["g" /* IonicModule */].forRoot(__WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */], {
+                    // activator:"highlight",     //activator:"ripple",
+                    // tabsHideOnSubPages : true,
+                    // tabsHighlight:true,
+                    backButtonText: '返回',
+                    mode: 'ios'
+                }, {
+                    links: []
+                }),
+                __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["a" /* IonicStorageModule */].forRoot(),
+                __WEBPACK_IMPORTED_MODULE_52__pipes_pipes_module__["a" /* PipesModule */],
+                __WEBPACK_IMPORTED_MODULE_51__components_components_module__["a" /* ComponentsModule */],
+            ],
+            bootstrap: [__WEBPACK_IMPORTED_MODULE_3_ionic_angular__["e" /* IonicApp */]],
+            entryComponents: [
+                __WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */],
+                /*pages*/
+                __WEBPACK_IMPORTED_MODULE_19__pages_index_index__["a" /* IndexPage */],
+                __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__["a" /* ChatPopoverPage */],
+                __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__["a" /* ChatPage */],
+                __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__["a" /* ChatContentPage */],
+                __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__["a" /* DailyPage */],
+                __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__["a" /* DiscoverPage */],
+                __WEBPACK_IMPORTED_MODULE_25__pages_me_me__["a" /* MePage */],
+                __WEBPACK_IMPORTED_MODULE_26__pages_me_detail_me_detail__["a" /* MeDetailPage */],
+                __WEBPACK_IMPORTED_MODULE_27__pages_mod_avatar_mod_avatar__["a" /* ModAvatarPage */],
+                __WEBPACK_IMPORTED_MODULE_28__pages_mod_nickname_mod_nickname__["a" /* ModNicknamePage */],
+                __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__["a" /* ModMottoPage */],
+                __WEBPACK_IMPORTED_MODULE_29__pages_mod_gender_mod_gender__["a" /* ModGenderPage */],
+                __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__["a" /* ShopPage */],
+                __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__["a" /* FriendAddPage */],
+                __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__["a" /* FriendRequestPage */],
+                __WEBPACK_IMPORTED_MODULE_41__pages_friend_by_contact_friend_by_contact__["a" /* FriendByContactPage */],
+                __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__["a" /* UserDetailPage */],
+                __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__["a" /* SignupPage */],
+                __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__["a" /* SetInfoPage */],
+                __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__["a" /* VerifyMobilePage */],
+                __WEBPACK_IMPORTED_MODULE_37__pages_login_login__["a" /* LoginPage */],
+                __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__["a" /* FriendListPage */],
+                __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__["a" /* FriendNewPage */],
+                __WEBPACK_IMPORTED_MODULE_42__pages_reorder_reorder__["a" /* ReorderPage */],
+                __WEBPACK_IMPORTED_MODULE_43__pages_download_download__["a" /* DownloadPage */],
+                __WEBPACK_IMPORTED_MODULE_44__pages_setting_setting__["a" /* SettingPage */],
+                __WEBPACK_IMPORTED_MODULE_45__pages_timeline_list_timeline_list__["a" /* TimelineListPage */],
+                __WEBPACK_IMPORTED_MODULE_46__pages_timeline_add_timeline_add__["a" /* TimelineAddPage */],
+                __WEBPACK_IMPORTED_MODULE_47__pages_joke_list_joke_list__["a" /* JokeListPage */],
+                __WEBPACK_IMPORTED_MODULE_48__pages_joke_add_joke_add__["a" /* JokeAddPage */],
+                __WEBPACK_IMPORTED_MODULE_49__pages_qrcode_qrcode__["a" /* QRcodePage */]
+            ],
+            providers: [
+                __WEBPACK_IMPORTED_MODULE_6__ionic_native_status_bar__["a" /* StatusBar */],
+                __WEBPACK_IMPORTED_MODULE_5__ionic_native_splash_screen__["a" /* SplashScreen */],
+                __WEBPACK_IMPORTED_MODULE_7__ionic_native_media__["a" /* Media */],
+                __WEBPACK_IMPORTED_MODULE_8__ionic_native_contacts__["a" /* Contacts */],
+                __WEBPACK_IMPORTED_MODULE_9__ionic_native_vibration__["a" /* Vibration */],
+                __WEBPACK_IMPORTED_MODULE_10__ionic_native_local_notifications__["a" /* LocalNotifications */],
+                __WEBPACK_IMPORTED_MODULE_11__ionic_native_barcode_scanner__["a" /* BarcodeScanner */],
+                __WEBPACK_IMPORTED_MODULE_12__ionic_native_image_picker__["a" /* ImagePicker */],
+                __WEBPACK_IMPORTED_MODULE_13__ionic_native_camera__["a" /* Camera */],
+                __WEBPACK_IMPORTED_MODULE_14__ionic_native_crop__["a" /* Crop */],
+                __WEBPACK_IMPORTED_MODULE_15__ionic_native_keyboard__["a" /* Keyboard */],
+                __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */],
+                __WEBPACK_IMPORTED_MODULE_17__ionic_native_file__["a" /* File */],
+                { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["v" /* ErrorHandler */], useClass: __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["f" /* IonicErrorHandler */] },
+                __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */],
+                __WEBPACK_IMPORTED_MODULE_54__services_msg__["a" /* MsgService */],
+                __WEBPACK_IMPORTED_MODULE_53__services_user__["a" /* UserService */],
+                __WEBPACK_IMPORTED_MODULE_55__services_timeline__["a" /* TimelineService */],
+                __WEBPACK_IMPORTED_MODULE_56__services_joke__["a" /* JokeService */],
+                __WEBPACK_IMPORTED_MODULE_59__providers_backend__["a" /* BackEnd */],
+                {
+                    provide: __WEBPACK_IMPORTED_MODULE_58__providers_my_http__["a" /* MyHttp */],
+                    useFactory: __WEBPACK_IMPORTED_MODULE_50__factorys__["a" /* myHttpFactory */],
+                    deps: [__WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* XHRBackend */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestOptions */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* LoadingController */], __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */], __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */]]
+                },
+                __WEBPACK_IMPORTED_MODULE_60__validators_user__["a" /* UserValidator */],
+            ]
+        })
+    ], AppModule);
     return AppModule;
 }());
-AppModule = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["L" /* NgModule */])({
-        declarations: [
-            __WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */],
-            /*pages*/
-            __WEBPACK_IMPORTED_MODULE_19__pages_index_index__["a" /* IndexPage */],
-            __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__["a" /* ChatPage */],
-            __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__["a" /* ChatContentPage */],
-            __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__["a" /* ChatPopoverPage */],
-            __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__["a" /* DailyPage */],
-            __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__["a" /* DiscoverPage */],
-            __WEBPACK_IMPORTED_MODULE_25__pages_me_me__["a" /* MePage */],
-            __WEBPACK_IMPORTED_MODULE_26__pages_me_detail_me_detail__["a" /* MeDetailPage */],
-            __WEBPACK_IMPORTED_MODULE_27__pages_mod_avatar_mod_avatar__["a" /* ModAvatarPage */],
-            __WEBPACK_IMPORTED_MODULE_28__pages_mod_nickname_mod_nickname__["a" /* ModNicknamePage */],
-            __WEBPACK_IMPORTED_MODULE_29__pages_mod_gender_mod_gender__["a" /* ModGenderPage */],
-            __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__["a" /* ModMottoPage */],
-            __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__["a" /* ShopPage */],
-            __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__["a" /* FriendAddPage */],
-            __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__["a" /* FriendRequestPage */],
-            __WEBPACK_IMPORTED_MODULE_41__pages_friend_by_contact_friend_by_contact__["a" /* FriendByContactPage */],
-            __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__["a" /* UserDetailPage */],
-            __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__["a" /* SignupPage */],
-            __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__["a" /* SetInfoPage */],
-            __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__["a" /* VerifyMobilePage */],
-            __WEBPACK_IMPORTED_MODULE_37__pages_login_login__["a" /* LoginPage */],
-            __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__["a" /* FriendListPage */],
-            __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__["a" /* FriendNewPage */],
-            __WEBPACK_IMPORTED_MODULE_42__pages_reorder_reorder__["a" /* ReorderPage */],
-            __WEBPACK_IMPORTED_MODULE_43__pages_download_download__["a" /* DownloadPage */],
-            __WEBPACK_IMPORTED_MODULE_44__pages_setting_setting__["a" /* SettingPage */],
-            __WEBPACK_IMPORTED_MODULE_45__pages_timeline_list_timeline_list__["a" /* TimelineListPage */],
-            __WEBPACK_IMPORTED_MODULE_46__pages_timeline_add_timeline_add__["a" /* TimelineAddPage */],
-            __WEBPACK_IMPORTED_MODULE_47__pages_joke_list_joke_list__["a" /* JokeListPage */],
-            __WEBPACK_IMPORTED_MODULE_48__pages_joke_add_joke_add__["a" /* JokeAddPage */],
-            __WEBPACK_IMPORTED_MODULE_49__pages_qrcode_qrcode__["a" /* QRcodePage */],
-        ],
-        imports: [
-            __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-            __WEBPACK_IMPORTED_MODULE_2__angular_http__["d" /* HttpModule */],
-            __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["g" /* IonicModule */].forRoot(__WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */], {
-                // activator:"highlight",     //activator:"ripple",
-                // tabsHideOnSubPages : true,
-                // tabsHighlight:true,
-                backButtonText: '返回',
-                mode: 'ios'
-            }, {
-                links: []
-            }),
-            __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["a" /* IonicStorageModule */].forRoot(),
-            __WEBPACK_IMPORTED_MODULE_52__pipes_pipes_module__["a" /* PipesModule */],
-            __WEBPACK_IMPORTED_MODULE_51__components_components_module__["a" /* ComponentsModule */],
-        ],
-        bootstrap: [__WEBPACK_IMPORTED_MODULE_3_ionic_angular__["e" /* IonicApp */]],
-        entryComponents: [
-            __WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* MyApp */],
-            /*pages*/
-            __WEBPACK_IMPORTED_MODULE_19__pages_index_index__["a" /* IndexPage */],
-            __WEBPACK_IMPORTED_MODULE_20__pages_chat_popover_chat_popover__["a" /* ChatPopoverPage */],
-            __WEBPACK_IMPORTED_MODULE_21__pages_chat_chat__["a" /* ChatPage */],
-            __WEBPACK_IMPORTED_MODULE_22__pages_chat_content_chat_content__["a" /* ChatContentPage */],
-            __WEBPACK_IMPORTED_MODULE_23__pages_daily_daily__["a" /* DailyPage */],
-            __WEBPACK_IMPORTED_MODULE_24__pages_discover_discover__["a" /* DiscoverPage */],
-            __WEBPACK_IMPORTED_MODULE_25__pages_me_me__["a" /* MePage */],
-            __WEBPACK_IMPORTED_MODULE_26__pages_me_detail_me_detail__["a" /* MeDetailPage */],
-            __WEBPACK_IMPORTED_MODULE_27__pages_mod_avatar_mod_avatar__["a" /* ModAvatarPage */],
-            __WEBPACK_IMPORTED_MODULE_28__pages_mod_nickname_mod_nickname__["a" /* ModNicknamePage */],
-            __WEBPACK_IMPORTED_MODULE_30__pages_mod_motto_mod_motto__["a" /* ModMottoPage */],
-            __WEBPACK_IMPORTED_MODULE_29__pages_mod_gender_mod_gender__["a" /* ModGenderPage */],
-            __WEBPACK_IMPORTED_MODULE_31__pages_shop_shop__["a" /* ShopPage */],
-            __WEBPACK_IMPORTED_MODULE_32__pages_friend_add_friend_add__["a" /* FriendAddPage */],
-            __WEBPACK_IMPORTED_MODULE_40__pages_friend_request_friend_request__["a" /* FriendRequestPage */],
-            __WEBPACK_IMPORTED_MODULE_41__pages_friend_by_contact_friend_by_contact__["a" /* FriendByContactPage */],
-            __WEBPACK_IMPORTED_MODULE_33__pages_user_detail_user_detail__["a" /* UserDetailPage */],
-            __WEBPACK_IMPORTED_MODULE_35__pages_signup_signup__["a" /* SignupPage */],
-            __WEBPACK_IMPORTED_MODULE_36__pages_set_info_set_info__["a" /* SetInfoPage */],
-            __WEBPACK_IMPORTED_MODULE_34__pages_verifymobile_verifymobile__["a" /* VerifyMobilePage */],
-            __WEBPACK_IMPORTED_MODULE_37__pages_login_login__["a" /* LoginPage */],
-            __WEBPACK_IMPORTED_MODULE_38__pages_friend_list_friend_list__["a" /* FriendListPage */],
-            __WEBPACK_IMPORTED_MODULE_39__pages_friend_new_friend_new__["a" /* FriendNewPage */],
-            __WEBPACK_IMPORTED_MODULE_42__pages_reorder_reorder__["a" /* ReorderPage */],
-            __WEBPACK_IMPORTED_MODULE_43__pages_download_download__["a" /* DownloadPage */],
-            __WEBPACK_IMPORTED_MODULE_44__pages_setting_setting__["a" /* SettingPage */],
-            __WEBPACK_IMPORTED_MODULE_45__pages_timeline_list_timeline_list__["a" /* TimelineListPage */],
-            __WEBPACK_IMPORTED_MODULE_46__pages_timeline_add_timeline_add__["a" /* TimelineAddPage */],
-            __WEBPACK_IMPORTED_MODULE_47__pages_joke_list_joke_list__["a" /* JokeListPage */],
-            __WEBPACK_IMPORTED_MODULE_48__pages_joke_add_joke_add__["a" /* JokeAddPage */],
-            __WEBPACK_IMPORTED_MODULE_49__pages_qrcode_qrcode__["a" /* QRcodePage */]
-        ],
-        providers: [
-            __WEBPACK_IMPORTED_MODULE_6__ionic_native_status_bar__["a" /* StatusBar */],
-            __WEBPACK_IMPORTED_MODULE_5__ionic_native_splash_screen__["a" /* SplashScreen */],
-            __WEBPACK_IMPORTED_MODULE_7__ionic_native_media__["a" /* Media */],
-            __WEBPACK_IMPORTED_MODULE_8__ionic_native_contacts__["a" /* Contacts */],
-            __WEBPACK_IMPORTED_MODULE_9__ionic_native_vibration__["a" /* Vibration */],
-            __WEBPACK_IMPORTED_MODULE_10__ionic_native_local_notifications__["a" /* LocalNotifications */],
-            __WEBPACK_IMPORTED_MODULE_11__ionic_native_barcode_scanner__["a" /* BarcodeScanner */],
-            __WEBPACK_IMPORTED_MODULE_12__ionic_native_image_picker__["a" /* ImagePicker */],
-            __WEBPACK_IMPORTED_MODULE_13__ionic_native_camera__["a" /* Camera */],
-            __WEBPACK_IMPORTED_MODULE_14__ionic_native_crop__["a" /* Crop */],
-            __WEBPACK_IMPORTED_MODULE_15__ionic_native_keyboard__["a" /* Keyboard */],
-            __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */],
-            __WEBPACK_IMPORTED_MODULE_17__ionic_native_file__["a" /* File */],
-            { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["v" /* ErrorHandler */], useClass: __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["f" /* IonicErrorHandler */] },
-            __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */],
-            __WEBPACK_IMPORTED_MODULE_54__services_msg__["a" /* MsgService */],
-            __WEBPACK_IMPORTED_MODULE_53__services_user__["a" /* UserService */],
-            __WEBPACK_IMPORTED_MODULE_55__services_timeline__["a" /* TimelineService */],
-            __WEBPACK_IMPORTED_MODULE_56__services_joke__["a" /* JokeService */],
-            __WEBPACK_IMPORTED_MODULE_59__providers_backend__["a" /* BackEnd */],
-            {
-                provide: __WEBPACK_IMPORTED_MODULE_58__providers_my_http__["a" /* MyHttp */],
-                useFactory: __WEBPACK_IMPORTED_MODULE_50__factorys__["a" /* myHttpFactory */],
-                deps: [__WEBPACK_IMPORTED_MODULE_2__angular_http__["g" /* XHRBackend */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["e" /* RequestOptions */], __WEBPACK_IMPORTED_MODULE_3_ionic_angular__["h" /* LoadingController */], __WEBPACK_IMPORTED_MODULE_57__services_system__["a" /* SystemService */], __WEBPACK_IMPORTED_MODULE_16__ionic_native_file_transfer__["a" /* FileTransfer */]]
-            },
-            __WEBPACK_IMPORTED_MODULE_60__validators_user__["a" /* UserValidator */],
-        ]
-    })
-], AppModule);
 
 //# sourceMappingURL=app.module.js.map
 
 /***/ }),
 
-/***/ 365:
+/***/ 364:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4381,8 +4381,8 @@ AppModule = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__ = __webpack_require__(251);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_storage__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_index_index__ = __webpack_require__(147);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_login_login__ = __webpack_require__(69);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_chat_content_chat_content__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_login_login__ = __webpack_require__(70);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_chat_content_chat_content__ = __webpack_require__(62);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4403,7 +4403,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 /*test*/
 // import { SignupPage } from '../pages/signup/signup';
 // import { SetInfoPage } from '../pages/set-info/set-info';
-var MyApp = (function () {
+var MyApp = /** @class */ (function () {
     function MyApp(platform, statusBar, splashScreen, storage, alertCtrl) {
         var _this = this;
         this.platform = platform;
@@ -4455,17 +4455,17 @@ var MyApp = (function () {
             return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     };
+    MyApp = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\app\app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\app\app.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */],
+            __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */],
+            __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]])
+    ], MyApp);
     return MyApp;
 }());
-MyApp = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/app/app.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */],
-        __WEBPACK_IMPORTED_MODULE_4__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */]])
-], MyApp);
 
 // window.onerror = function (msg, url, line) {
 // 	var idx = url.lastIndexOf("/");
@@ -4488,7 +4488,7 @@ document.addEventListener("pause", function () {
 
 /***/ }),
 
-/***/ 374:
+/***/ 373:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -6034,9 +6034,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
   // an AMD load request. Those cases could generate an error when an
   // anonymous define() is called outside of a loader request.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
       return _;
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
 }.call(this));
@@ -6044,7 +6044,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 
 /***/ }),
 
-/***/ 375:
+/***/ 374:
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -6684,7 +6684,6 @@ eval("\n\nmodule.exports = __webpack_require__(/*! ./SIP */ \"./src/SIP.js\")(__
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ANDROID_DOWNLOAD_URL; });
 //服务器地址
 // export const HOST = 'http://192.168.0.106:3000';
-//服务器地址
 var HOST = 'http://192.168.2.101:8008';
 //api根地址
 var API_HOST = HOST + '/api/v1';
@@ -6696,7 +6695,7 @@ var ANDROID_DOWNLOAD_URL = HOST + '/ionic-uuchat.apk';
 
 /***/ }),
 
-/***/ 61:
+/***/ 62:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6713,9 +6712,9 @@ var ANDROID_DOWNLOAD_URL = HOST + '/ionic-uuchat.apk';
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__ = __webpack_require__(271);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_rxjs_add_operator_filter__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__config_config__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__user_detail_user_detail__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__reorder_reorder__ = __webpack_require__(273);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__utils_utils__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__utils_file_utils__ = __webpack_require__(274);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_rxjs_Observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_rxjs_Observable__);
@@ -6788,7 +6787,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 
 
 
-var ChatContentPage = (function () {
+var ChatContentPage = /** @class */ (function () {
     function ChatContentPage(_ngZone, _ref, navCtrl, actionSheetCtrl, params, fb, renderer, platform, storage, media, keyboard, cordovaFile, userService, msgService, systemService, myHttp, backEnd) {
         this._ngZone = _ngZone;
         this._ref = _ref;
@@ -7250,46 +7249,46 @@ var ChatContentPage = (function () {
         });
         return content;
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
+        __metadata("design:type", Object)
+    ], ChatContentPage.prototype, "contentComponent", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('header'),
+        __metadata("design:type", Object)
+    ], ChatContentPage.prototype, "header", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
+        __metadata("design:type", Object)
+    ], ChatContentPage.prototype, "input", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('audio'),
+        __metadata("design:type", Object)
+    ], ChatContentPage.prototype, "audio", void 0);
+    ChatContentPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-chat-content-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\chat-content\chat-content.html"*/'<ion-header #header>\n\n  <ion-navbar>\n    <ion-title>{{pageTitle}}</ion-title>\n    <!--<ion-buttons end>\n      <button ion-button icon-only (click)="gotoReorderPage()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>-->\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding-vertical>\n\n\n  <div *ngFor="let msg of msgList">\n    <!--发送时间-->\n    <div class="send-time-wrap"><span class="send-time">{{msg.timediff | timediff}}</span></div>\n    <!--消息-->\n    <div class="msg-wrap {{ msg.fromUserId === ownId?\'me-msg\':\'other-msg\' }}">\n      <!--头像-->\n\n      <ion-thumbnail>\n        <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(msg._fromUser._id)"  style="width:56px;height:56px;"></cy-img>\n        <!-- <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc"  style="width:56px;"></cy-img> -->\n      </ion-thumbnail>\n\n      <!--文本消息-->\n      <p class="msg-content" *ngIf="msg.type===0" [innerHTML]="decodeMsgContent(msg.content)"></p>\n\n      <!--图片消息-->\n      <p *ngIf="msg.type===1" style="padding: 0 10px;">\n        <cy-img [src]="msg.content | imgSrc:200" [zoom]="true" style="max-width:100px;max-height:100px;"></cy-img>\n      </p>\n\n      <!--语音消息-->\n      <p class="msg-content" *ngIf="msg.type===3" (click)="playRecord(msg.content)">\n        <ion-icon class="audio-icon" name="wifi"></ion-icon>\n      </p>\n\n      <span class="audio-duartion" *ngIf="msg.type===3">{{msg.audioDuration}}"</span>\n\n      <ion-spinner *ngIf="msg.fromUserId === ownId && msg.pending"></ion-spinner>\n\n    </div>\n  </div>\n  <div class="record-volume-wrap" *ngIf="recording">\n    <div class="title">开始说话</div>\n    <img class="volume-img" [src]="volumeImgSrc" />\n    <div class="">{{recordDuration}}s</div>\n  </div>\n  <audio #audio autoplay="autoplay"></audio>\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <div class="foot-wrapper">\n      <!--切换按钮-->\n      <a ion-button icon-only outline small (click)="switchInput()">\n        <ion-icon *ngIf="!isAudio" name="wifi" class="switch-toggle"></ion-icon>\n        <ion-icon *ngIf="isAudio" name="barcode"></ion-icon>\n      </a>\n      <!--文本-->\n      <div *ngIf="!isAudio" class="msg-input-wrapper">\n        <form [formGroup]="form" (ngSubmit)="sendMsg()">\n          <!-- <input #input type="text" formControlName="content" (focus)="onInputFocus()" /> -->\n          <cy-content-input #input formControlName="content" (focus)="onInputFocus()"></cy-content-input>\n          <a ion-button icon-only clear small (click)="presentActionSheet()">        \n            <ion-icon name="image-outline"></ion-icon>\n          </a>\n          <a ion-button icon-only clear small (click)="toggleFace()">        \n              <ion-icon [name]="isShowFace?\'happy\':\'happy-outline\'"></ion-icon>\n            </a>\n          <button type="submit" ion-button outline [disabled]="form.invalid">发送</button>\n        </form>\n      </div>\n      <!--语音-->\n      <div *ngIf="isAudio" class="audio-msg-wrapper">\n        <a ion-button block outline small (click)="recordToggle()">{{recording? \'停止录音\':\'开始录音\'}}</a>\n      </div>\n\n      <!--<button ion-button icon-only outline small><ion-icon name="add-outline"></ion-icon></button>-->\n    </div>\n  </ion-toolbar>\n    <!-- 表情栏 -->\n    <div class="face-wrap" [hidden]="!isShowFace">\n      <div class="face-item" *ngFor="let item of faceItems;" (click)="insertFace(item.src)">\n        <img src="{{item.src}}" />\n      </div>\n    </div>\n</ion-footer>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\chat-content\chat-content.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */],
+            __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */],
+            __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */],
+            __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */],
+            __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
+    ], ChatContentPage);
     return ChatContentPage;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* Content */]),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "contentComponent", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('header'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "header", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "input", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('audio'),
-    __metadata("design:type", Object)
-], ChatContentPage.prototype, "audio", void 0);
-ChatContentPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-chat-content-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/'<ion-header #header>\n\n  <ion-navbar>\n    <ion-title>{{pageTitle}}</ion-title>\n    <!--<ion-buttons end>\n      <button ion-button icon-only (click)="gotoReorderPage()">\n          <ion-icon name="more"></ion-icon>\n      </button>\n    </ion-buttons>-->\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding-vertical>\n\n\n  <div *ngFor="let msg of msgList">\n    <!--发送时间-->\n    <div class="send-time-wrap"><span class="send-time">{{msg.timediff | timediff}}</span></div>\n    <!--消息-->\n    <div class="msg-wrap {{ msg.fromUserId === ownId?\'me-msg\':\'other-msg\' }}">\n      <!--头像-->\n\n      <ion-thumbnail>\n        <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc" (click)="gotoUserDetailPage(msg._fromUser._id)"  style="width:56px;height:56px;"></cy-img>\n        <!-- <cy-img [src]="msg._fromUser && msg._fromUser.avatarSrc | avatarSrc"  style="width:56px;"></cy-img> -->\n      </ion-thumbnail>\n\n      <!--文本消息-->\n      <p class="msg-content" *ngIf="msg.type===0" [innerHTML]="decodeMsgContent(msg.content)"></p>\n\n      <!--图片消息-->\n      <p *ngIf="msg.type===1" style="padding: 0 10px;">\n        <cy-img [src]="msg.content | imgSrc:200" [zoom]="true" style="max-width:100px;max-height:100px;"></cy-img>\n      </p>\n\n      <!--语音消息-->\n      <p class="msg-content" *ngIf="msg.type===3" (click)="playRecord(msg.content)">\n        <ion-icon class="audio-icon" name="wifi"></ion-icon>\n      </p>\n\n      <span class="audio-duartion" *ngIf="msg.type===3">{{msg.audioDuration}}"</span>\n\n      <ion-spinner *ngIf="msg.fromUserId === ownId && msg.pending"></ion-spinner>\n\n    </div>\n  </div>\n  <div class="record-volume-wrap" *ngIf="recording">\n    <div class="title">开始说话</div>\n    <img class="volume-img" [src]="volumeImgSrc" />\n    <div class="">{{recordDuration}}s</div>\n  </div>\n  <audio #audio autoplay="autoplay"></audio>\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <div class="foot-wrapper">\n      <!--切换按钮-->\n      <a ion-button icon-only outline small (click)="switchInput()">\n        <ion-icon *ngIf="!isAudio" name="wifi" class="switch-toggle"></ion-icon>\n        <ion-icon *ngIf="isAudio" name="barcode"></ion-icon>\n      </a>\n      <!--文本-->\n      <div *ngIf="!isAudio" class="msg-input-wrapper">\n        <form [formGroup]="form" (ngSubmit)="sendMsg()">\n          <!-- <input #input type="text" formControlName="content" (focus)="onInputFocus()" /> -->\n          <cy-content-input #input formControlName="content" (focus)="onInputFocus()"></cy-content-input>\n          <a ion-button icon-only clear small (click)="presentActionSheet()">        \n            <ion-icon name="image-outline"></ion-icon>\n          </a>\n          <a ion-button icon-only clear small (click)="toggleFace()">        \n              <ion-icon [name]="isShowFace?\'happy\':\'happy-outline\'"></ion-icon>\n            </a>\n          <button type="submit" ion-button outline [disabled]="form.invalid">发送</button>\n        </form>\n      </div>\n      <!--语音-->\n      <div *ngIf="isAudio" class="audio-msg-wrapper">\n        <a ion-button block outline small (click)="recordToggle()">{{recording? \'停止录音\':\'开始录音\'}}</a>\n      </div>\n\n      <!--<button ion-button icon-only outline small><ion-icon name="add-outline"></ion-icon></button>-->\n    </div>\n  </ion-toolbar>\n    <!-- 表情栏 -->\n    <div class="face-wrap" [hidden]="!isShowFace">\n      <div class="face-item" *ngFor="let item of faceItems;" (click)="insertFace(item.src)">\n        <img src="{{item.src}}" />\n      </div>\n    </div>\n</ion-footer>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/chat-content/chat-content.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* NgZone */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* ChangeDetectorRef */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* ActionSheetController */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["k" /* Platform */],
-        __WEBPACK_IMPORTED_MODULE_8__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_3__ionic_native_media__["a" /* Media */],
-        __WEBPACK_IMPORTED_MODULE_17__ionic_native_keyboard__["a" /* Keyboard */],
-        __WEBPACK_IMPORTED_MODULE_18__ionic_native_file__["a" /* File */],
-        __WEBPACK_IMPORTED_MODULE_5__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_4__services_msg__["a" /* MsgService */],
-        __WEBPACK_IMPORTED_MODULE_6__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_19__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
-], ChatContentPage);
 
 //# sourceMappingURL=chat-content.js.map
 
@@ -7324,7 +7323,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
-var DailyPage = (function () {
+var DailyPage = /** @class */ (function () {
     function DailyPage() {
         this.items = [];
         for (var i = 0; i < 20; i++) {
@@ -7336,14 +7335,14 @@ var DailyPage = (function () {
             refresher.complete();
         }, 2000);
     };
+    DailyPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-daily-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\daily\daily.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Daily</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-refresher (ionRefresh)="doRefresh($event)">\n    <ion-refresher-content></ion-refresher-content>\n  </ion-refresher>\n\n   \n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\daily\daily.html"*/,
+        }),
+        __metadata("design:paramtypes", [])
+    ], DailyPage);
     return DailyPage;
 }());
-DailyPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-daily-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/daily/daily.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Daily</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-refresher (ionRefresh)="doRefresh($event)">\n    <ion-refresher-content></ion-refresher-content>\n  </ion-refresher>\n\n   \n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/daily/daily.html"*/,
-    }),
-    __metadata("design:paramtypes", [])
-], DailyPage);
 
 //# sourceMappingURL=daily.js.map
 
@@ -7365,17 +7364,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
-var ShopPage = (function () {
+var ShopPage = /** @class */ (function () {
     function ShopPage() {
     }
+    ShopPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-shop-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\shop\shop.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Shop</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n	<ion-slides autoplay>\n		<ion-slide><div><img src="assets/img/fengjing1.jpg"/></div></ion-slide>\n		<ion-slide><div><img src="assets/img/fengjing2.jpg"/></div></ion-slide>\n		<ion-slide><div><img src="assets/img/fengjing3.jpg"/></div></ion-slide>\n	</ion-slides>\n\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\shop\shop.html"*/,
+        }),
+        __metadata("design:paramtypes", [])
+    ], ShopPage);
     return ShopPage;
 }());
-ShopPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-shop-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/shop/shop.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Shop</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n	<ion-slides autoplay>\n		<ion-slide><div><img src="assets/img/fengjing1.jpg"/></div></ion-slide>\n		<ion-slide><div><img src="assets/img/fengjing2.jpg"/></div></ion-slide>\n		<ion-slide><div><img src="assets/img/fengjing3.jpg"/></div></ion-slide>\n	</ion-slides>\n\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/shop/shop.html"*/,
-    }),
-    __metadata("design:paramtypes", [])
-], ShopPage);
 
 //# sourceMappingURL=shop.js.map
 
@@ -7414,26 +7413,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var ComponentsModule = (function () {
+var ComponentsModule = /** @class */ (function () {
     function ComponentsModule() {
     }
+    ComponentsModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgModule */])({
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_1__img_img__["a" /* ImgComponent */],
+                __WEBPACK_IMPORTED_MODULE_2__content_input_content_input__["a" /* ContentInputComponent */],
+                __WEBPACK_IMPORTED_MODULE_3__qrcode_qrcode__["a" /* QrcodeComponent */]
+            ],
+            imports: [],
+            exports: [
+                __WEBPACK_IMPORTED_MODULE_1__img_img__["a" /* ImgComponent */],
+                __WEBPACK_IMPORTED_MODULE_2__content_input_content_input__["a" /* ContentInputComponent */],
+                __WEBPACK_IMPORTED_MODULE_3__qrcode_qrcode__["a" /* QrcodeComponent */]
+            ]
+        })
+    ], ComponentsModule);
     return ComponentsModule;
 }());
-ComponentsModule = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgModule */])({
-        declarations: [
-            __WEBPACK_IMPORTED_MODULE_1__img_img__["a" /* ImgComponent */],
-            __WEBPACK_IMPORTED_MODULE_2__content_input_content_input__["a" /* ContentInputComponent */],
-            __WEBPACK_IMPORTED_MODULE_3__qrcode_qrcode__["a" /* QrcodeComponent */]
-        ],
-        imports: [],
-        exports: [
-            __WEBPACK_IMPORTED_MODULE_1__img_img__["a" /* ImgComponent */],
-            __WEBPACK_IMPORTED_MODULE_2__content_input_content_input__["a" /* ContentInputComponent */],
-            __WEBPACK_IMPORTED_MODULE_3__qrcode_qrcode__["a" /* QrcodeComponent */]
-        ]
-    })
-], ComponentsModule);
 
 //# sourceMappingURL=components.module.js.map
 
@@ -7457,7 +7456,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-var ImgComponent = (function () {
+var ImgComponent = /** @class */ (function () {
     function ImgComponent(elemRef, renderer) {
         this.elemRef = elemRef;
         this.renderer = renderer;
@@ -7619,49 +7618,49 @@ var ImgComponent = (function () {
             });
         }
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('src'),
+        __metadata("design:type", String)
+    ], ImgComponent.prototype, "src", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('width'),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], ImgComponent.prototype, "width", null);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('height'),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], ImgComponent.prototype, "height", null);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('zoom'),
+        __metadata("design:type", Boolean)
+    ], ImgComponent.prototype, "zoom", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('img'),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */])
+    ], ImgComponent.prototype, "img", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* HostListener */])('window:resize'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], ImgComponent.prototype, "onResize", null);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* HostListener */])('click'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], ImgComponent.prototype, "onClick", null);
+    ImgComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-img',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\components\img\img.html"*/'<img #img [src]="src">\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\components\img\img.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]])
+    ], ImgComponent);
     return ImgComponent;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('src'),
-    __metadata("design:type", String)
-], ImgComponent.prototype, "src", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('width'),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
-], ImgComponent.prototype, "width", null);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('height'),
-    __metadata("design:type", Object),
-    __metadata("design:paramtypes", [Object])
-], ImgComponent.prototype, "height", null);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('zoom'),
-    __metadata("design:type", Boolean)
-], ImgComponent.prototype, "zoom", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('img'),
-    __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */])
-], ImgComponent.prototype, "img", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* HostListener */])('window:resize'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ImgComponent.prototype, "onResize", null);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* HostListener */])('click'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ImgComponent.prototype, "onClick", null);
-ImgComponent = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-img',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/components/img/img.html"*/'<img #img [src]="src">\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/components/img/img.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */],
-        __WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]])
-], ImgComponent);
 
 //# sourceMappingURL=img.js.map
 
@@ -7675,7 +7674,7 @@ ImgComponent = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(634);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
 
-var DomUtils = (function () {
+var DomUtils = /** @class */ (function () {
     function DomUtils() {
     }
     DomUtils.getStyle = function (dom, name) {
@@ -7724,12 +7723,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-var ContentInputComponent = ContentInputComponent_1 = (function () {
+var ContentInputComponent = /** @class */ (function () {
     function ContentInputComponent(renderer) {
         this.renderer = renderer;
         this._onChange = function (value) { };
         this.focus = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* EventEmitter */]();
     }
+    ContentInputComponent_1 = ContentInputComponent;
     ContentInputComponent.prototype.writeValue = function (value) {
         this.renderer.setElementProperty(this.input.nativeElement, 'innerHTML', value);
     };
@@ -7819,27 +7819,27 @@ var ContentInputComponent = ContentInputComponent_1 = (function () {
         this.lastEditRange = range;
         this._onChange(inputEl.innerHTML);
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
+        __metadata("design:type", Object)
+    ], ContentInputComponent.prototype, "input", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Output */])('focus'),
+        __metadata("design:type", Object)
+    ], ContentInputComponent.prototype, "focus", void 0);
+    ContentInputComponent = ContentInputComponent_1 = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-content-input',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\components\content-input\content-input.html"*/'<div contenteditable="true" #input (click)="saveLastEditRange()" (keyup)="saveLastEditRange()" (keypress)="onKeypress($event);" (input)="onInput($event)" (focus)="focus.emit($event)"></div>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\components\content-input\content-input.html"*/,
+            providers: [
+                { provide: __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* NG_VALUE_ACCESSOR */], useExisting: Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_22" /* forwardRef */])(function () { return ContentInputComponent_1; }), multi: true }
+            ]
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]])
+    ], ContentInputComponent);
     return ContentInputComponent;
+    var ContentInputComponent_1;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('input'),
-    __metadata("design:type", Object)
-], ContentInputComponent.prototype, "input", void 0);
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Output */])('focus'),
-    __metadata("design:type", Object)
-], ContentInputComponent.prototype, "focus", void 0);
-ContentInputComponent = ContentInputComponent_1 = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-content-input',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/components/content-input/content-input.html"*/'<div contenteditable="true" #input (click)="saveLastEditRange()" (keyup)="saveLastEditRange()" (keypress)="onKeypress($event);" (input)="onInput($event)" (focus)="focus.emit($event)"></div>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/components/content-input/content-input.html"*/,
-        providers: [
-            { provide: __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* NG_VALUE_ACCESSOR */], useExisting: Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_22" /* forwardRef */])(function () { return ContentInputComponent_1; }), multi: true }
-        ]
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_0" /* Renderer */]])
-], ContentInputComponent);
 
-var ContentInputComponent_1;
 //# sourceMappingURL=content-input.js.map
 
 /***/ }),
@@ -7861,7 +7861,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 var QRCode = __webpack_require__(637);
-var QrcodeComponent = (function () {
+var QrcodeComponent = /** @class */ (function () {
     function QrcodeComponent(_elementRef) {
         this._elementRef = _elementRef;
     }
@@ -7875,18 +7875,18 @@ var QrcodeComponent = (function () {
             correctLevel: QRCode.CorrectLevel.H
         });
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('text'),
+        __metadata("design:type", String)
+    ], QrcodeComponent.prototype, "text", void 0);
+    QrcodeComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-qrcode',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\components\qrcode\qrcode.html"*/'\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\components\qrcode\qrcode.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */]])
+    ], QrcodeComponent);
     return QrcodeComponent;
 }());
-__decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* Input */])('text'),
-    __metadata("design:type", String)
-], QrcodeComponent.prototype, "text", void 0);
-QrcodeComponent = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-qrcode',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/components/qrcode/qrcode.html"*/'\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/components/qrcode/qrcode.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */]])
-], QrcodeComponent);
 
 //# sourceMappingURL=qrcode.js.map
 
@@ -9353,30 +9353,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var PipesModule = (function () {
+var PipesModule = /** @class */ (function () {
     function PipesModule() {
     }
+    PipesModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgModule */])({
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_1__timediff__["a" /* TimediffPipe */],
+                __WEBPACK_IMPORTED_MODULE_2__connect_state__["a" /* ConnectStatePipe */],
+                __WEBPACK_IMPORTED_MODULE_3__avatar_src__["a" /* AvatarSrcPipe */],
+                __WEBPACK_IMPORTED_MODULE_4__gender__["a" /* GenderPipe */],
+                __WEBPACK_IMPORTED_MODULE_5__img_src__["a" /* ImgSrcPipe */]
+            ],
+            imports: [],
+            exports: [
+                __WEBPACK_IMPORTED_MODULE_1__timediff__["a" /* TimediffPipe */],
+                __WEBPACK_IMPORTED_MODULE_2__connect_state__["a" /* ConnectStatePipe */],
+                __WEBPACK_IMPORTED_MODULE_3__avatar_src__["a" /* AvatarSrcPipe */],
+                __WEBPACK_IMPORTED_MODULE_4__gender__["a" /* GenderPipe */],
+                __WEBPACK_IMPORTED_MODULE_5__img_src__["a" /* ImgSrcPipe */]
+            ]
+        })
+    ], PipesModule);
     return PipesModule;
 }());
-PipesModule = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgModule */])({
-        declarations: [
-            __WEBPACK_IMPORTED_MODULE_1__timediff__["a" /* TimediffPipe */],
-            __WEBPACK_IMPORTED_MODULE_2__connect_state__["a" /* ConnectStatePipe */],
-            __WEBPACK_IMPORTED_MODULE_3__avatar_src__["a" /* AvatarSrcPipe */],
-            __WEBPACK_IMPORTED_MODULE_4__gender__["a" /* GenderPipe */],
-            __WEBPACK_IMPORTED_MODULE_5__img_src__["a" /* ImgSrcPipe */]
-        ],
-        imports: [],
-        exports: [
-            __WEBPACK_IMPORTED_MODULE_1__timediff__["a" /* TimediffPipe */],
-            __WEBPACK_IMPORTED_MODULE_2__connect_state__["a" /* ConnectStatePipe */],
-            __WEBPACK_IMPORTED_MODULE_3__avatar_src__["a" /* AvatarSrcPipe */],
-            __WEBPACK_IMPORTED_MODULE_4__gender__["a" /* GenderPipe */],
-            __WEBPACK_IMPORTED_MODULE_5__img_src__["a" /* ImgSrcPipe */]
-        ]
-    })
-], PipesModule);
 
 //# sourceMappingURL=pipes.module.js.map
 
@@ -9401,7 +9401,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
   See https://angular.io/docs/ts/latest/guide/pipes.html for more info on
   Angular 2 Pipes.
 */
-var TimediffPipe = (function () {
+var TimediffPipe = /** @class */ (function () {
     function TimediffPipe() {
     }
     /*
@@ -9431,13 +9431,13 @@ var TimediffPipe = (function () {
             return "刚刚";
         }
     };
+    TimediffPipe = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
+            name: 'timediff'
+        })
+    ], TimediffPipe);
     return TimediffPipe;
 }());
-TimediffPipe = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
-        name: 'timediff'
-    })
-], TimediffPipe);
 
 //# sourceMappingURL=timediff.js.map
 
@@ -9456,20 +9456,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 
-var ConnectStatePipe = (function () {
+var ConnectStatePipe = /** @class */ (function () {
     function ConnectStatePipe() {
     }
     ConnectStatePipe.prototype.transform = function (value) {
         var arr = ['(未连接)', '(连接中)', ''];
         return arr[value] || '';
     };
+    ConnectStatePipe = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
+            name: 'connectState'
+        })
+    ], ConnectStatePipe);
     return ConnectStatePipe;
 }());
-ConnectStatePipe = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
-        name: 'connectState'
-    })
-], ConnectStatePipe);
 
 //# sourceMappingURL=connect-state.js.map
 
@@ -9490,7 +9490,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 
 
-var AvatarSrcPipe = (function () {
+var AvatarSrcPipe = /** @class */ (function () {
     function AvatarSrcPipe() {
     }
     AvatarSrcPipe.prototype.transform = function (value, size) {
@@ -9503,13 +9503,13 @@ var AvatarSrcPipe = (function () {
             return size ? url + '@' + size + '.jpg' : url;
         }
     };
+    AvatarSrcPipe = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
+            name: 'avatarSrc'
+        })
+    ], AvatarSrcPipe);
     return AvatarSrcPipe;
 }());
-AvatarSrcPipe = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
-        name: 'avatarSrc'
-    })
-], AvatarSrcPipe);
 
 //# sourceMappingURL=avatar-src.js.map
 
@@ -9528,20 +9528,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 
-var GenderPipe = (function () {
+var GenderPipe = /** @class */ (function () {
     function GenderPipe() {
     }
     GenderPipe.prototype.transform = function (value) {
         var genders = ['男', '女'];
         return genders[value] || '';
     };
+    GenderPipe = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
+            name: 'gender'
+        })
+    ], GenderPipe);
     return GenderPipe;
 }());
-GenderPipe = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
-        name: 'gender'
-    })
-], GenderPipe);
 
 //# sourceMappingURL=gender.js.map
 
@@ -9562,7 +9562,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 
 
-var ImgSrcPipe = (function () {
+var ImgSrcPipe = /** @class */ (function () {
     function ImgSrcPipe() {
     }
     ImgSrcPipe.prototype.transform = function (value, size) {
@@ -9574,19 +9574,19 @@ var ImgSrcPipe = (function () {
             return size ? url + '@' + size + '.jpg' : url;
         }
     };
+    ImgSrcPipe = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
+            name: 'imgSrc'
+        })
+    ], ImgSrcPipe);
     return ImgSrcPipe;
 }());
-ImgSrcPipe = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["W" /* Pipe */])({
-        name: 'imgSrc'
-    })
-], ImgSrcPipe);
 
 //# sourceMappingURL=img-src.js.map
 
 /***/ }),
 
-/***/ 66:
+/***/ 67:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9720,7 +9720,7 @@ function formatDate(date, fmt) {
 
 /***/ }),
 
-/***/ 67:
+/***/ 68:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9730,7 +9730,7 @@ function formatDate(date, fmt) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_system__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__friend_request_friend_request__ = __webpack_require__(150);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__chat_content_chat_content__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__chat_content_chat_content__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_backend__ = __webpack_require__(31);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -9750,7 +9750,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var UserDetailPage = (function () {
+var UserDetailPage = /** @class */ (function () {
     function UserDetailPage(navCtrl, navParams, userService, systemService, myHttp, backEnd) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -9784,25 +9784,25 @@ var UserDetailPage = (function () {
             this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_5__chat_content_chat_content__["a" /* ChatContentPage */], { relationId: this.relationId, chatName: this.user.nickname });
         }
     };
+    UserDetailPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-user-detail-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\user-detail\user-detail.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>详细资料</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n  <ion-list>\n    <ion-item>\n      <ion-thumbnail item-left>\n        <!-- <img [src]="user.avatarSrc | avatarSrc" /> -->\n        <cy-img [src]="user?.avatarSrc | avatarSrc" style="width:56px;" [zoom]="true"></cy-img>\n      </ion-thumbnail>\n      <h2>\n        <span class="nickname">{{user?.nickname}}</span>\n        <ion-icon name="male" color="primary" *ngIf="user?.gender===0"></ion-icon>\n        <ion-icon name="female" color="fourthly" *ngIf="user?.gender===1"></ion-icon>\n      </h2>\n      <p class="username">用户名：{{user?.username}}</p>\n    </ion-item>\n  </ion-list>\n\n  <div padding *ngIf="user">\n    <button ion-button block round *ngIf="isFriend != true && user._id !== ownId" (click)="gotoFriendRequestPage()">添加好友</button>\n\n    <button ion-button block round *ngIf="isFriend == true" (click)="gotoChatContentPage()">开始聊天</button>\n\n  </div>\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\user-detail\user-detail.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_3__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
+    ], UserDetailPage);
     return UserDetailPage;
 }());
-UserDetailPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-user-detail-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/user-detail/user-detail.html"*/'<ion-header>\n\n  <ion-navbar>\n    <ion-title>详细资料</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content>\n  <ion-list>\n    <ion-item>\n      <ion-thumbnail item-left>\n        <!-- <img [src]="user.avatarSrc | avatarSrc" /> -->\n        <cy-img [src]="user?.avatarSrc | avatarSrc" style="width:56px;" [zoom]="true"></cy-img>\n      </ion-thumbnail>\n      <h2>\n        <span class="nickname">{{user?.nickname}}</span>\n        <ion-icon name="male" color="primary" *ngIf="user?.gender===0"></ion-icon>\n        <ion-icon name="female" color="fourthly" *ngIf="user?.gender===1"></ion-icon>\n      </h2>\n      <p class="username">用户名：{{user?.username}}</p>\n    </ion-item>\n  </ion-list>\n\n  <div padding *ngIf="user">\n    <button ion-button block round *ngIf="isFriend != true && user._id !== ownId" (click)="gotoFriendRequestPage()">添加好友</button>\n\n    <button ion-button block round *ngIf="isFriend == true" (click)="gotoChatContentPage()">开始聊天</button>\n\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/user-detail/user-detail.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_3__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_7__providers_backend__["a" /* BackEnd */]])
-], UserDetailPage);
 
 //# sourceMappingURL=user-detail.js.map
 
 /***/ }),
 
-/***/ 69:
+/***/ 70:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9842,7 +9842,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var LoginPage = (function () {
+var LoginPage = /** @class */ (function () {
     function LoginPage(navCtrl, navParams, toastCtrl, builder, storage, userservice, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
@@ -9930,21 +9930,21 @@ var LoginPage = (function () {
         var pAll = Promise.all([p1, p2]);
         return __WEBPACK_IMPORTED_MODULE_3_rxjs_Observable__["Observable"].fromPromise(pAll);
     };
+    LoginPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-login-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\login\login.html"*/'<ion-content>\n  <form [formGroup]="form" (ngSubmit)="login()">\n    <div class="logo-wrap">\n      <img src="assets/img/logo.png" />\n    </div>\n    <ion-list>\n      <ion-item>\n        <ion-label>帐号</ion-label>\n        <ion-input type="text" placeholder="用户名/手机号" formControlName="username" [clearInput]="true"></ion-input>\n        <!--<span item-right *ngIf="form.controls.username.pending && form.controls.username.dirty">...</span>\n				<span item-right *ngIf="form.controls.username.valid && form.controls.username.dirty">√</span>\n				<span item-right *ngIf="form.controls.username.invalid && form.controls.username.dirty">×</span>-->\n      </ion-item>\n\n      <ion-item>\n        <ion-label>密码</ion-label>\n        <ion-input type="password" placeholder="密码" formControlName="password" [clearInput]="true"></ion-input>\n        <!--<span item-right *ngIf="form.controls.password.pending && form.controls.password.dirty">...</span>\n				<span item-right *ngIf="form.controls.password.valid && form.controls.password.dirty">√</span>\n				<span item-right *ngIf="form.controls.password.invalid && form.controls.password.dirty">×</span>-->\n      </ion-item>\n\n    </ion-list>\n    <div padding-horizontal style="overflow:hidden;">\n      <!-- <a ion-button href="javascript:;" (click)="gotoVerifyMobilePage()" >注册</a> -->\n      <a ion-button outline small clear class="signup-btn" (click)="gotoVerifyMobilePage()">没有账号? 去注册</a>\n    </div>\n\n    <!--<div padding-horizontal><button ion-button block [disabled]="form.invalid" @flyInOut>登录</button></div>-->\n    <div padding>\n      <button type="submit" ion-button block round icon-start disabled="{{ logining? \'disabled\' : \'\' }}">\n          <ion-spinner color="light" style="margin-right:6px;" *ngIf="logining"></ion-spinner>\n          登录\n      </button>\n    </div>\n  </form>\n\n  <div padding-horizontal style="display: none;">\n    <!-- <button ion-button block color="secondary" (click)="_$testLogin(1)">test1</button>\n    <button ion-button block color="secondary" (click)="_$testLogin(2)">test2</button> -->\n  </div>\n</ion-content>'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\login\login.html"*/,
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */],
+            __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["m" /* ToastController */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_5__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_9__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_11__providers_my_http__["a" /* MyHttp */]])
+    ], LoginPage);
     return LoginPage;
 }());
-LoginPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-login-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/login/login.html"*/'<ion-content>\n  <form [formGroup]="form" (ngSubmit)="login()">\n    <div class="logo-wrap">\n      <img src="assets/img/logo.png" />\n    </div>\n    <ion-list>\n      <ion-item>\n        <ion-label>帐号</ion-label>\n        <ion-input type="text" placeholder="用户名/手机号" formControlName="username" [clearInput]="true"></ion-input>\n        <!--<span item-right *ngIf="form.controls.username.pending && form.controls.username.dirty">...</span>\n				<span item-right *ngIf="form.controls.username.valid && form.controls.username.dirty">√</span>\n				<span item-right *ngIf="form.controls.username.invalid && form.controls.username.dirty">×</span>-->\n      </ion-item>\n\n      <ion-item>\n        <ion-label>密码</ion-label>\n        <ion-input type="password" placeholder="密码" formControlName="password" [clearInput]="true"></ion-input>\n        <!--<span item-right *ngIf="form.controls.password.pending && form.controls.password.dirty">...</span>\n				<span item-right *ngIf="form.controls.password.valid && form.controls.password.dirty">√</span>\n				<span item-right *ngIf="form.controls.password.invalid && form.controls.password.dirty">×</span>-->\n      </ion-item>\n\n    </ion-list>\n    <div padding-horizontal style="overflow:hidden;">\n      <!-- <a ion-button href="javascript:;" (click)="gotoVerifyMobilePage()" >注册</a> -->\n      <a ion-button outline small clear class="signup-btn" (click)="gotoVerifyMobilePage()">没有账号? 去注册</a>\n    </div>\n\n    <!--<div padding-horizontal><button ion-button block [disabled]="form.invalid" @flyInOut>登录</button></div>-->\n    <div padding>\n      <button type="submit" ion-button block round icon-start disabled="{{ logining? \'disabled\' : \'\' }}">\n          <ion-spinner color="light" style="margin-right:6px;" *ngIf="logining"></ion-spinner>\n          登录\n      </button>\n    </div>\n  </form>\n\n  <div padding-horizontal style="display: none;">\n    <!-- <button ion-button block color="secondary" (click)="_$testLogin(1)">test1</button>\n    <button ion-button block color="secondary" (click)="_$testLogin(2)">test2</button> -->\n  </div>\n</ion-content>'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/login/login.html"*/,
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["j" /* NavParams */],
-        __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["m" /* ToastController */],
-        __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_5__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_8__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_9__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_11__providers_my_http__["a" /* MyHttp */]])
-], LoginPage);
 
 //# sourceMappingURL=login.js.map
 
@@ -9980,7 +9980,7 @@ LoginPage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__providers_my_http__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__providers_backend__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_user__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__utils_utils__ = __webpack_require__(67);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10007,7 +10007,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var MsgService = (function () {
+var MsgService = /** @class */ (function () {
     function MsgService(storage, myHttp, backEnd, userService) {
         this.storage = storage;
         this.myHttp = myHttp;
@@ -10271,15 +10271,15 @@ var MsgService = (function () {
         // return Promise.resolve();
         return this.storage.set(name + '/' + ownId, value);
     };
+    MsgService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */],
+            __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */],
+            __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */],
+            __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]])
+    ], MsgService);
     return MsgService;
 }());
-MsgService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__ionic_storage__["b" /* Storage */],
-        __WEBPACK_IMPORTED_MODULE_13__providers_my_http__["a" /* MyHttp */],
-        __WEBPACK_IMPORTED_MODULE_14__providers_backend__["a" /* BackEnd */],
-        __WEBPACK_IMPORTED_MODULE_15__services_user__["a" /* UserService */]])
-], MsgService);
 
 //# sourceMappingURL=msg.js.map
 
@@ -10292,7 +10292,7 @@ MsgService = __decorate([
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FriendAddPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_detail_user_detail__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_detail_user_detail__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__friend_by_contact_friend_by_contact__ = __webpack_require__(276);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_user__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_system__ = __webpack_require__(15);
@@ -10313,7 +10313,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var FriendAddPage = (function () {
+var FriendAddPage = /** @class */ (function () {
     function FriendAddPage(navCtrl, userService, systemService, myHttp) {
         this.navCtrl = navCtrl;
         this.userService = userService;
@@ -10336,17 +10336,17 @@ var FriendAddPage = (function () {
     FriendAddPage.prototype.gotoUserDetailPage = function (userId) {
         this.navCtrl.push(__WEBPACK_IMPORTED_MODULE_2__user_detail_user_detail__["a" /* UserDetailPage */], { userId: userId });
     };
+    FriendAddPage = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'cy-friend-add-page',template:/*ion-inline-start:"E:\xcode\kefu\livechat\src\pages\friend-add\friend-add.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>添加好友</ion-title>\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form (ngSubmit)="submitForm()">\n    <ion-list padding-top>\n      <ion-item>\n        <!-- <ion-label>\n          <ion-icon name="search" color="primary"></ion-icon>\n        </ion-label> -->\n        <ion-input [(ngModel)]="search" type="search" name="search" placeholder="用户名/手机号" [clearInput]="true"></ion-input>\n        <button item-end ion-button icon-only clear type="submit">\n            <ion-icon name="search" color="primary"></ion-icon>\n        </button>\n      </ion-item>\n    </ion-list>\n  </form>\n  <ion-list>\n    \n    <button ion-item (click)="gotoFriendByContactPage()">\n      <ion-icon item-left name="md-qr-scanner"></ion-icon>\n      <h2>扫一扫</h2>\n      <ion-note>扫描二维码添加好友</ion-note>\n    </button>\n    <button ion-item (click)="gotoFriendByContactPage()">\n        <ion-icon item-left name="phone-portrait"></ion-icon>\n        <h2>手机联系人</h2>\n        <ion-note>手机通讯录添加好友</ion-note>\n      </button>\n  </ion-list>\n\n</ion-content>\n'/*ion-inline-end:"E:\xcode\kefu\livechat\src\pages\friend-add\friend-add.html"*/
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
+            __WEBPACK_IMPORTED_MODULE_4__services_user__["a" /* UserService */],
+            __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
+            __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */]])
+    ], FriendAddPage);
     return FriendAddPage;
 }());
-FriendAddPage = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'cy-friend-add-page',template:/*ion-inline-start:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-add/friend-add.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>添加好友</ion-title>\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form (ngSubmit)="submitForm()">\n    <ion-list padding-top>\n      <ion-item>\n        <!-- <ion-label>\n          <ion-icon name="search" color="primary"></ion-icon>\n        </ion-label> -->\n        <ion-input [(ngModel)]="search" type="search" name="search" placeholder="用户名/手机号" [clearInput]="true"></ion-input>\n        <button item-end ion-button icon-only clear type="submit">\n            <ion-icon name="search" color="primary"></ion-icon>\n        </button>\n      </ion-item>\n    </ion-list>\n  </form>\n  <ion-list>\n    \n    <button ion-item (click)="gotoFriendByContactPage()">\n      <ion-icon item-left name="md-qr-scanner"></ion-icon>\n      <h2>扫一扫</h2>\n      <ion-note>扫描二维码添加好友</ion-note>\n    </button>\n    <button ion-item (click)="gotoFriendByContactPage()">\n        <ion-icon item-left name="phone-portrait"></ion-icon>\n        <h2>手机联系人</h2>\n        <ion-note>手机通讯录添加好友</ion-note>\n      </button>\n  </ion-list>\n\n</ion-content>\n'/*ion-inline-end:"/Users/linyong/xcode/kefu/livechat/src/pages/friend-add/friend-add.html"*/
-    }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_4__services_user__["a" /* UserService */],
-        __WEBPACK_IMPORTED_MODULE_5__services_system__["a" /* SystemService */],
-        __WEBPACK_IMPORTED_MODULE_6__providers_my_http__["a" /* MyHttp */]])
-], FriendAddPage);
 
 //# sourceMappingURL=friend-add.js.map
 
@@ -10360,7 +10360,7 @@ FriendAddPage = __decorate([
 /* harmony export (immutable) */ __webpack_exports__["a"] = getErrorMsgByFormControl;
 /* harmony export (immutable) */ __webpack_exports__["b"] = getErrorMsgByFormGroup;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_utils__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_utils__ = __webpack_require__(67);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10390,7 +10390,7 @@ var defulatErrorMsgFuncMap = {
         return Object(__WEBPACK_IMPORTED_MODULE_1__utils_utils__["c" /* format */])('{label}不正确', args);
     }
 };
-var myValidators = (function () {
+var myValidators = /** @class */ (function () {
     function myValidators() {
     }
     myValidators.mobile = function (control) {
@@ -10399,12 +10399,12 @@ var myValidators = (function () {
         }
         return !regs.mobile.test(control.value) ? { mobile: true } : null;
     };
+    myValidators = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
+        __metadata("design:paramtypes", [])
+    ], myValidators);
     return myValidators;
 }());
-myValidators = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [])
-], myValidators);
 
 function getErrorMsgByFormControl(control, label, errorMsgFuncMap) {
     if (errorMsgFuncMap === void 0) { errorMsgFuncMap = {}; }
