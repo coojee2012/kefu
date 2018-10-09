@@ -233,6 +233,24 @@ export class FreeSwitchPBX {
     }
   }
 
+
+  async  getRegExtension(): Promise<string> {
+    try {
+      const result = await new Promise<string>((resolve, reject) => {
+        this.conn.api('sofia', ['status', 'profile', 'internal', 'reg'], (evt: Event) => {
+          const value: string = evt.body;
+          resolve(value);
+        });
+      });
+      return result;
+    }
+    catch (ex) {
+      return Promise.reject(ex);
+    }
+  }
+
+
+
   async uuidPlayAndGetDigits({ uuid, options, includeLast = false }: { uuid: string, options: uuidPlayAndGetDigitsOptions, includeLast: boolean }) {
     try {
       let {

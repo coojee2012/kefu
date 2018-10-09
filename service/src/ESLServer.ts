@@ -128,14 +128,22 @@ export class ESLServer extends EventEmitter2 {
 
             const conn = await this.eslServer.createInboundServer();
             const calls: string[] = [];
+
+            setInterval(() => {
+                conn.api('sofia', ['status', 'profile', 'internal', 'reg'], (evt: Event) => {
+                    const value: string = evt.body;
+                    this.logger.debug('REG:', value);
+                });
+            }, 5000)
+
             conn.on('esl::event::MESSAGE::**', (evt) => {
 
-                this.fsChat.inboundHandleMsg(conn,evt)
-                .then()
-                .catch(err=>{
+                this.fsChat.inboundHandleMsg(conn, evt)
+                    .then()
+                    .catch(err => {
 
-                })
-                
+                    })
+
 
             })
 
@@ -231,7 +239,7 @@ export class ESLServer extends EventEmitter2 {
         }
     }
 
-   
+
 
     handleAgentEvents(fsCallFlow: FreeSwitchCallFlow) {
         try {
