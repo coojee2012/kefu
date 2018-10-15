@@ -56,7 +56,22 @@ export class HeaderComponent implements OnInit {
         modalRef.componentInstance.alertTitle = '友情提示：';
         modalRef.componentInstance.alertMsg = alertMsg;
       } else {
-        await this.sipClient.init({ domain: user.domain, exten: user.extension, password: user.extPwd });
+        await this.sipClient.init({
+          domain: user.domain,
+          exten: user.extension, password: user.extPwd,
+          media: {
+            local: {
+              video: document.getElementById('localVideo')
+            },
+            remote: {
+              // video: document.getElementById('remoteVideo'),
+              video: null,
+              // This is necessary to do an audio/video call as opposed to just a video call
+              audio: document.getElementById('remoteVideo')
+            }
+          },
+          ua: {}
+        });
         await new Promise((resolve, reject) => {
           const subscription = this.headerService.checkIn()
             .subscribe(
