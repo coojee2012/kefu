@@ -69,7 +69,7 @@ export class IVR {
     async ivrAction({ ivrNumber, ordinal, uuid }: { ivrNumber: string, ordinal: number, uuid: string }): Promise<TDoneIvrActionResult> {
         try {
             const { tenantId, callId, caller, ivrCurrentDeep, ivrMaxDeep } = this.runtimeData.getRunData();
-            this.logger.debug(`正在处理IVR:Number-${ivrNumber},Action-${ordinal},uuid:${uuid}`);
+            this.logger.debug(`正在处理${tenantId}IVR:Number-${ivrNumber},Action-${ordinal},uuid:${uuid}`);
             if (ivrCurrentDeep < ivrMaxDeep) {
                 const actionDoc = await this.pbxActionController.getIvrAction(tenantId, ivrNumber, ordinal);
                 if (actionDoc) {
