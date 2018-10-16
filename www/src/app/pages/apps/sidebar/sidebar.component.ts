@@ -50,6 +50,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     } else {
       this.roomIds.push(room.id);
       this.rooms.push(room);
+      if (room.t === 'call') {
+        this.router.navigate([`app/phone/${room.id}`]);
+      }
     }
   }
 

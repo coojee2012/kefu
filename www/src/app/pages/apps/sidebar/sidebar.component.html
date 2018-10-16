@@ -37,8 +37,12 @@
         </a>
         <ul class="treeview-menu">
           <li *ngFor="let room of rooms">
-            <a routerLink="chat/{{ room.id }}">
-              <i class="fa fa-circle-o"></i> {{ room.userName }}</a>
+            <a  *ngIf="room.t === 'livechat'" routerLink="chat/{{ room.id }}">
+              <i class="fa fa-commenting"></i> {{ room.userName }}
+            </a>
+            <a  *ngIf="room.t === 'call'" routerLink="phone/{{ room.id }}">
+              <i class="fa fa-phone"></i> {{ room.userName }}
+            </a>
           </li>
 
         </ul>
