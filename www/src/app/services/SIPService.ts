@@ -24,13 +24,16 @@ export class SIPService {
     private options: any;
     private anonymous: boolean;
     private state: number;
+    private C: any;
     eventSource = new Subject<any>();
     event$: Observable<any>;
     constructor(private logger: LoggerService) {
         this.client = null;
         this.session = null;
+        this.anonymous = false;
         this.chatMessageSource = new MyReplaySubject<any>();
         this.chatMessage$ = this.chatMessageSource.asObservable();
+        this.event$ = this.eventSource.asObservable();
     }
 
     async init(options: any) {
@@ -93,6 +96,7 @@ export class SIPService {
                     // FreeSWITCH Default Password
                     password: options.password,
                     register: true,
+                    stunServers: ['stun:stun.voiparound.com', 'stun:stun1.l.google.com:19302', 'stun:stun.voipbuster.com'],
                     // sessionDescriptionHandlerFactory: (session, options) => {
                     //     return new SessionDescriptionHandler(session, options);
                     // },
@@ -115,7 +119,7 @@ export class SIPService {
                 this.client.transport.setMaxListeners(1000);
                 this.client.on('registered', onRegistered);
                 this.client.on('registrationFailed', onRegistionFailed);
-                this.client.on('invite', this.acceptACall.bind(this));
+                this.client.on('invite', this.onInvite.bind(this));
                 this.client.on('message', this.handleChatMsg.bind(this));
                 this.client.on('transportCreated', function (transport) {
                     console.log('======transportCreated====');
@@ -124,6 +128,8 @@ export class SIPService {
                 }.bind(this));
                 this.client.start();
             });
+
+            this.C = C;
         } catch (ex) {
             this.logger.error('SIP INIT ERROR:', ex);
         }
@@ -133,7 +139,7 @@ export class SIPService {
         try {
             if (this.client) {
                 this.client.start();
-                this.client.on('invite', this.acceptACall.bind(this));
+                this.client.on('invite', this.onInvite.bind(this));
                 this.client.on('message', this.handleChatMsg.bind(this));
             } else {
                 await this.init(options);
@@ -195,7 +201,7 @@ export class SIPService {
         return (this.anonymous || (this.client && this.client.isRegistered()));
     }
 
-    async makeACall() {
+    async makeACall(number) {
         try {
             if (!this.client || !this.checkRegistration()) {
                 this.logger.warn('A registered UA is required for calling');
@@ -218,7 +224,7 @@ export class SIPService {
                 this.options.media.local.video.volume = 0;
             }
 
-            this.session = this.client.invite('200', {
+            this.session = this.client.invite(`${number}`, {
                 sessionDescriptionHandlerOptions: {
                     constraints: {
                         audio: this.audio,
@@ -232,7 +238,132 @@ export class SIPService {
         }
     }
 
-    async acceptACall(session) {
+
+    answer() {
+        if (this.state !== C.STATUS_NEW && this.state !== C.STATUS_CONNECTING) {
+            this.logger.warn('No call to answer');
+            return;
+        }
+        // Safari hack, because you cannot call .play() from a non user action
+        if (this.options.media.remote.audio) {
+            this.options.media.remote.audio.autoplay = true;
+        }
+        if (this.options.media.remote.video) {
+            this.options.media.remote.video.autoplay = true;
+        }
+        return this.session.accept({
+            sessionDescriptionHandlerOptions: {
+                constraints: {
+                    audio: this.audio,
+                    video: this.video
+                }
+            }
+        });
+        // emit call is active
+    }
+
+    reject() {
+        if (this.state !== C.STATUS_NEW && this.state !== C.STATUS_CONNECTING) {
+            this.logger.warn('Call is already answered');
+            return;
+        }
+        return this.session.reject();
+    }
+
+    hangup() {
+        if (this.state !== C.STATUS_CONNECTED && this.state !== C.STATUS_CONNECTING && this.state !== C.STATUS_NEW) {
+            this.logger.warn('No active call to hang up on');
+            return;
+        }
+        if (this.state !== C.STATUS_CONNECTED) {
+            return this.session.cancel();
+        } else {
+            return this.session.bye();
+        }
+    }
+    hold() {
+        if (this.state !== C.STATUS_CONNECTED || this.session.local_hold) {
+            this.logger.warn('Cannot put call on hold');
+            return;
+        }
+        this.mute();
+        this.logger.log('Placing session on hold');
+        return this.session.hold();
+    }
+    unhold() {
+        if (this.state !== C.STATUS_CONNECTED || !this.session.local_hold) {
+            this.logger.warn('Cannot unhold a call that is not on hold');
+            return;
+        }
+        this.unmute();
+        this.logger.log('Placing call off hold');
+        return this.session.unhold();
+    }
+
+    mute() {
+        if (this.state !== C.STATUS_CONNECTED) {
+            this.logger.warn('An acitve call is required to mute audio');
+            return;
+        }
+        this.logger.log('Muting Audio');
+        this.toggleMute(true);
+        this.emit('mute', this);
+    }
+
+    unmute() {
+        if (this.state !== C.STATUS_CONNECTED) {
+            this.logger.warn('An active call is required to unmute audio');
+            return;
+        }
+        this.logger.log('Unmuting Audio');
+        this.toggleMute(false);
+        this.emit('unmute', this);
+    }
+
+    sendDTMF(tone) {
+        if (this.state !== C.STATUS_CONNECTED) {
+            this.logger.warn('An active call is required to send a DTMF tone');
+            return;
+        }
+        this.logger.log('Sending DTMF tone: ' + tone);
+        this.session.dtmf(tone);
+    }
+
+    message(destination, message) {
+        if (!this.client || !this.checkRegistration()) {
+            this.logger.warn('A registered UA is required to send a message');
+            return;
+        }
+        if (!destination || !message) {
+            this.logger.warn('A destination and message are required to send a message');
+            return;
+        }
+        this.client.message(destination, message);
+    }
+
+    toggleMute(mute) {
+        const pc = this.session.sessionDescriptionHandler.peerConnection;
+        if (pc.getSenders) {
+            pc.getSenders().forEach(function (sender) {
+                if (sender.track) {
+                    sender.track.enabled = !mute;
+                }
+            });
+        } else {
+            pc.getLocalStreams().forEach(function (stream) {
+                stream.getAudioTracks().forEach(function (track) {
+                    track.enabled = !mute;
+                });
+                stream.getVideoTracks().forEach(function (track) {
+                    track.enabled = !mute;
+                });
+            });
+        }
+    }
+
+
+
+    async onInvite(session) {
         try {
             if (this.state !== C.STATUS_NULL && this.state !== C.STATUS_COMPLETED) {
                 this.logger.warn('Rejecting incoming call. Simple only supports 1 call at a time');
@@ -241,63 +372,63 @@ export class SIPService {
             }
             this.session = session;
             this.setupSession();
-            this.eventSource.next({ t: 'ringing', d: this.session });
-            this.logger.debug('Accept a Aclling');
-            const remoteVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('remoteVideo');
-            const localVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('localVideo');
+            this.emit('ringing', this.session);
+            // this.logger.debug('Accept a Aclling');
+            // const remoteVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('remoteVideo');
+            // const localVideo: HTMLVideoElement = <HTMLVideoElement>document.getElementById('localVideo');
 
-            this.session.once('trackAdded', () => {
-                // We need to check the peer connection to determine which track was added
+            // this.session.once('trackAdded', () => {
+            //     // We need to check the peer connection to determine which track was added
 
-                // this.session.sessionDescriptionHandler.setDescription('Liny', {
-                //     constraints: {
-                //         audio: true,
-                //         video: false
-                //     }
-                // });
+            //     // this.session.sessionDescriptionHandler.setDescription('Liny', {
+            //     //     constraints: {
+            //     //         audio: true,
+            //     //         video: false
+            //     //     }
+            //     // });
 
-                const pc = this.session.sessionDescriptionHandler.peerConnection;
+            //     const pc = this.session.sessionDescriptionHandler.peerConnection;
 
-                // Gets remote tracks
-                const remoteStream = new MediaStream();
-                pc.getReceivers().forEach(function (receiver) {
-                    remoteStream.addTrack(receiver.track);
-                });
-                remoteVideo.srcObject = remoteStream;
-                const playPromise = remoteVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        // Automatic playback started!
-                        // Show playing UI.
-                        // We can now safely pause video...
-                        // remoteVideo.pause();
-                    })
-                        .catch(error => {
-                            // Auto-play was prevented
-                            // Show paused UI.
-                        });
-                }
-                // Gets local tracks
-                const localStream = new MediaStream();
-                pc.getSenders().forEach(function (sender) {
-                    localStream.addTrack(sender.track);
-                });
-                localVideo.srcObject = localStream;
-                const localeplayPromise = localVideo.play();
-                if (localeplayPromise !== undefined) {
-                    localeplayPromise.then(_ => {
-                        // Automatic playback started!
-                        // Show playing UI.
-                        // We can now safely pause video...
-                        // localeplayPromise.pause();
-                    })
-                        .catch(error => {
-                            // Auto-play was prevented
-                            // Show paused UI.
-                        });
-                }
-            });
-            this.session.accept();
+            //     // Gets remote tracks
+            //     const remoteStream = new MediaStream();
+            //     pc.getReceivers().forEach(function (receiver) {
+            //         remoteStream.addTrack(receiver.track);
+            //     });
+            //     remoteVideo.srcObject = remoteStream;
+            //     const playPromise = remoteVideo.play();
+            //     if (playPromise !== undefined) {
+            //         playPromise.then(_ => {
+            //             // Automatic playback started!
+            //             // Show playing UI.
+            //             // We can now safely pause video...
+            //             // remoteVideo.pause();
+            //         })
+            //             .catch(error => {
+            //                 // Auto-play was prevented
+            //                 // Show paused UI.
+            //             });
+            //     }
+            //     // Gets local tracks
+            //     const localStream = new MediaStream();
+            //     pc.getSenders().forEach(function (sender) {
+            //         localStream.addTrack(sender.track);
+            //     });
+            //     localVideo.srcObject = localStream;
+            //     const localeplayPromise = localVideo.play();
+            //     if (localeplayPromise !== undefined) {
+            //         localeplayPromise.then(_ => {
+            //             // Automatic playback started!
+            //             // Show playing UI.
+            //             // We can now safely pause video...
+            //             // localeplayPromise.pause();
+            //         })
+            //             .catch(error => {
+            //                 // Auto-play was prevented
+            //                 // Show paused UI.
+            //             });
+            //     }
+            // });
+            // this.session.accept();
         } catch (ex) {
             this.logger.error('Accept A Call Error:', ex);
         }
@@ -305,7 +436,7 @@ export class SIPService {
 
     setupSession() {
         this.state = C.STATUS_NEW;
-        this.eventSource.next({ t: 'new', d: this.session });
+        this.emit('new', this.session);
         this.session.on('progress', this.onProgress.bind(this));
         this.session.on('accepted', this.onAccepted.bind(this));
         this.session.on('rejected', this.onEnded.bind(this));

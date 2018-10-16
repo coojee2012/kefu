@@ -55,38 +55,44 @@
       <!-- fa-lg (比默认大小大33%), fa-2x, fa-3x, fa-4x, fa-5  fa-rotate-180 旋转 http://www.runoob.com/font-awesome/fontawesome-tutorial.html-->
 
       <ul class="nav navbar-nav">
-        <li *ngIf="isCheckIn">
+        <li *ngIf="isCheckIn && ccBtns.DialBtn">
           <a href="javascript:void(0);" (click)="openDialout()">
             <i class="fa fa-phone-square fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li *ngIf="isCheckIn">
+        <li *ngIf="isCheckIn && ccBtns.RingBtn">
+          <a href="javascript:void(0);"  (click)="answer()">
+            <i class="fa fa-sun-o fa-spin  fa-lg " style="color:springgreen;"></i>
+          </a>
+        </li>
+
+        <li *ngIf="isCheckIn && ccBtns.HoldBtn">
           <a href="javascript:void(0);">
             <i class="fa fa-pause fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li *ngIf="isCheckIn">
+        <li *ngIf="isCheckIn && ccBtns.TransferBtn">
           <a href="javascript:void(0);">
             <i class="fa fa-share-square fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li *ngIf="isCheckIn">
+        <li *ngIf="isCheckIn && ccBtns.ConsultBtn">
           <a href="javascript:void(0);">
             <i class="fa   fa-comments fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li *ngIf="isCheckIn">
+        <li *ngIf="isCheckIn && ccBtns.MultiPartyBtn">
           <a href="javascript:void(0);">
             <i class="fa  fa-user-plus fa-lg" style="color:springgreen;"></i>
           </a>
         </li>
 
-        <li *ngIf="isCheckIn">
-          <a href="javascript:void(0);">
+        <li *ngIf="isCheckIn && ccBtns.HangupBtn">
+          <a href="javascript:void(0);" (click)="hangup()">
             <i class="fa  fa-tty  fa-lg" style="color:red;"></i>
           </a>
         </li>

@@ -501,6 +501,16 @@ export class FlowBase {
             }
             // const oriResult = await this.fsPbx.originate(dialStr, '&park()', blegArgs.join(','), originationUuid);
 
+            this.fsPbx.message({
+                sessionId: callId,
+                msgType: 'system',
+                from: 'system' + '@' + tenantId,
+                to: number + '@' + tenantId,
+                subject: 'chat',
+                profile: 'internal',//'external'
+                body: 'new'
+            })
+
             const bridgeResult = await this.bridgeACall(dialStr, number, onAnswer, onHangup);
 
 

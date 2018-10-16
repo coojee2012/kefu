@@ -92,6 +92,10 @@ export class FreeSwitchPBX {
       this.logger.error('subscribe', ex);
     }
   }
+  message(data) {
+    this.conn.message(data, (e) => { console.log(e.headers) });
+  }
+
   async linger(time: Number) {
     try {
       const result = await new Promise((resolve, reject) => {
@@ -170,7 +174,7 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.execute('answer', '', uuid, (evt: Event) => {
-         console.log('Answer -> ',evt);
+          console.log('Answer -> ', evt);
           resolve();
         })
       });
@@ -186,7 +190,7 @@ export class FreeSwitchPBX {
     try {
       const result = await new Promise((resolve, reject) => {
         this.conn.execute('unpark', '', uuid, (evt: Event) => {
-         console.log('unpark -> ',evt);
+          console.log('unpark -> ', evt);
           resolve();
         })
       });

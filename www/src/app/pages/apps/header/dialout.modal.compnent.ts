@@ -18,7 +18,7 @@ export class NgbdDialoutModalComponent {
     async  dialout(number) {
         try {
             this.logger.debug('dialout:', number);
-            await this.sipClient.makeACall();
+            await this.sipClient.makeACall(number);
             this.activeModal.close();
         } catch (ex) {
             this.activeModal.close();

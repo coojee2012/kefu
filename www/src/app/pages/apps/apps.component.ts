@@ -40,7 +40,7 @@ export class AppsComponent implements OnInit {
     // this.logger.debug('aaaaaa', uri.toString(), uri.scheme , uri.user);
 
     const roomId = request.getHeader('X-Session-Id');
-    console.log('roomId:', roomId);
+    this.logger.debug('roomId:', roomId);
     const index = this.chatRoomIds.indexOf(roomId);
     if (index > -1) {
       this.logger.debug(`已经存在该房间,当前房间数:${this.chatRoomIds.length}`);
