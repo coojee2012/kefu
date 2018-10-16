@@ -137,6 +137,21 @@ export class DataService {
                 t: 'text'
             });
 
+        } else if (msgType === 'call') {
+            const roomId = request.getHeader('X-Session-Id');
+            this.logger.debug(`new call roomId:${roomId}`);
+            const index = this.rooms.indexOf(roomId);
+            if (index < 0) {
+                this.rooms.push(roomId);
+                this.RoomSource.next({
+                    id: roomId,
+                    user: user,
+                    userName: `电话访客-${this.rooms.length + 1}`,
+                    status: 0,
+                    ts: new Date().getTime(),
+                    t: 'call'
+                });
+            }
         }
     }
 

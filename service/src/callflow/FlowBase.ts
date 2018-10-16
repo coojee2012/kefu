@@ -503,7 +503,7 @@ export class FlowBase {
 
             this.fsPbx.message({
                 sessionId: callId,
-                msgType: 'system',
+                msgType: 'call',
                 from: 'system' + '@' + tenantId,
                 to: number + '@' + tenantId,
                 subject: 'chat',
