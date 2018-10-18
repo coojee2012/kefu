@@ -48,7 +48,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewChecked {
       .pipe()
       .subscribe(this.handleChatMsg.bind(this));
 
-    this.roomSub = this.dataService.LiveChatMsg$
+    this.roomSub = this.dataService.Room$
       .pipe()
       .subscribe(this.handleRoomChange.bind(this));
 
