@@ -67,7 +67,16 @@ export class SIPService {
                 isFirefox = true;
             }
             const sessionDescriptionHandlerFactoryOptions: any = {
-
+                peerConnectionOptions: {
+                    iceCheckingTimeout: 5000,
+                    rtcConfiguration: {
+                        iceServers: [
+                            {urls: 'stun:stun.voiparound.com'},
+                            {urls: 'stun:stun.voipbuster.com'},
+                            {urls: 'stun:stun.l.google.com:19302'}
+                        ]
+                    }
+                }
             };
             if (isSafari) {
                 sessionDescriptionHandlerFactoryOptions.modifiers = [SIP.Web.Modifiers.stripG722];
@@ -229,7 +238,17 @@ export class SIPService {
                     constraints: {
                         audio: this.audio,
                         video: this.video
-                    }
+                    },
+                    // peerConnectionOptions: {
+                    //     iceCheckingTimeout: 5000,
+                    //     rtcConfiguration: {
+                    //         iceServers: [
+                    //             {urls: 'stun:stun.voiparound.com'},
+                    //             {urls: 'stun:stun.voipbuster.com'},
+                    //             {urls: 'stun:stun.l.google.com:19302'}
+                    //         ]
+                    //     }
+                    // }
                 }
             });
             this.setupSession();
