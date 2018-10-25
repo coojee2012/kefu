@@ -71,9 +71,9 @@ export class SIPService {
                     iceCheckingTimeout: 5000,
                     rtcConfiguration: {
                         iceServers: [
-                            {urls: 'stun:stun.voiparound.com'},
-                            {urls: 'stun:stun.voipbuster.com'},
-                            {urls: 'stun:stun.l.google.com:19302'}
+                            { urls: 'stun:stun.voiparound.com' },
+                            { urls: 'stun:stun.voipbuster.com' },
+                            { urls: 'stun:stun.l.google.com:19302' }
                         ]
                     }
                 }
@@ -102,15 +102,27 @@ export class SIPService {
                     },
                     // FreeSWITCH Default Username
                     authorizationUser: options.exten,
-                    // FreeSWITCH Default Password
-                    password: options.password,
-                    register: true,
+                    // Username (String) to use when generating authentication credentials.
+                    // If not defined the value in uri parameter is used.
+                    password: options.password, // FreeSWITCH Default Password
+                    register: true, // Indicate if a SIP User Agent should register automatically when starting.
+                    registerExpires: 300, // Registration expiry time (in seconds) (Number). Default value is 600.
+                    // registrarServer: '', // Set the SIP registrar URI.
+                    // Valid value is a SIP URI without username.
+                    // Default value is null which means that the registrar URI is taken from the uri parameter (by removing the username).
                     stunServers: ['stun:stun.voiparound.com', 'stun:stun1.l.google.com:19302', 'stun:stun.voipbuster.com'],
                     // sessionDescriptionHandlerFactory: (session, options) => {
                     //     return new SessionDescriptionHandler(session, options);
                     // },
-                    log: { level: 'debug' },
-                    sessionDescriptionHandlerFactoryOptions: sessionDescriptionHandlerFactoryOptions
+                    dtmfType: SIP.C.dtmfType.INFO, // Valid values are SIP.C.dtmfType.INFO and SIP.C.dtmfType.RTP
+                    log: {
+                        builtinEnabled: true,
+                        level: 'debug', // "debug", "log", "warn", "error"
+                        // connector:(level, category, label, content)=>{}
+                    },
+                    noAnswerTimeout: 60,
+                    sessionDescriptionHandlerFactoryOptions: sessionDescriptionHandlerFactoryOptions,
+                    userAgentString: 'AI-SIP'
                 });
                 let registered = false;
                 this.state = C.STATUS_NULL;
