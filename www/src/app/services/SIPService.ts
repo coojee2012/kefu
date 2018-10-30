@@ -68,7 +68,7 @@ export class SIPService {
             }
             const sessionDescriptionHandlerFactoryOptions: any = {
                 peerConnectionOptions: {
-                    iceCheckingTimeout: 5000,
+                    iceCheckingTimeout: 3000,
                     rtcConfiguration: {
                         iceServers: [
                             { urls: 'stun:stun.voiparound.com' },
@@ -99,6 +99,11 @@ export class SIPService {
                     transportOptions: {
                         traceSip: true,
                         wsServers: 'ws://192.168.2.230:5066',
+                        connectionTimeout: 5, // seconds default 5
+                        maxReconnectionAttempts: 3,
+                        reconnectionTimeout: 4,
+                        keepAliveInterval: 0,
+                        keepAliveDebounce: 10
                     },
                     // FreeSWITCH Default Username
                     authorizationUser: options.exten,
@@ -110,7 +115,6 @@ export class SIPService {
                     // registrarServer: '', // Set the SIP registrar URI.
                     // Valid value is a SIP URI without username.
                     // Default value is null which means that the registrar URI is taken from the uri parameter (by removing the username).
-                    stunServers: ['stun:stun.voiparound.com', 'stun:stun1.l.google.com:19302', 'stun:stun.voipbuster.com'],
                     // sessionDescriptionHandlerFactory: (session, options) => {
                     //     return new SessionDescriptionHandler(session, options);
                     // },
