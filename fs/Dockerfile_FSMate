@@ -1,0 +1,16 @@
+FROM registry.yunkefu.cc/unicall/freeswitch-node-base:0.0.1
+MAINTAINER Harold Sun && Yong Lin
+
+WORKDIR /srv/app
+
+ADD odbc /usr/local/freeswitch/odbc
+ADD images /usr/local/freeswitch/images
+ADD sounds /usr/local/freeswitch/sounds
+ADD config /usr/local/freeswitch/config.d
+ADD scripts /usr/local/freeswitch/scripts
+ADD ./package.json /srv/app
+RUN mkdir -p /usr/local/freeswitch/files && cd /srv/app && npm install --production -d
+ADD ./build /srv/app
+
+# Start the container.
+CMD node Server.min.js

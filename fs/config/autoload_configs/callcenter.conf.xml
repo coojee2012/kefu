@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration name="callcenter.conf" description="CallCenter">
+ <settings>
+ </settings>
+ <queues>
+  <queue name="undefined@undefined">
+  </queue>
+  <queue name="400@192.168.2.123">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="false">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-all">
+   </param>
+  </queue>
+  <queue name="403@abc">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="404@abc">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="405@abc">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="400@sohu.com">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="401@sohu.com">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="400@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="401@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="234@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="444@10.211.55.2:3000">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="456@10.211.55.2:3000">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="402@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="405@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="409@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="446@math.yunkefu.dev">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+  <queue name="400@10.211.55.2:3000">
+   <param name="ring-progressively-delay" value="10">
+   </param>
+   <param name="max-wait-time-with-no-agent-time-reached" value="5">
+   </param>
+   <param name="max-wait-time-with-no-agent" value="0">
+   </param>
+   <param name="max-wait-time" value="120">
+   </param>
+   <param name="abandoned-resume-allowed" value="false">
+   </param>
+   <param name="discard-abandoned-after" value="0">
+   </param>
+   <param name="tier-rule-no-agent-no-wait" value="false">
+   </param>
+   <param name="tier-rule-wait-multiply-level" value="false">
+   </param>
+   <param name="tier-rule-wait-second" value="0">
+   </param>
+   <param name="tier-rules-apply" value="true">
+   </param>
+   <param name="time-base-score" value="queue">
+   </param>
+   <param name="record-template" value="$${base_dir}/recordings/">
+   </param>
+   <param name="moh-sound" value="local_stream://moh">
+   </param>
+   <param name="strategy" value="ring-progressively">
+   </param>
+  </queue>
+ </queues>
+ <agents>
+  <agent name="1001@400_192.168.2.123" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="0" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1001" type="callback">
+  </agent>
+  <agent name="1002@400_192.168.2.123" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="0" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1002" type="callback">
+  </agent>
+  <agent name="1003@400_192.168.2.123" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="0" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1003" type="callback">
+  </agent>
+  <agent name="1001@400_sohu.com" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1001" type="callback">
+  </agent>
+  <agent name="1002@400_sohu.com" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1002" type="callback">
+  </agent>
+  <agent name="1001@401_sohu.com" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1001" type="callback">
+  </agent>
+  <agent name="1002@401_sohu.com" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1002" type="callback">
+  </agent>
+  <agent name="1001@401_math.yunkefu.dev" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1001" type="callback">
+  </agent>
+  <agent name="1002@401_math.yunkefu.dev" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/1002" type="callback">
+  </agent>
+  <agent name="8003@234_math.yunkefu.dev" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/8003" type="callback">
+  </agent>
+  <agent name="8008@234_math.yunkefu.dev" truncate-tiers-on-load="false" truncate-agents-on-load="false" reserve-agents="false" no-answer-delay-time="0" busy-delay-time="0" reject-delay-dime="0" wrap-up-time="15" max-no-answer="10" status="Available" contact="[leg_timeout=30]user/8008" type="callback">
+  </agent>
+ </agents>
+ <tiers>
+  <tier agent="1001@400_192.168.2.123" queue="400@192.168.2.123" level="1" position="1">
+  </tier>
+  <tier agent="1002@400_192.168.2.123" queue="400@192.168.2.123" level="1" position="1">
+  </tier>
+  <tier agent="1003@400_192.168.2.123" queue="400@192.168.2.123" level="1" position="1">
+  </tier>
+  <tier agent="1001@400_sohu.com" queue="400@sohu.com" level="1" position="1">
+  </tier>
+  <tier agent="1002@400_sohu.com" queue="400@sohu.com" level="1" position="1">
+  </tier>
+  <tier agent="1001@401_sohu.com" queue="401@sohu.com" level="1" position="1">
+  </tier>
+  <tier agent="1002@401_sohu.com" queue="401@sohu.com" level="1" position="1">
+  </tier>
+  <tier agent="1001@401_math.yunkefu.dev" queue="401@math.yunkefu.dev" level="1" position="1">
+  </tier>
+  <tier agent="1002@401_math.yunkefu.dev" queue="401@math.yunkefu.dev" level="1" position="1">
+  </tier>
+  <tier agent="8003@234_math.yunkefu.dev" queue="234@math.yunkefu.dev" level="1" position="1">
+  </tier>
+  <tier agent="8008@234_math.yunkefu.dev" queue="234@math.yunkefu.dev" level="1" position="1">
+  </tier>
+ </tiers>
+</configuration>

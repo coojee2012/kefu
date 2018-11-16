@@ -1,0 +1,12 @@
+FROM registry.yunkefu.cc/unicall/freeswitch-base:0.0.1
+MAINTAINER Yong Lin <11366846@qq.com>
+
+RUN wget -O - https://npm.taobao.org/mirrors/node/v4.4.4/node-v4.4.4-linux-x64.tar.gz | tar --strip-components 1 -xzf - -C /usr/local \
+    && mkdir -p /srv/app && mkdir -p /srv/app/config && mkdir -p /srv/app/log \
+    && mkdir -p /srv/app/node_modules
+ADD ./.npmrc /root/.npmrc
+ADD ./package.json /srv/app/package.json
+RUN npm install -g  node-gyp -d \
+    && cd /srv/app && npm install --production -d
+
+WORKDIR /srv/app
