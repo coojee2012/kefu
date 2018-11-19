@@ -1,0 +1,40 @@
+/*
+-- Query: SELECT * FROM kamailio.dispatcher
+LIMIT 0, 1000
+
+-- Date: 2016-11-10 11:09
+*/
+INSERT INTO `dispatcher` (`id`,`setid`,`destination`,`flags`,`priority`,`attrs`,`description`) VALUES (1,1,'sip:10.0.4.6:5090',0,0,'weight=50','FreeSWITCH-1');
+INSERT INTO `dispatcher` (`id`,`setid`,`destination`,`flags`,`priority`,`attrs`,`description`) VALUES (5,1,'sip:10.0.4.7:5090',0,0,'weight=50','FreeSWITCH-2');
+INSERT INTO `dispatcher` (`id`,`setid`,`destination`,`flags`,`priority`,`attrs`,`description`) VALUES (7,2,'sip:10.0.4.8:5090',0,0,'','conference-server-1');
+INSERT INTO `dispatcher` (`id`,`setid`,`destination`,`flags`,`priority`,`attrs`,`description`) VALUES (8,2,'sip:10.0.4.7:5090',0,0,'','conference-server-2');
+INSERT INTO `dispatcher` (`id`,`setid`,`destination`,`flags`,`priority`,`attrs`,`description`) VALUES (9,2,'sip:10.0.4.6:5090',0,0,'','conference-server-3');
+
+
+/*
+-- Query: SELECT * FROM kamailio.dialplan
+LIMIT 0, 1000
+
+-- Date: 2016-11-10 11:05
+*/
+INSERT INTO `dialplan` (`id`,`dpid`,`pr`,`match_op`,`match_exp`,`match_len`,`subst_exp`,`repl_exp`,`attrs`) VALUES (1,1,10,1,'^00[1-9][0-9]+$',0,'^00(.*)$','\\1','');
+INSERT INTO `dialplan` (`id`,`dpid`,`pr`,`match_op`,`match_exp`,`match_len`,`subst_exp`,`repl_exp`,`attrs`) VALUES (2,1,10,1,'^\\+[1-9][0-9]+$',0,'^\\+(.*)$','\\1','');
+INSERT INTO `dialplan` (`id`,`dpid`,`pr`,`match_op`,`match_exp`,`match_len`,`subst_exp`,`repl_exp`,`attrs`) VALUES (3,1,10,1,'^0[1-9][0-9]+$',0,'^0(.*)$','86\\1','');
+INSERT INTO `dialplan` (`id`,`dpid`,`pr`,`match_op`,`match_exp`,`match_len`,`subst_exp`,`repl_exp`,`attrs`) VALUES (4,1,10,1,'^[1-9][0-9]+$',0,'^(.*)$','86\\1','');
+
+
+/*
+-- Query: SELECT * FROM kamailio.address
+LIMIT 0, 1000
+
+-- Date: 2016-11-10 11:47
+*/
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (1,1,'10.0.4.6',32,5090,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (2,1,'10.0.4.6',32,5092,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (4,2,'112.124.118.98',32,5060,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (5,2,'112.124.118.98',32,6060,'tcp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (6,1,'10.0.4.7',32,5090,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (7,1,'10.0.4.7',32,5092,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (8,1,'10.0.4.8',32,5090,'udp');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (9,1,'10.0.4.8',32,5092,'upd');
+INSERT INTO `address` (`id`,`grp`,`ip_addr`,`mask`,`port`,`tag`) VALUES (10,3,'10.0.4.0',24,5092,'call-ctrl');
