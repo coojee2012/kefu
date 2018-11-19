@@ -1,0 +1,33 @@
+#!groovy
+
+node {
+    stage 'Checkout'
+
+        checkout scm
+
+    stage 'Build'
+
+        def version = "0.0.1"
+        def buildNumber = currentBuild.number
+        def GString VER_TAG = "${version}.${buildNumber}"
+        def buildCommand = "docker build "
+        def buildArg = "--build-arg http_proxy='http://10.0.0.110:8123' --build-arg https_proxy='http://10.0.0.110:8123' "
+        def dockerFilePath ="imply-docker/"
+        def registryPath = "registry.yunkefu.cc/unicall/s3proxy"
+        sh "docker build  ${buildArg} -t ${registryPath}:${VER_TAG} . "
+        sh "git tag -a ${VER_TAG} -m 'tagged by Jenkins'"
+        echo "docker push"
+    stage 'Publish'
+
+        sh "docker push ${registryPath}:${VER_TAG}"
+        echo "docker push"
+    stage '是否部署stage环境'
+        timeout(time: 10, unit: 'MINUTES') {
+              input 'deploy?'
+            }
+    stage '完成'
+        sh "cd proxy-k8s && kubectl apply -f ./"
+        echo "deployed"
+
+
+}

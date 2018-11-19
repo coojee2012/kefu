@@ -6,10 +6,14 @@ import { Connection } from '../lib/NodeESL/Connection';
 import { Event } from '../lib/NodeESL/Event';
 import { EventEmitter2 } from 'eventemitter2';
 
+import { MsgBus } from './MsgBus'
+
 import { FreeSwitchPBX } from './FreeSwitchPBX';
 import { RuntimeData } from './RunTimeData';
 import { FlowBase } from './FlowBase';
 import { IVR } from './IVR';
+import { CCQueue } from './Queue';
+
 
 import { PBXRouterController } from '../controllers/pbx_router';
 import { PBXCallProcessController } from '../controllers/pbx_callProcess';
@@ -17,22 +21,37 @@ import { PBXLocalNumberController } from '../controllers/pbx_localNumber';
 import { PBXCDRController } from '../controllers/pbx_cdr';
 import { PBXIVRMenuController } from '../controllers/pbx_ivrMenu';
 import { PBXIVRActionsController } from '../controllers/pbx_ivrAction';
+import { PBXIVRInputController } from '../controllers/pbx_ivrInput';
+import { PBXQueueStatisticController } from '../controllers/pbx_queueStatistic';
+import { PBXAgentStatisticController } from '../controllers/pbx_agentStatistic';
+import { PBXBlackListController } from '../controllers/pbx_blacklist';
+import { PBXQueueController } from '../controllers/pbx_queue';
+import { PBXExtensionController } from '../controllers/pbx_extension';
+import { PBXAgentController } from '../controllers/pbx_agent';
+import { PBXRecordFileController } from '../controllers/pbx_recordFile';
+import { PBXTrunkController } from '../controllers/pbx_trunk';
+
+import { TenantController } from '../controllers/tenant';
+import { UserEventController } from '../controllers/userEvent';
+
 @Injectable()
 export class FreeSwitchCallFlow extends EventEmitter2 {
     private logger: LoggerService;
     private fsPbx: FreeSwitchPBX;
     private childInjector: Injector;
-    private isEnd: Boolean;
-    private callId: String;
+    private isEnd: boolean;
+    private callId: string;
     private runtimeData: RuntimeData;
     private eslEventNames: ESLEventNames;
     private routerControl: PBXRouterController;
     private callProcessControl: PBXCallProcessController;
     private cdrControl: PBXCDRController;
-    private flowBase:FlowBase;
-    private ivr:IVR;
+    private flowBase: FlowBase;
+    private userEventCtl:UserEventController;
+    private ivr: IVR;
+    private queue: CCQueue;
 
-    constructor(private injector: Injector, private conn: Connection) {
+    constructor(private injector: Injector, private conn: Connection,initEvent?:Event) {
         super({ wildcard: true, delimiter: '::', maxListeners: 10000 });
         this.logger = this.injector.get(LoggerService);
         this.eslEventNames = this.injector.get(ESLEventNames);
@@ -41,13 +60,19 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
         this.callProcessControl = this.childInjector.get(PBXCallProcessController);
         this.cdrControl = this.childInjector.get(PBXCDRController);
         this.fsPbx = this.childInjector.get(FreeSwitchPBX);
+        this.fsPbx.initData(initEvent);
+  
         this.runtimeData = this.childInjector.get(RuntimeData);
+
+        this.runtimeData.initData();
         this.flowBase = this.childInjector.get(FlowBase);
         this.isEnd = false;
-        const connEvent: Event = this.conn.getInfo();
+        const connEvent: Event = this.fsPbx.getConnInfo();
         this.callId = connEvent.getHeader('Unique-ID');
     }
     createChildInjector(conn: Connection): void {
+        this.logger.debug('ccQueueccQueueccQueue', typeof CCQueue);
+        this.logger.debug('IVR', typeof IVR);
         this.childInjector = ReflectiveInjector.resolveAndCreate([
 
             {
@@ -56,22 +81,41 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
                 },
                 deps: [] //这里不能丢
             },
-            {
-                provide: RuntimeData, useFactory: () => {
-                    return new RuntimeData(conn, this.injector);
-                },
-                deps: [] //这里不能丢
-            },
+            RuntimeData,
+            MsgBus,
+            // {
+            //     provide: RuntimeData, useFactory: () => {
+            //         return new RuntimeData(conn, this.injector);
+            //     },
+            //     deps: [] //这里不能丢
+            // },
             // 功能服务注入
-            FlowBase,
             IVR,
+            CCQueue,
+            FlowBase,
+
+
             // 数据库相关服务注入
             PBXRouterController,
             PBXCallProcessController,
             PBXLocalNumberController,
             PBXCDRController,
             PBXIVRMenuController,
+            PBXIVRInputController,
             PBXIVRActionsController,
+            PBXQueueStatisticController,
+            PBXAgentStatisticController,
+            PBXBlackListController,
+            PBXQueueController,
+            PBXExtensionController,
+            PBXAgentController,
+            PBXRecordFileController,
+            PBXTrunkController,
+
+
+
+            TenantController,
+            UserEventController,
         ], this.injector);
     }
     /**
@@ -80,24 +124,31 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     async start() {
         try {
             this.logger.debug('Begin Call Flow!')
-            this.conn.on('esl::event::disconnect::notice', (event: Event) => {
-                const disposition = event.getHeader('Content-Disposition');
-                if (disposition === 'linger') {
-                    const lingerTime = event.getHeader('Linger-Time');
-                    this.logger.warn(`ESL Conn will disconnect after:${lingerTime}s`);
-                } else {
-                    this.logger.debug(`ESL Conn is disconnecting!!!`);
-                }
-            })
-            // 当A-leg结束之后，还允许esl socket驻留的最长时间s
-            await this.fsPbx.linger(30);
-            const subRes = await this.fsPbx.subscribe(['ALL']);
-            await this.fsPbx.filter('Unique-ID', this.callId);
+           
+            // 没有租户的用户是非法的用户
+            await this.runtimeData.setTenantInfo();
+            if (!this.conn.isInBound()) {
+                this.conn.on('esl::event::disconnect::notice', (event: Event) => {
+                    const disposition = event.getHeader('Content-Disposition');
+                    if (disposition === 'linger') {
+                        const lingerTime = event.getHeader('Linger-Time');
+                        this.logger.warn(`ESL Conn will disconnect after:${lingerTime}s`);
+                    } else {
+                        this.logger.debug(`ESL Conn is disconnecting!!!`);
+                    }
+                })
+                // 当A-leg结束之后，还允许esl socket驻留的最长时间s
+                await this.fsPbx.linger(30);
+                const subRes = await this.fsPbx.subscribe(['ALL']);
+                await this.fsPbx.filter('Unique-ID', this.callId);
+                await this.fsPbx.filter('Other-Leg-Unique-ID', this.callId)
+            }
 
             await this.billing();
             this.listenAgentEvent();
             await this.route();
-            this.logger.debug('CallFlowEND:');
+            await this.fsPbx.uuidTryKill(this.callId)
+            this.logger.debug('Call Flow Exec END!');
         } catch (ex) {
             this.logger.error('In Call Flow Sart:', ex);
         }
@@ -159,10 +210,20 @@ export class FreeSwitchCallFlow extends EventEmitter2 {
     listenAgentEvent() {
         try {
             const agentEvents = this.eslEventNames.ESLUserEvents;
-            this.on(`${agentEvents.hangup}::${this.callId}`, this.onAgentHangup.bind(this))
+            this.once(`${agentEvents.hangup}::${this.callId}`, this.onAgentHangup.bind(this))
         }
         catch (ex) {
+            return Promise.reject(ex);
+        }
+    }
 
+    removeAllAgentListener() {
+        try {
+            const agentEvents = this.eslEventNames.ESLUserEvents;
+            this.removeAllListeners(`${agentEvents.hangup}::${this.callId}`);
+        }
+        catch (ex) {
+            return Promise.reject(ex);
         }
     }
 

@@ -1,13 +1,20 @@
+
 /**
  * Created by LinYong on 2017/8/1.
+ * update 6
+ * do -> tap
+ * catch -> catchError
+ * switch -> switchAll
+ * finally -> finalize
  */
-import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {AuthorizationService} from './core/authorization/authorization.service';
-import {Router} from '@angular/router';
-import { environment } from './../environments/environment';
-import 'rxjs/add/operator/do';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { AuthorizationService } from './core/authorization/authorization.service';
+import { Router } from '@angular/router';
+import { environment } from '../environments/environment';
+
+import { Observable, Subject, ReplaySubject, from, of, range } from 'rxjs';
+import { map, filter, switchMap, catchError, tap } from 'rxjs/operators';
 /**
  * 是否是对象
  * @param value
@@ -49,13 +56,14 @@ export class APPRequestInterceptor implements HttpInterceptor {
     if (!!this.authorizationService.getCurrentUser()) {
       JWT = `Bearer ${this.authorizationService.getCurrentUser().token}`;
     }
+    console.log('befor intercept', req.url);
     req = req.clone({
       setHeaders: {
         Authorization: JWT
       },
       url: environment.api.host + req.url
     });
-    console.log(req.params, this.authorizationService.getCurrentUser(), environment);
+    console.log('intercept request:', req.params, req.url, this.authorizationService.getCurrentUser());
     return next.handle(req);
   }
 }
@@ -72,26 +80,35 @@ export class APPResponseInterceptor implements HttpInterceptor {
    * @returns {Observable<HttpEvent<any>>}
    */
   intercept(req: HttpRequest<any>,
-            next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req).map(event => {
-      console.log('Response map', event);
-      return event;
-    }).catch(err => {
-      console.log('Response catch', err);
-      if (err instanceof HttpErrorResponse) {
-        switch (err.status) {
-          case 401:
-            return Observable.throw(err);
-          case 403:
-            break;
-          case 404:
-            break;
-          case 500:
-            break;
-        }
-      }
-    });
+    next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req)
+      .pipe(
+        map(event => {
+          console.log('Response map', event);
+          return event;
+        }),
+      // catchError((err,cau) => {
+      //   return event;
+      // })
+    );
   }
+
+
+  // catchError(err => {
+  //   console.log('Response catch', err);
+  //   if (err instanceof HttpErrorResponse) {
+  //     switch (err.status) {
+  //       case 401:
+  //         return observableThrowError(err);
+  //       case 403:
+  //         break;
+  //       case 404:
+  //         break;
+  //       case 500:
+  //         break;
+  //     }
+  //   }
+  // })
 }
 /**
  * 我们也可以使用拦截器来实现缓存。比如，假设我们已经写了一个 HTTP 缓存，它具有如下的简单接口：
@@ -100,7 +117,7 @@ abstract class HttpCache {
   /**
    * Returns a cached response, if any, or null if not present.
    */
-  abstract get(req: HttpRequest<any>): HttpResponse<any>|null;
+  abstract get(req: HttpRequest<any>): HttpResponse<any> | null;
 
   /**
    * Adds or updates the response in the cache.
@@ -110,10 +127,10 @@ abstract class HttpCache {
 
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
-  constructor(private cache: HttpCache) {}
+  constructor(private cache: HttpCache) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  	// Before doing anything, it's important to only cache GET requests.
+    // Before doing anything, it's important to only cache GET requests.
     // Skip this interceptor if the request method isn't GET.
     if (req.method !== 'GET') {
       return next.handle(req);
@@ -124,18 +141,21 @@ export class CachingInterceptor implements HttpInterceptor {
     if (cachedResponse) {
       // A cached response exists. Serve it instead of forwarding
       // the request to the next handler.
-      return Observable.of(cachedResponse);
+      return of(cachedResponse);
     }
 
     // No cached response exists. Go to the network, and cache
     // the response when it arrives.
-    return next.handle(req).do(event => {
-      // Remember, there may be other events besides just the response.
-      if (event instanceof HttpResponse) {
-      	// Update the cache.
-     this.cache.put(req, event);
-      }
-    });
+    return next.handle(req)
+      .pipe(
+        tap(event => {
+          // Remember, there may be other events besides just the response.
+          if (event instanceof HttpResponse) {
+            // Update the cache.
+            this.cache.put(req, event);
+          }
+        })
+      );
   }
 }
 
@@ -145,16 +165,19 @@ export class CachingInterceptor implements HttpInterceptor {
  */
 @Injectable()
 export class TimingInterceptor implements HttpInterceptor {
- constructor(private auth: AuthorizationService) {}
- intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-   const started = Date.now();
-   return next
-     .handle(req)
-     .do(event => {
-       if (event instanceof HttpResponse) {
-         const elapsed = Date.now() - started;
-         console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
-       }
-     });
- }
+  constructor(private auth: AuthorizationService) { }
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const started = Date.now();
+    return next
+      .handle(req)
+      .pipe(
+        tap(event => {
+          if (event instanceof HttpResponse) {
+            const elapsed = Date.now() - started;
+            console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+          }
+        })
+      )
+      ;
+  }
 }

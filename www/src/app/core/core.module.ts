@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
+
+
 // import { UTILS_STORAGE_PROVIDERS } from './utils-service/utils.service';
 /**
  * 数据缓存）
@@ -17,7 +19,8 @@ import { LoggerModule } from './logger';
     LoadingModule,
     StorageModule,
     AuthorizationModule,
-    LoggerModule
+    LoggerModule,
+
   ],
   providers: [
     // UTILS_STORAGE_PROVIDERS,
@@ -26,7 +29,7 @@ import { LoggerModule } from './logger';
   ],
   exports: [
     StorageModule,
-    AuthorizationModule
+    AuthorizationModule,
   ]
 })
 export class CoreModule { }

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>下载APP</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <h2>Android版</h2>
+
+  <div padding class="qrcode-wrap">
+    <cy-qrcode class="qrcode" [text]="android_url"></cy-qrcode>
+
+    <a margin-top ion-button block round [href]="android_url">下载</a>
+  </div>
+
+</ion-content>

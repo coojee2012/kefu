@@ -1,0 +1,62 @@
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:16:01.217Z"}
+{"status":0,"data":[{"currency":"zil","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"omg","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"btc","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"icx","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"eth","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"btm","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"bch","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"ae","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"ltc","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"zrx","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"usdt","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"bnb","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"ft","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"zip","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"},{"currency":"etc","available":"0.000000000000000000","frozen":"0.000000000000000000","balance":"0.000000000000000000"}],"level":"info","message":"当前账户资产:","timestamp":"2018-06-21T08:16:02.518Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:28:17.943Z"}
+{"level":"info","message":"当前账户资产:","timestamp":"2018-06-21T08:28:18.797Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:47:19.155Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:49:00.362Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:50:22.252Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:51:22.294Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:54:18.133Z"}
+{"message":"trad data:","stack":"TypeError: Cannot read property 'length' of undefined\n    at FCTrade.<anonymous> (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:183:50)\n    at step (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:32:23)\n    at Object.next (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:13:53)\n    at fulfilled (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:4:58)\n    at <anonymous>\n    at process._tickCallback (internal/process/next_tick.js:188:7)","level":"error","timestamp":"2018-06-21T08:54:29.128Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:54:45.478Z"}
+{"message":"trad data:","stack":"TypeError: Cannot read property 'length' of undefined\n    at FCTrade.<anonymous> (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:183:50)\n    at step (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:32:23)\n    at Object.next (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:13:53)\n    at fulfilled (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:4:58)\n    at <anonymous>\n    at process._tickCallback (internal/process/next_tick.js:188:7)","level":"error","timestamp":"2018-06-21T08:54:58.838Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:57:08.184Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:57:56.095Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:59:32.670Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T08:59:48.222Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T09:04:35.754Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T09:05:02.058Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T09:25:37.834Z"}
+{"message":"trad data:","stack":"Error: 使用账户数<useAccount>，值应该为数字1或2\n    at FCTrade.<anonymous> (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:78:31)\n    at step (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:32:23)\n    at Object.next (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:13:53)\n    at /Users/linyong/xcode/kefu/exe/dist/FCTrade.js:7:71\n    at new Promise (<anonymous>)\n    at __awaiter (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:3:12)\n    at FCTrade.initAccount (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:56:16)\n    at FCTrade.<anonymous> (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:208:51)\n    at step (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:32:23)\n    at Object.next (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:13:53)","level":"error","timestamp":"2018-06-21T09:25:37.837Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T09:26:58.730Z"}
+{"level":"info","message":"欢迎使用FT自动挖矿程序，祝你早日发财，别墅靠海！(^_^) ","timestamp":"2018-06-21T09:28:07.219Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:41.275Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:43.740Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:45.997Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:48.261Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:50.507Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:52.762Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:55.006Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:32:58.863Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:02.209Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:04.476Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:06.754Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:09.007Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:11.269Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:13.783Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:16.030Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:21.081Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:23.344Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:25.602Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:27.851Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:30.113Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:32.362Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:34.604Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:38.286Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:40.537Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:45.269Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:47.540Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:51.024Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:53.259Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:56.772Z"}
+{"level":"warn","message":"可用账户资金不允许，请充钱！","timestamp":"2018-06-22T03:33:59.030Z"}
+{"level":"error","message":"授权出现异常！","timestamp":"2018-06-22T04:05:10.525Z"}
+{"level":"error","message":"授权出现异常！","timestamp":"2018-06-22T04:05:41.666Z"}
+{"level":"info","message":"订单A卖出: ZsuLSotrb6LwiZxjEw97PLumkuo-S12kDwotnNIA4Mk= sell 0.119000000000000000 filled","timestamp":"2018-06-22T04:05:49.373Z"}
+{"level":"info","message":"订单A买入: VyMI8c0f0vtehFqT08hv9bF88d-gTFa_m4d6Y-eQjMc= buy 61.260000000000000000 filled","timestamp":"2018-06-22T04:05:54.238Z"}
+{"level":"info","message":"订单B卖出: KV1nKuVD5hV7LaVlMTRtj7htURyBR9e3R3EmoH869Ug= sell 0.121400000000000000 filled","timestamp":"2018-06-22T04:05:54.238Z"}
+{"level":"error","message":"授权出现异常！","timestamp":"2018-06-22T06:18:17.148Z"}
+{"level":"error","message":"授权出现异常！","timestamp":"2018-06-22T06:34:56.310Z"}
+{"message":"Error:","stack":"Error: A账户USDT大于授权可用最大金额:0\n    at FCTrade.<anonymous> (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:457:35)\n    at step (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:32:23)\n    at Object.next (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:13:53)\n    at fulfilled (/Users/linyong/xcode/kefu/exe/dist/FCTrade.js:4:58)\n    at <anonymous>\n    at process._tickCallback (internal/process/next_tick.js:188:7)","level":"error","timestamp":"2018-06-22T06:34:57.885Z"}
+{"level":"warn","message":"未授权！","timestamp":"2018-06-22T06:38:04.277Z"}
+{"level":"info","message":"50011b57eb9c4c00a2f15abce8a05d71的授权码:064a9f1d347853765f30c9bdf6b32a4eab9bc23afb27c16130ff7fb8907eb6de2e9e84ea8cdc9b1d2f30daf2915f49ac","timestamp":"2018-06-22T06:54:43.347Z"}

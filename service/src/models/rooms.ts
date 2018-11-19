@@ -5,76 +5,83 @@ import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 export type RoomModel = mongoose.Document & {
-    rid:String;
-    tenantId:String;
-    userId:String;
-    name:String;
+    rid: string;
+    tenantId: string;
+    display: string;
     createdAt: Date;   // 创建时间
     updatedAt: Date;   // 更新时间
-    msgs:String;
-    open:Boolean; // 房价是否开启
-    receivers:any[]; // 房间参与
-    owner:String;// 
-    endTime:Date;
-    duration:Number;
-    closeBy:String;
+    msgs: number;
+    open: boolean; // 房价是否开启
+    receivers: any[]; // 房间参与
+    owner: string;// 
+    endTime: Date;
+    roomType: string;
+    duration: number;
+    closeBy: String;
+    customer?: any; 
 }
 
 const roomSchema = new mongoose.Schema({
-    rid : {
+    rid: {
         type: String,
         unique: true,
         required: true
-    }, 
-    name: {
+    },
+    display: {
         type: String,
         required: true
-    }, // 用于显示房间，如果类型为phone,显示为电话号码
-    msgs:{
+    }, // 用于显示房间，如果类型为phone,显示为电话号码 livechat显示成访客 或 坐席重新制定访客的姓名
+    msgs: {
         type: Number,
         default: 0
     },
-    usernames : {
-        type: Array,
-        required: true
-    },
-    roomType:  {
+    usernames: [
+        {
+            type: Schema.Types.ObjectId,    // 引用类型
+            ref: 'Users'                     // 关联用户表
+        }
+    ], // 房间相关的坐席人员
+    roomType: {
         type: String,
-        enum: ['phone', 'webchat', 'wechat','groupchat'],
-    }, 
-    open: {  //是否存录音
+        enum: ['phone', 'livechat', 'wechat', 'groupchat'],
+    },
+    open: {  // 
         type: Boolean,
         default: true
     },
-    status :  {
+    status: {
         type: Number,
-        default: 0
-    }, 
+        default: 1   // 1 开放  2 结束 0  坐席已经在关闭 将不再显示在列表
+    },
     owner: {
         type: Schema.Types.ObjectId,    // 引用类型
-        ref: 'User'                     // 关联用户表
+        ref: 'Users'                     // 关联用户表
     }, // 房价归属
-    receivers:[
+    customer: {
+        type: Schema.Types.ObjectId,    // 引用类型
+        ref: 'Customer'                     // 关联客户
+    }, 
+    receivers: [
         {
             type: Schema.Types.ObjectId,    // 引用类型
-            ref: 'User'                     // 关联用户表
+            ref: 'Users'                     // 关联用户表
         }
     ], // 针对聊天类型的房间参与者
-    tenantId:{
+    tenantId: {
         type: String,
         required: true
-    }, 
-    closeBy : {
+    },
+    closeBy: {
         type: String,
         enum: ['owner', 'visitor'],
-    }, 
-    endTime : {
+    },
+    endTime: {
         type: Date,
     },
-    duration :  {
+    duration: {
         type: Number,
         default: 0.00
-    }, 
-},{ timestamps: true });
+    },
+}, { timestamps: true });
 
 export default roomSchema;

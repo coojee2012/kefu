@@ -1,6 +1,6 @@
 import {Component, OnInit, OnChanges, SimpleChanges, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ArticleListService} from './article-list.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {ArticleItem} from './article-item';
 
 @Component({

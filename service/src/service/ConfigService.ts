@@ -6,14 +6,21 @@ import stageConfig from '../config/app_stage';
 import prodConfig from '../config/app_prod';
 
 
+export  interface IConfig {
+    redis?:any;
+    mongo?:any;
+    deepstream?:any;
+    callControlApi?:any;
+    sipRegInFS?:boolean,
+}
 @Injectable()
 export class ConfigService {
     constructor(private logger:LoggerService){
 
     }
-    getConfig(){
+    getConfig():IConfig{
         const { NODE_ENV } = process.env;
-        let config;
+        let config:IConfig;
         this.logger.info(`获取系统配置，当前运行环境为：${NODE_ENV}`);
         switch(NODE_ENV){
             case 'development':

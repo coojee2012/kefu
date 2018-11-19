@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h4 class="modal-title">快速拨打</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>快速拨打, {{name}}!</p>
+
+  <div class="form-group">
+    <input type="text" #phoneInput (keyup)="onKey(phoneInput.value)" class="form-control" placeholder="快速拨打⏎" (keyup.enter)="onEnter(phoneInput.value)">
+  </div>
+
+  <ul class="menu">
+    <li>
+      <a href="javascript:void(0);" (click)="dialout(1)">15308098290</a>
+    </li>
+    <li>
+      <a href="javascript:void(0);">15308098290</a>
+    </li>
+    <li>
+      <a href="javascript:void(0);">15308098290</a>
+    </li>
+    <li>
+      <a href="javascript:void(0);">15308098290</a>
+    </li>
+  </ul>
+</div>

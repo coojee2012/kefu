@@ -1,14 +1,15 @@
-import {Observable} from 'rxjs/Observable';
-import {Injectable} from '@angular/core';
-import {AuthorizationService} from '../../core/authorization';
-import {HttpClient} from '@angular/common/http';
+import { Observable, Subject, ReplaySubject, from, of, range, throwError } from 'rxjs';
+import { map, filter, switchMap, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { AuthorizationService } from '../../core/authorization';
+import { HttpClient } from '@angular/common/http';
 
 
 @Injectable()
 export class LoginService {
 
   constructor(protected http: HttpClient,
-              private authorizationService: AuthorizationService) {
+    private authorizationService: AuthorizationService) {
   }
 
   isLogin(): boolean {
@@ -22,20 +23,37 @@ export class LoginService {
   login(loginInfo: { username: string; password: string }): Observable<any> {
     const authorizationService = this.authorizationService;
     console.log(loginInfo, authorizationService);
-    return this.http.post('/login1', loginInfo)
-      .map((user: any) => {
-        console.log(user);
-        if (user.meta.code === 200) {
-          authorizationService.setCurrentUser(user.data);
-        }
-        return user;
-      });
+    return this.http.post('/login', loginInfo)
+      .pipe(
+        map((user: any) => {
+          console.log(user);
+          if (user.meta.code === 200) {
+            authorizationService.setCurrentUser(user.data);
+          }
+          return user;
+        })
+      );
   }
 
   /**
    * 退出登录
    */
-  logout(): void {
-    this.authorizationService.logout();
+  logout(): Observable<any> {
+    return this.http.post('/logout', {})
+      .pipe(
+        map((res: any) => {
+          console.log('logiouttt :', res);
+          if (res.meta.code === 200) {
+
+          } else {
+          }
+          this.authorizationService.logout();
+          return res;
+        }),
+        catchError((error) => {
+          this.authorizationService.logout();
+          return throwError(error);
+        })
+      );
   }
 }

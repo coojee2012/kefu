@@ -1,100 +1,67 @@
-<app-apps-content-header></app-apps-content-header>
+<section class="content-header">
+  <h1>
+    我的服务
+    <small>WebChat</small>
+  </h1>
+  <ol class="breadcrumb">
+    <!-- <li>
+        <a href="#">
+          <i class="fa fa-refresh"></i> 刷新</a>
+      </li> -->
+      <ngb-alert *ngIf="tipMsg && tipStyle==='danger'" type="danger" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+      <ngb-alert *ngIf="tipMsg && tipStyle==='success'" type="success" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+  </ol>
+</section>
 <!-- Main content -->
 <section class="content">
   <!-- Small boxes (Stat box) -->
+
+  <!-- <div class="row">
+    <div class="col-sm-12">
+      <ngb-alert *ngIf="tipMsg && tipStyle==='danger'" type="danger" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+    </div>
+    <div class="col-sm-12">
+      <ngb-alert *ngIf="tipMsg && tipStyle==='success'" type="success" (close)="tipMsg = ''">{{ tipMsg }}</ngb-alert>
+    </div>
+  </div> -->
+
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-5">
       <!-- DIRECT CHAT -->
       <div class="box box-warning direct-chat direct-chat-warning">
         <div class="box-header with-border">
-          <h3 class="box-title">NodeJs技术交流</h3>
-
+          <h3 class="box-title">在线聊天</h3>
           <div class="box-tools pull-right">
             <span data-toggle="tooltip" title="3 New Messages" class="badge bg-yellow">3</span>
-            <button type="button" class="btn btn-box-tool" data-widget="collapse">
-              <i class="fa fa-minus"></i>
-            </button>
             <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
               <i class="fa fa-comments"></i>
-            </button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove">
-              <i class="fa fa-times"></i>
             </button>
           </div>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
           <!-- Conversations are loaded here -->
-          <div class="direct-chat-messages">
+          <div class="direct-chat-messages" style="height:600px;">
             <!-- Message. Default to the left -->
-            <div class="direct-chat-msg">
+            <div *ngFor="let message of messages" class="direct-chat-msg {{ message.from === 'me'? 'right':'left'}}">
               <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-left">Alexander Pierce</span>
-                <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
+                <span class="direct-chat-name {{ message.from === 'me'? 'pull-right':'pull-left'}}">我</span>
+                <span class="direct-chat-timestamp {{ message.from === 'me'? 'pull-left':'pull-right'}}">23 Jan 2:00 pm</span>
               </div>
               <!-- /.direct-chat-info -->
               <img class="direct-chat-img" src="../assets/img/user1-128x128.jpg" alt="message user image">
               <!-- /.direct-chat-img -->
               <div class="direct-chat-text">
-                Is this template really for free? That's unbelievable!
+                {{ message.msg }}
               </div>
               <!-- /.direct-chat-text -->
             </div>
             <!-- /.direct-chat-msg -->
-
-            <!-- Message to the right -->
-            <div class="direct-chat-msg right">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-right">Sarah Bullock</span>
-                <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user3-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                You better believe it!
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
-            <!-- Message. Default to the left -->
-            <div class="direct-chat-msg">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-left">Alexander Pierce</span>
-                <span class="direct-chat-timestamp pull-right">23 Jan 5:37 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user1-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                Working with AdminLTE on a great new app! Wanna join?
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
-            <!-- Message to the right -->
-            <div class="direct-chat-msg right">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-right">Sarah Bullock</span>
-                <span class="direct-chat-timestamp pull-left">23 Jan 6:10 pm</span>
-              </div>
-              <!-- /.direct-chat-info -->
-              <img class="direct-chat-img" src="../assets/img/user3-128x128.jpg" alt="message user image">
-              <!-- /.direct-chat-img -->
-              <div class="direct-chat-text">
-                I would love to.
-              </div>
-              <!-- /.direct-chat-text -->
-            </div>
-            <!-- /.direct-chat-msg -->
-
           </div>
           <!--/.direct-chat-messages-->
 
           <!-- Contacts are loaded here -->
-          <div class="direct-chat-contacts">
+          <div class="direct-chat-contacts" style="height:600px;">
             <ul class="contacts-list">
               <li>
                 <a href="#">
@@ -193,11 +160,12 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-          <form action="#" method="post">
+          <form #msgForm="ngForm">
             <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+              <input type="text" name="message" placeholder="输入聊天内容..." class="form-control" [(ngModel)]="inputMsg"
+                (keyup.enter)="onEnter()">
               <span class="input-group-btn">
-                <button type="button" class="btn btn-warning btn-flat">Send</button>
+                <button type="button" class="btn btn-warning btn-flat" (click)="sendMsg()">发送</button>
               </span>
             </div>
           </form>
@@ -206,79 +174,31 @@
       </div>
       <!--/.direct-chat -->
     </div>
-    <!-- /.col -->
+    <div class="col-md-7">
 
-    <div class="col-md-5">
-      <!-- USERS LIST -->
-      <div class="box box-danger">
+      <div class="box box-info">
         <div class="box-header with-border">
-          <h3 class="box-title">Latest Members</h3>
-
+          <h3 class="box-title">业务办理</h3>
           <div class="box-tools pull-right">
-            <span class="label label-danger">8 New Members</span>
-            <button type="button" class="btn btn-box-tool" data-widget="collapse">
-              <i class="fa fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove">
-              <i class="fa fa-times"></i>
-            </button>
+            <div class="btn-group">
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='order','btn-default':memu!=='order'}" (click)="action('order')">工单处理</a>
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='detail','btn-default':memu!=='detail'}"
+                (click)="action('detail')">会话详情</a>
+              <a type="button" class="btn" [ngClass]="{'btn-info':memu==='faq','btn-default':memu!=='faq'}" (click)="action('faq')">知识库</a>
+            </div>
           </div>
         </div>
-        <!-- /.box-header -->
-        <div class="box-body no-padding">
-          <ul class="users-list clearfix">
-            <li>
-              <img src="../assets/img/user1-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Alexander Pierce</a>
-              <span class="users-list-date">Today</span>
-            </li>
-            <li>
-              <img src="../assets/img/user8-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Norman</a>
-              <span class="users-list-date">Yesterday</span>
-            </li>
-            <li>
-              <img src="../assets/img/user7-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Jane</a>
-              <span class="users-list-date">12 Jan</span>
-            </li>
-            <li>
-              <img src="../assets/img/user6-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">John</a>
-              <span class="users-list-date">12 Jan</span>
-            </li>
-            <li>
-              <img src="../assets/img/user2-160x160.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Alexander</a>
-              <span class="users-list-date">13 Jan</span>
-            </li>
-            <li>
-              <img src="../assets/img/user5-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Sarah</a>
-              <span class="users-list-date">14 Jan</span>
-            </li>
-            <li>
-              <img src="../assets/img/user4-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Nora</a>
-              <span class="users-list-date">15 Jan</span>
-            </li>
-            <li>
-              <img src="../assets/img/user3-128x128.jpg" alt="User Image">
-              <a class="users-list-name" href="#">Nadia</a>
-              <span class="users-list-date">15 Jan</span>
-            </li>
-          </ul>
-          <!-- /.users-list -->
-        </div>
-        <!-- /.box-body -->
-        <div class="box-footer text-center">
-          <a href="javascript:void(0)" class="uppercase">所有成员</a>
-        </div>
-        <!-- /.box-footer -->
+
+        <!-- Custom Tabs -->
+
+        <app-chat-order *ngIf="memu==='order'" [roomId]="roomId" [customerId] = "customerId"></app-chat-order>
+        <app-chat-faq *ngIf="memu==='faq'"></app-chat-faq>
+        <app-chat-detail *ngIf="memu==='detail'"></app-chat-detail>
       </div>
-      <!--/.box -->
+
+
     </div>
-    <!-- /.col -->
+
   </div>
 
 </section>

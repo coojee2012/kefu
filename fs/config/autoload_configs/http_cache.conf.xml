@@ -1,0 +1,39 @@
+<configuration name="http_cache.conf" description="HTTP GET cache">
+  <settings>
+    <!-- set to true if you want to enable http:// and https:// formats.  Do not se if mod_httapi uis also loaded -->
+    <param name="enable-file-formats" value="false"/>
+    <param name="max-urls" value="1000"/>
+    <param name="location" value="$${cache_dir}"/>
+    <param name="default-max-age" value="86400"/>
+    <param name="prefetch-thread-count" value="8"/>
+    <param name="prefetch-queue-size" value="100"/>
+    <!-- absolute path to CA bundle file -->
+    <param name="ssl-cacert" value="$${certs_dir}/cacert.pem"/>
+    <!-- verify certificates -->
+    <param name="ssl-verifypeer" value="true"/>
+    <!-- verify host name matches certificate -->
+    <param name="ssl-verifyhost" value="true"/>
+    <!-- default is 300 seconds, override here -->
+    <!--param name="connect-timeout" value="300"/-->
+    <!-- default is 300 seconds, override here -->
+    <!--param name="download-timeout" value="300"/-->
+  </settings>
+
+  <profiles>
+    <!-- amazon s3 security credentials -->
+    <profile name="s3">
+      <aws-s3>
+        <!-- 20 character key identifier -->
+        <access-key-id><![CDATA[AKIAPNIVBEM4NRGS67MQ]]></access-key-id>
+        <!-- 40 character secret -->
+        <secret-access-key><![CDATA[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]]></secret-access-key>
+      </aws-s3>
+      <!-- optional list of domains that this profile will automatically be applied to -->
+      <!-- if you wish to apply the s3 credentials to a domain not listed here, then use
+           {profile=s3}http://foo.s3... -->
+      <domains>
+        <domain name="uobject.s3.cn-north-1.amazonaws.com.cn"/>
+      </domains>
+    </profile>
+  </profiles>
+</configuration>

@@ -1,0 +1,195 @@
+<section class="content-header">
+  <h1>
+    用户管理
+    <small>用户详情</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li>
+      <a routerLink="/app/userma">
+        <i class="fa fa-chevron-left fa-lg"></i>返回列表</a>
+    </li>
+  </ol>
+</section>
+<section class="content">
+  <div class="row">
+    <div class="col-md-3">
+
+      <!-- Profile Image -->
+      <div class="box box-primary">
+        <div class="box-body box-profile">
+          <img class="profile-user-img img-responsive img-circle" src="../assets/img/user4-128x128.jpg" alt="User profile picture">
+
+          <h3 class="profile-username text-center">张三</h3>
+
+          <p class="text-muted text-center">分机:1000</p>
+
+          <ul class="list-group list-group-unbordered">
+            <li class="list-group-item">
+              <b>好评次数</b>
+              <a class="pull-right">1,322</a>
+            </li>
+            <li class="list-group-item">
+              <b>中评次数</b>
+              <a class="pull-right">543</a>
+            </li>
+            <li class="list-group-item">
+              <b>差评次数</b>
+              <a class="pull-right">13,287</a>
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary btn-block">
+            <b>修改头像</b>
+          </a>
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+
+      <!-- About Me Box -->
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">关于坐席</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+          <strong>
+            <i class="fa fa-book margin-r-5"></i> 教育</strong>
+
+          <p class="text-muted">
+            四川师范大学
+          </p>
+
+          <hr>
+
+          <strong>
+            <i class="fa fa-map-marker margin-r-5"></i> 所在地</strong>
+
+          <p class="text-muted">中国四川</p>
+
+          <hr>
+
+          <strong>
+            <i class="fa fa-pencil margin-r-5"></i> 技能特长</strong>
+
+          <p>
+            <span class="label label-danger">UI设计</span>
+            <span class="label label-primary">Node.js</span>
+          </p>
+
+          <hr>
+
+          <strong>
+            <i class="fa fa-file-text-o margin-r-5"></i> 备注</strong>
+
+          <p>对帅哥免疫</p>
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-9">
+
+      <ngb-tabset class="nav-tabs-custom">
+        <ngb-tab title="基本设置">
+          <ng-template ngbTabContent>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">姓名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" placeholder="姓名、昵称">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">电邮</label>
+
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" placeholder="电子邮件">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputName" class="col-sm-2 control-label">生日</label>
+
+                <div class="col-sm-10">
+                    <input class="form-control" placeholder="yyyy-mm-dd"
+                    name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker"  (click)="d.toggle()">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputExperience" class="col-sm-2 control-label">教育</label>
+
+                <div class="col-sm-10">
+                  <textarea class="form-control" id="inputExperience" placeholder="主要教育、培训经历"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">特长</label>
+
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputSkills" placeholder="技能、特长">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputSkills" class="col-sm-2 control-label">爱好</label>
+
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputSkills" placeholder="兴趣、爱好">
+                </div>
+              </div>
+             
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-danger">确认修改</button>
+                </div>
+              </div>
+            </form>
+          </ng-template>
+        </ngb-tab>
+        <ngb-tab>
+            <ng-template ngbTabTitle><b>密码</b> 修改</ng-template>
+          <ng-template ngbTabContent>
+              <strong><i class="fa fa-exclamation-triangle text-yellow margin-r-5"></i> 注意</strong>
+
+              <p>忘记密码请联系管理人员帮你重置密码！</p>
+
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">原始密码</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" placeholder="以前的密码">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">新的密码</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" placeholder="6-12位新密码">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">密码确认</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" placeholder="再次确认新的密码">
+                </div>
+              </div>
+                <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-danger">确认重设</button>
+                </div>
+              </div>
+            </form>
+           
+          </ng-template>
+        </ngb-tab>
+        <ngb-tab title="权限设置">
+          <ng-template ngbTabContent>
+            <p>无权限操作</p>
+          </ng-template>
+        </ngb-tab>
+      </ngb-tabset>
+
+      <!-- /.nav-tabs-custom -->
+    </div>
+    <!-- /.col -->
+  </div>
+</section>

@@ -6,7 +6,9 @@ import { LoggerService } from './service/LogService';
 import { DeepStreamService } from './service/DeepStreamService';
 import { MongoService } from './service/MongoService';
 import { RoutesService } from './routes/RoutesService';
+import { RedisService } from './service/RedisService';
 import { AppServer } from './AppServer';
+import { Passport } from './config/passport'
 // import { RoutesService }  from './routes/RoutesService';
 // import { App } from './app/index';
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
@@ -18,8 +20,10 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
         deps: [] //这里不能丢
     },
     ConfigService,
+    RedisService,
     DeepStreamService,
     MongoService,
+    Passport,
     HeroService,
     RoutesService,
     AppServer

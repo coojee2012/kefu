@@ -1,0 +1,15 @@
+#{notice}
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3proxy
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+    nodePort: 30300
+  selector:
+    run: s3proxy
+  sessionAffinity: None
+  type: NodePort

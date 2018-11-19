@@ -5,6 +5,7 @@ import util = require('util');
 import net = require('net');
 import crypto = require('crypto');
 import { Connection } from './Connection';
+import { resolve } from 'url';
 
 
 
@@ -15,6 +16,7 @@ export class FreeSwitchServer extends EventEmitter2 {
     password: string;
     server: any;
     connections: any;
+    inboundConn: Connection;
     constructor(opts?, readyCb?) {
         super({ wildcard: true, delimiter: '::', maxListeners: 1000 });
         this.port = opts.port || 8085;
@@ -22,9 +24,28 @@ export class FreeSwitchServer extends EventEmitter2 {
         this.password = opts.password || 'ClueCon';
         this.connections = {};
     }
-    createInboundServer() {
-        const conn = new Connection();
-        conn.client(this.host, this.port, this.password);
+    async createInboundServer(): Promise<Connection> {
+        try {
+            this.inboundConn = new Connection();
+
+            await new Promise((resolve, reject) => {
+                this.inboundConn.on('esl::ready', () => {
+                    this.inboundConn.subscribe('ALL', (evt) => {
+                       
+                        resolve();
+                      });
+                   // resolve();
+                })
+                this.inboundConn.on('esl::event::auth::fail', () => {
+                    reject('esl::event::auth::fail');
+                })
+                this.inboundConn.client(this.host, this.port, this.password);
+            })
+
+            return this.inboundConn;
+        } catch (ex) {
+            return Promise.reject(ex);
+        }
     }
 
     async createOutboundServer() {
@@ -48,8 +69,8 @@ export class FreeSwitchServer extends EventEmitter2 {
     }
 
     async _onConnection(socket: net.Socket) {
-        try{
-            const conn = new Connection();       
+        try {
+            const conn = new Connection();
             const id = this._generateId();
             this.connections[id] = conn;
             this.connections[id]._id = id;
@@ -63,18 +84,18 @@ export class FreeSwitchServer extends EventEmitter2 {
                     this.emit('connection::ready', this.connections[id], id);
                 }
             }.bind(this, id));
-    
+
             conn.on('esl::end', function (id) {
                 this.emit('connection::close', this.connections[id], id);
                 delete this.connections[id];
             }.bind(this, id));
-    
+
             conn.server(socket);
         }
-        catch(ex){
+        catch (ex) {
 
         }
-        
+
 
     }
 

@@ -1,0 +1,19 @@
+FROM debian:jessie
+MAINTAINER Harold Sun
+
+ADD sources.list /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y wget \
+    && wget -O - https://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add - \
+    && apt-get update && apt-get install -y freeswitch-meta-all && apt-get install -y freeswitch-mod-shout \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/local/freeswitch && adduser --gecos "FreeSWITCH Voice Platform" --no-create-home --disabled-login \
+          --disabled-password --system --ingroup daemon --home /usr/local/freeswitch freeswitch \
+    && chown -R freeswitch:daemon /usr/local/freeswitch
+
+RUN apt-get update && apt-get install -y msmtp lua5.2 lua-sql-mysql liblua5.2-dev && rm -rf /var/lib/apt/lists/*
+
+RUN wget http://curl.haxx.se/ca/cacert.pem -O /etc/freeswitch/tls/cacert.pem
+RUN apt-get update && apt-get install -y unixodbc-dev vim && rm -rf /var/lib/apt/lists/*
+

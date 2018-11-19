@@ -5,7 +5,7 @@ const Config = {
     api: {
         port: '80'
     },
-    reids: {
+    redis: {
         host: '127.0.0.1',
         port: '6379',
         //password: '',
@@ -57,11 +57,15 @@ const Config = {
         database_call_control: 'call_control',
         database_cgrates: 'cgrates'
     },
+    callControlApi:{
+        baseUrl:''
+    },
     deepstream: {
         host: '192.168.2.230',
         port: '6020'
     },
     logLevel: 'debug',
+    sipRegInFS:false,
     esl: {
         port: '8058',
         host: ''

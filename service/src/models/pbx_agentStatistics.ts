@@ -2,7 +2,20 @@ import * as mongoose from 'mongoose';
 /**
  * 定义接口
  */
-export type PBXAgentStatisticsModel = mongoose.Document & {}
+export type PBXAgentStatisticsModel = mongoose.Document & {
+  tenantId:string;
+  bLegId:string;
+  queueNumber:string;
+  callId:string;
+  agentNumber:string;
+  agentId:string;
+  ringStart:Date;
+  answerTime?:Date;
+  hangupTime?:Date;
+  satisfaction:number;
+  hangupCase:string;
+  idleTime:number;
+}
 
 const pbxAgentStatisticSchema = new mongoose.Schema({
     callId: {

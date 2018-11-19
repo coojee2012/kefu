@@ -5,6 +5,9 @@ import { LoggerService } from './service/LogService';
 import { ESLEventNames } from './service/ESLEventNames';
 import { DeepStreamService } from './service/DeepStreamService';
 import { MongoService } from './service/MongoService';
+import { RedisService } from './service/RedisService';
+import { QueueWorkerService } from './callflow/QueueWorkerService';
+import { EventService } from './service/EventService';
 import { ESLServer } from './ESLServer';
 const TITLE = new InjectionToken<string>('title');
 const injector: Injector = ReflectiveInjector.resolveAndCreate([
@@ -20,6 +23,9 @@ const injector: Injector = ReflectiveInjector.resolveAndCreate([
     ConfigService,
     DeepStreamService,
     MongoService,
+    RedisService,
+    EventService,
+    QueueWorkerService,
     ESLServer,
 ]);
 

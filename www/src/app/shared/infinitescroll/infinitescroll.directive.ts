@@ -12,7 +12,7 @@ import { PositionResolverService } from './position-resolver.service';
 import { ScrollRegisterService, IScrollRegisterConfig } from './scroll-register.service';
 import { ScrollResolverService } from './scroll-resolver.service';
 import { AxisResolverService } from './axis-resolver.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { InfiniteScrollEvent, IScrollStats, IPositionStats } from './interface';
 

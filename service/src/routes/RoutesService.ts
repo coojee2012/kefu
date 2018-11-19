@@ -4,6 +4,13 @@ import { Request, Response, NextFunction } from 'express';
 
 import { UserController } from '../controllers/user';
 import { ArticleController } from '../controllers/article'
+import { PBXExtensionController } from '../controllers/pbx_extension';
+import { TenantController } from '../controllers/tenant';
+import { PBXTrunkController } from '../controllers/pbx_trunk';
+import { PBXCDRController } from '../controllers/pbx_cdr';
+import { CustomerController } from '../controllers/customer';
+import { UserEventController } from '../controllers/userEvent';
+import { RoomController } from '../controllers/room';
 
 import { WebAPI } from './webApi';
 import { WebStatic } from './web';
@@ -19,8 +26,15 @@ export class RoutesService {
   }
   createChildInjector(): void {
     this.childInjector = ReflectiveInjector.resolveAndCreate([
+      PBXTrunkController,
+      PBXCDRController,
+      TenantController,
       UserController,
-      ArticleController
+      PBXExtensionController,
+      ArticleController,
+      CustomerController,
+      UserEventController,
+      RoomController,
     ], this.injector);
   }
 
@@ -28,7 +42,7 @@ export class RoutesService {
     /**
      * 全局代理
      */
-    app.all('*', function (req: Request, res: Response, next: NextFunction) {
+    app.all('*', (req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers',
         'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
