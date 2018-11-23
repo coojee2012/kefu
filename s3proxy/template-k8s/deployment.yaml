@@ -1,0 +1,37 @@
+#{notice}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: s3proxy
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: s3proxy
+    spec:
+      containers:
+      - name: s3proxy
+        image: registry.yunkefu.cc/unicall/s3proxy
+        readinessProbe:
+          httpGet:
+            path: /healthCheck
+            port: 3000
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /healthCheck
+            port: 3000
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        imagePullPolicy: Always
+        env:
+          - name: NODE_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: node-config
+                key: node.env
+        ports:
+        - containerPort: 3000
+          protocol: TCP

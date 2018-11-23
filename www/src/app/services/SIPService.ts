@@ -67,7 +67,16 @@ export class SIPService {
                 isFirefox = true;
             }
             const sessionDescriptionHandlerFactoryOptions: any = {
-
+                peerConnectionOptions: {
+                    iceCheckingTimeout: 3000,
+                    rtcConfiguration: {
+                        iceServers: [
+                            { urls: 'stun:stun.voiparound.com' },
+                            { urls: 'stun:stun.voipbuster.com' },
+                            { urls: 'stun:stun.l.google.com:19302' }
+                        ]
+                    }
+                }
             };
             if (isSafari) {
                 sessionDescriptionHandlerFactoryOptions.modifiers = [SIP.Web.Modifiers.stripG722];
@@ -90,18 +99,34 @@ export class SIPService {
                     transportOptions: {
                         traceSip: true,
                         wsServers: 'ws://192.168.2.230:5066',
+                        connectionTimeout: 5, // seconds default 5
+                        maxReconnectionAttempts: 3,
+                        reconnectionTimeout: 4,
+                        keepAliveInterval: 0,
+                        keepAliveDebounce: 10
                     },
                     // FreeSWITCH Default Username
                     authorizationUser: options.exten,
-                    // FreeSWITCH Default Password
-                    password: options.password,
-                    register: true,
-                    stunServers: ['stun:stun.voiparound.com', 'stun:stun1.l.google.com:19302', 'stun:stun.voipbuster.com'],
+                    // Username (String) to use when generating authentication credentials.
+                    // If not defined the value in uri parameter is used.
+                    password: options.password, // FreeSWITCH Default Password
+                    register: true, // Indicate if a SIP User Agent should register automatically when starting.
+                    registerExpires: 300, // Registration expiry time (in seconds) (Number). Default value is 600.
+                    // registrarServer: '', // Set the SIP registrar URI.
+                    // Valid value is a SIP URI without username.
+                    // Default value is null which means that the registrar URI is taken from the uri parameter (by removing the username).
                     // sessionDescriptionHandlerFactory: (session, options) => {
                     //     return new SessionDescriptionHandler(session, options);
                     // },
-                    log: { level: 'debug' },
-                    sessionDescriptionHandlerFactoryOptions: sessionDescriptionHandlerFactoryOptions
+                    dtmfType: SIP.C.dtmfType.INFO, // Valid values are SIP.C.dtmfType.INFO and SIP.C.dtmfType.RTP
+                    log: {
+                        builtinEnabled: true,
+                        level: 'debug', // "debug", "log", "warn", "error"
+                        // connector:(level, category, label, content)=>{}
+                    },
+                    noAnswerTimeout: 60,
+                    sessionDescriptionHandlerFactoryOptions: sessionDescriptionHandlerFactoryOptions,
+                    userAgentString: 'AI-SIP'
                 });
                 let registered = false;
                 this.state = C.STATUS_NULL;
@@ -229,7 +254,17 @@ export class SIPService {
                     constraints: {
                         audio: this.audio,
                         video: this.video
-                    }
+                    },
+                    // peerConnectionOptions: {
+                    //     iceCheckingTimeout: 5000,
+                    //     rtcConfiguration: {
+                    //         iceServers: [
+                    //             {urls: 'stun:stun.voiparound.com'},
+                    //             {urls: 'stun:stun.voipbuster.com'},
+                    //             {urls: 'stun:stun.l.google.com:19302'}
+                    //         ]
+                    //     }
+                    // }
                 }
             });
             this.setupSession();

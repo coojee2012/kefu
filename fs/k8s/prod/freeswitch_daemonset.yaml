@@ -1,0 +1,82 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: freeswitch
+  labels:
+    env: prod
+    app: octopus
+    component: freeswitch
+spec:
+  template:
+    metadata:
+      labels:
+        env: prod
+        app: octopus
+        component: freeswitch
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        env: prod
+        freeswitch: "true"
+      containers:
+      - name: freeswitch
+        image: registry.yunkefu.cc/unicall/freeswitch:1.6.10.517
+        imagePullPolicy: Always
+        securityContext:
+          capabilities:
+            add:
+            - IPC_LOCK
+            - NET_ADMIN
+            - NET_RAW
+            - NET_BROADCAST
+            - SYS_NICE
+            - SYS_RESOURCE
+        env:
+        - name: CONF_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: node-config
+              key: node.env
+        ports:
+          - containerPort: 5090
+            hostPort: 5090
+            protocol: UDP
+            name: sip-internal
+          - containerPort: 5092
+            hostPort: 5092
+            protocol: UDP
+            name: sip-external
+          - containerPort: 8080
+            hostPort: 8080
+            protocol: TCP
+            name: webapi
+          - containerPort: 8021
+            hostPort: 8021
+            protocol: TCP
+            name: event-socket
+        resources:
+          requests:
+            cpu: 1
+            memory: 2Gi
+          limits:
+            cpu: 2
+            memory: 2Gi
+        readinessProbe:
+          exec:
+            command: ["fs_cli", "-x", "status", "|", "grep", "-q", "^UP"]
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
+        livenessProbe:
+          exec:
+            command: ["fs_cli", "-x", "status", "|", "grep", "-q", "^UP"]
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
+        terminationMessagePath: /dev/termination-log
+      imagePullSecrets:
+         - name: registry-yunkefu-cc-secret
+      serviceAccount: freeswitch
+      terminationGracePeriodSeconds: 10

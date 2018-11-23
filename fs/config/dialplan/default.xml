@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    NOTICE:
+
+    This context is usually accessed via authenticated callers on the sip profile on port 5060
+    or transfered callers from the public context which arrived via the sip profile on port 5080.
+
+    Authenticated users will use the user_context variable on the user to determine what context
+    they can access.  You can also add a user in the directory with the cidr= attribute acl.conf.xml
+    will build the domains ACL using this value.
+-->
+<!-- http://wiki.freeswitch.org/wiki/Dialplan_XML -->
+<include>
+    <context name="default">
+
+        <extension name="unloop">
+            <condition field="${unroll_loops}" expression="^true$"/>
+            <condition field="${sip_looped_call}" expression="^true$">
+                <action application="deflect" data="${destination_number}"/>
+            </condition>
+        </extension>
+
+        <extension name="strip_plus">
+            <condition field="destination_number" expression="^(\d+)\-(\d+)$">
+                <action application="transfer" data="$1$2"/>
+            </condition>
+        </extension>
+
+        <extension name="global" continue="true">
+            <condition field="${call_debug}" expression="^true$" break="never">
+                <action application="info"/>
+            </condition>
+
+            <condition field="destination_number" expression="^[1-9]\d{3}$" break="on-true">
+                <action application="set" data="call_direction=calllocal"/>
+            </condition>
+
+            <condition field="destination_number" expression="^1\d{2}$" break="on-true">
+                <action application="set" data="call_direction=callin"/>
+            </condition>
+
+            <condition field="destination_number" expression="^3\d{2}$" break="on-true">
+                <action application="set" data="call_direction=callconference"/>
+            </condition>
+
+            <condition field="destination_number" expression="^[2,4-9]\d{2}$" break="on-true">
+                <action application="set" data="call_direction=calllocal"/>
+            </condition>
+
+            <condition field="destination_number" expression="^\d+$" break="on-true">
+                <action application="set" data="call_direction=callout"/>
+            </condition>
+
+        </extension>
+
+        <extension name="service-consulting">
+            <condition field="destination_number" expression="^consulting$">
+                <action application="sleep" data="300"/>
+                <!-- action application="park"/ -->
+                <action application="set" data="park_after_bridge=true"/>
+                <action application="set" data="playback_terminators=none"/>
+                <action application="playback" data="$${hold_music}"/>
+            </condition>
+        </extension>
+
+        <!-- 会议 -->
+        <extension name="service-conference">
+            <condition field="destination_number" expression="^con_conventioner(\S+)" break="on-true">
+                <action application="sleep" data="300"/>
+                <action application="set" data="park_after_bridge=true"/>
+                <action application="conference" data="con_$1@tripartite++flags{endconf}"/>
+            </condition>
+            <!--主持人进入会议-->
+            <condition field="destination_number" expression="^con_moderator(\S+)" break="on-true">
+                <action application="sleep" data="300"/>
+                <action application="set" data="park_after_bridge=true"/>
+                <action application="conference" data="con_$1@tripartite++flags{endconf|moderator}"/>
+            </condition>
+        </extension>
+
+        <extension name="service-after_hangup">
+            <condition field="destination_number" expression="^after_hangup$">
+                <action application="set" data="esl_after_hangup=yes"/>
+                <action application="set" data="call_direction=callin"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <extension name="service-click_out">
+            <condition field="destination_number" expression="^click_out$">
+                <action application="set" data="esl_click_out=yes"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <extension name="ELS_GetCGRParameters" continue="true">
+            <condition field="${esl_cgr_reqtype}" expression="^$">
+                <action application="set" data="socket_resume=true"/>
+                <action application="set" data="cgr_ignorepark=true"/>
+                <action application="set" data="direction=inbound"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <!--- CGRateS related extensions -->
+        <!-- Place all requests into park app. Notify must be empty so we do not loop. Order Lcr computation -->
+        <extension name="CGRateS_Auth" continue="true">
+            <condition field="${cgr_notify}" expression="^$">
+                <!---<action application="set" data="cgr_computelcr=true" />-->
+                <action application="set" data="cgr_ignorepark=false"/>
+                <action application="park"/>
+            </condition>
+        </extension>
+
+        <!-- In case of CGRateS returning INSUFFICIENT_FUNDS, play the message (if recorded) and disconnect the call with 403. -->
+        <extension name="CGRateS_AuthForbidden">
+            <condition field="${cgr_notify}" expression="^-INSUFFICIENT_FUNDS$">
+                <action application="set" data="proto_specific_hangup_cause=sip:403"/>
+                <action application="hangup"/>
+            </condition>
+        </extension>
+
+
+        <!-- In case of CGRateS returning SYSTEM_ERROR, disconnect the call so we do not risk prepaid calls going out. -->
+        <extension name="CGRateS_Error">
+            <condition field="${cgr_notify}" expression="^-SYSTEM_ERROR$">
+                <action application="set" data="proto_specific_hangup_cause=sip:503"/>
+                <action application="hangup"/>
+            </condition>
+        </extension>
+
+        <!-- Use Suppliers information to simulate calls to suppliers, replace here with real gateway ids out of suppliers -->
+        <extension name="CGR Suppliers">
+            <condition field="cgr_suppliers" expression=".+">
+                <action application="set" data="cgr_supplier=${cgr_suppliers[1]}"/>
+            </condition>
+        </extension>
+
+        <extension name="subscriber-bridge">
+            <condition field="destination_number" expression="^[1-9]\d{3}$">
+                <action application="export" data="sip_invite_domain=${sip_from_host}"/>
+                <action application="set" data="call_direction=calllocal"/>
+                <action application="set" data="cgr_ignorepark=true"/>
+                <action application="set" data="hangup_after_bridge=false"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <extension name="did-test">
+            <condition field="destination_number" expression="^0108888888$">
+                <action application="answer"/>
+                <action application="sleep" data="2000"/>
+                <action application="ivr" data="demo_ivr"/>
+            </condition>
+        </extension>
+
+        <extension name="did-numbers">
+            <condition field="destination_number" expression="^1\d{2}$">
+                <action application="set" data="call_direction=callin"/>
+                <action application="set" data="cgr_ignorepark=true"/>
+                <action application="set" data="hangup_after_bridge=false"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <extension name="conference-bridge">
+            <condition field="destination_number" expression="^3\d{2}$">
+                <action application="answer"/>
+                <action application="conference" data="conf-$1-${sip_to_host}@ultrawideband+123456"/>
+            </condition>
+        </extension>
+
+        <extension name="service-numbers">
+            <condition field="destination_number" expression="^[2,4-9]\d{2}$">
+                <action application="set" data="call_direction=calllocal"/>
+                <action application="set" data="cgr_ignorepark=true"/>
+                <action application="set" data="hangup_after_bridge=false"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+        <extension name="pstn-bridge">
+            <condition field="destination_number" expression="^(.*)$">
+                <action application="export" data="sip_invite_domain=${sip_req_host}"/>
+                <action application="set" data="call_direction=callout"/>
+                <action application="set" data="cgr_ignorepark=true"/>
+                <action application="set" data="hangup_after_bridge=false"/>
+                <action application="socket" data="$${esl_host} async full"/>
+            </condition>
+        </extension>
+
+    </context>
+</include>
